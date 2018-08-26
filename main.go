@@ -3,6 +3,7 @@ package main
 import r "RapidEngine"
 
 var child1 r.Child2D
+var child2 r.Child2D
 
 func main() {
 	c := r.EngineConfig{
@@ -23,11 +24,13 @@ func main() {
 	child1 = engine.NewChild2D()
 	child1.AttachPrimitive(r.NewRectangle(100, 100, &c))
 	child1.AttachTexturePrimitive("./krita/blueSword.jpeg")
+	child1.AttachCollider(0, 0, 10, 10)
 	child1.SetPosition(500, 500)
 
-	child2 := engine.NewChild2D()
+	child2 = engine.NewChild2D()
 	child2.AttachPrimitive(r.NewRectangle(100, 100, &c))
 	child2.AttachTexturePrimitive("./krita/goldSword.jpeg")
+	child2.AttachCollider(0, 0, 10, 10)
 	child2.SetPosition(600, 500)
 
 	engine.Instance(&child1)
@@ -40,4 +43,7 @@ func main() {
 func render(renderer *r.Renderer) {
 	renderer.RenderChildren()
 	child1.SetPosition(child1.X+1, 500)
+	if child1.CheckCollision(&child2) {
+		println("yeet")
+	}
 }
