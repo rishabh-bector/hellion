@@ -1,14 +1,17 @@
 package main
 
-import r "RapidEngine"
+import (
+	"rapidengine"
+	"rapidengine/configuration"
+)
 
-var engine r.Engine
+var engine rapidengine.Engine
 
-var child1 r.Child2D
-var child2 r.Child2D
+var child1 rapidengine.Child2D
+var child2 rapidengine.Child2D
 
 func main() {
-	c := r.EngineConfig{
+	c := configuration.EngineConfig{
 		ScreenWidth:    1920,
 		ScreenHeight:   1080,
 		WindowTitle:    "game",
@@ -17,31 +20,26 @@ func main() {
 		Dimensions:     2,
 	}
 
-	engine = r.NewEngine(c, render)
+	engine = rapidengine.NewEngine(c, render)
 	err := engine.Initialize()
 	if err != nil {
 		panic(err)
 	}
 
-	engine.TextureControl.NewTexture("./krita/blueSword.jpeg", "blue-sword")
+	engine.TextureControl.NewTexture("./krita/blueSword.jpeg", "sword")
+	engine.TextureControl.NewTexture("./krita/dirt.jpeg", "dirt")
 
 	child1 = engine.NewChild2D()
-	child1.AttachPrimitive(r.NewRectangle(50, 50, &c))
-	child1.AttachTexturePrimitive(engine.TextureControl.GetTexture("blue-sword"))
+	child1.AttachPrimitive(rapidengine.NewRectangle(50, 50, &c))
+	child1.AttachTexturePrimitive(engine.TextureControl.GetTexture("dirt"))
 	child1.EnableCopying()
 	engine.Instance(&child1)
 
 	for x := 0; x < 5000; x += 50 {
-		for y := 0; y < 5000; y += 50 {
-			child1.AddCopy(r.ChildCopy{float32(x), float32(y)})
+		for y := 0; y < 10000; y += 50 {
+			child1.AddCopy(rapidengine.ChildCopy{float32(x), float32(y), engine.TextureControl.GetTexture("sword")})
 		}
 	}
-
-	child2 = engine.NewChild2D()
-	child2.AttachPrimitive(r.NewRectangle(100, 100, &c))
-	child2.AttachTexturePrimitive(engine.TextureControl.GetTexture("blue-sword"))
-	child2.SetPosition(0, 0)
-	engine.Instance(&child2)
 
 	/*engine.CollisionControl.CreateGroup("children")
 	engine.CollisionControl.AddChildToGroup(&child1, "children")
@@ -54,10 +52,12 @@ func main() {
 	engine.Renderer.SetRenderDistance(2000)
 	engine.Renderer.MainCamera.SetPosition(0, 5000)
 
+	engine.InitializeRenderer()
+
 	engine.StartRenderer()
 	<-engine.Done()
 }
 
-func render(renderer *r.Renderer) {
+func render(renderer *rapidengine.Renderer) {
 	renderer.RenderChildren()
 }
