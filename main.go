@@ -1,57 +1,64 @@
 package main
 
 import (
+	"math/rand"
 	"rapidengine"
 	"rapidengine/configuration"
+
+	perlin "github.com/aquilax/go-perlin"
 )
 
 var engine rapidengine.Engine
+var config configuration.EngineConfig
 
 var child1 rapidengine.Child2D
 var child2 rapidengine.Child2D
 
-func main() {
-	c := configuration.EngineConfig{
-		ScreenWidth:    1920,
-		ScreenHeight:   1080,
-		WindowTitle:    "game",
-		PolygonLines:   false,
-		CollisionLines: true,
-		Dimensions:     2,
-	}
+const WorldHeight = 1000
+const WorldWidth = 1000
+const BlockSize = 25
 
-	engine = rapidengine.NewEngine(c, render)
+var p *perlin.Perlin
+var world [WorldWidth][WorldHeight]int
+
+var blocks []string
+
+func main() {
+	config = configuration.NewEngineConfig(1920, 1080, 2)
+
+	engine = rapidengine.NewEngine(config, render)
 	err := engine.Initialize()
 	if err != nil {
 		panic(err)
 	}
 
-	engine.TextureControl.NewTexture("./krita/blueSword.jpeg", "sword")
-	engine.TextureControl.NewTexture("./krita/dirt.jpeg", "dirt")
+	engine.TextureControl.NewTexture("./sprites/blueSword.jpeg", "sword")
+	engine.TextureControl.NewTexture("./sprites/dirt.jpeg", "dirt")
 
-	child1 = engine.NewChild2D()
-	child1.AttachPrimitive(rapidengine.NewRectangle(50, 50, &c))
-	child1.AttachTexturePrimitive(engine.TextureControl.GetTexture("dirt"))
-	child1.EnableCopying()
-	engine.Instance(&child1)
+	blocks = append(blocks, "dirt")
 
-	for x := 0; x < 5000; x += 50 {
-		for y := 0; y < 10000; y += 50 {
-			child1.AddCopy(rapidengine.ChildCopy{float32(x), float32(y), engine.TextureControl.GetTexture("sword")})
-		}
-	}
+	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
 
 	/*engine.CollisionControl.CreateGroup("children")
 	engine.CollisionControl.AddChildToGroup(&child1, "children")
 	engine.CollisionControl.AddChildToGroup(&child2, "children")
-	engine.CollisionControl.CreateCollision(&child1, "children", cbk)
+	engine.CollisionControl.CreateCollision(&child1, "children", cbk)*/
 
-	child1.SetVelocity(1, 0)
-	child1.AttachGravity(0.2)*/
-
-	engine.Renderer.SetRenderDistance(2000)
+	engine.Renderer.SetRenderDistance(1000)
 	engine.Renderer.MainCamera.SetPosition(0, 5000)
 
+	child1 = engine.NewChild2D()
+	child1.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	child1.AttachTexturePrimitive(engine.TextureControl.GetTexture("dirt"))
+	child1.EnableCopying()
+
+	engine.Config.Logger.Info("Generating world...")
+	generateWorld()
+	createCopies()
+
+	println(len(child1.GetCopies()))
+
+	engine.Instance(&child1)
 	engine.InitializeRenderer()
 
 	engine.StartRenderer()
@@ -60,4 +67,20 @@ func main() {
 
 func render(renderer *rapidengine.Renderer) {
 	renderer.RenderChildren()
+}
+
+func generateWorld() {
+	for x := 0; x < WorldWidth; x += 1 {
+		for y := 0; y < WorldHeight; y += 1 {
+			world[x][y] = 0
+		}
+	}
+}
+
+func createCopies() {
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			child1.AddCopy(rapidengine.ChildCopy{float32(x * BlockSize), float32(y * BlockSize), engine.TextureControl.GetTexture(blocks[world[x][y]])})
+		}
+	}
 }
