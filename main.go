@@ -32,8 +32,9 @@ func main() {
 		panic(err)
 	}
 
-	engine.TextureControl.NewTexture("./sprites/blueSword.jpeg", "sword")
-	engine.TextureControl.NewTexture("./sprites/dirt.jpeg", "dirt")
+	//engine.TextureControl.NewTexture("./sprites/dirt.png", "dirt")
+	//engine.TextureControl.NewTexture("./sprites/grass.png", "grass")
+	engine.TextureControl.NewTexture("./sprites/dirt.png", "dirt")
 
 	blocks = append(blocks, "dirt")
 
@@ -45,7 +46,7 @@ func main() {
 	engine.CollisionControl.CreateCollision(&child1, "children", cbk)*/
 
 	engine.Renderer.SetRenderDistance(1000)
-	engine.Renderer.MainCamera.SetPosition(0, 5000)
+	engine.Renderer.MainCamera.SetPosition(17000, 17000)
 
 	child1 = engine.NewChild2D()
 	child1.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
