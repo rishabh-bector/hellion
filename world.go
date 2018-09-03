@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"rapidengine"
 
 	perlin "github.com/aquilax/go-perlin"
@@ -12,17 +13,19 @@ const BlockSize = 25
 const Flatness = 0.3
 
 var p *perlin.Perlin
-var world [WorldWidth][WorldHeight]int
+var WorldMap [WorldWidth][WorldHeight]int
 
 func generateWorld() {
+	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
+
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			world[x][y] = 0
+			WorldMap[x][y] = 0
 		}
 	}
 	heights := generateHeights()
 	for x := 0; x < WorldWidth; x++ {
-		world[x][heights[x]] = 2
+		WorldMap[x][heights[x]] = 2
 	}
 	fillHeights()
 }
@@ -30,8 +33,8 @@ func generateWorld() {
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if world[x][y] != 0 {
-				child1.AddCopy(rapidengine.ChildCopy{float32(x * BlockSize), float32(y * BlockSize), engine.TextureControl.GetTexture(blocks[world[x][y]])})
+			if WorldMap[x][y] != 0 {
+				WorldChild.AddCopy(rapidengine.ChildCopy{float32(x * BlockSize), float32(y * BlockSize), engine.TextureControl.GetTexture(blocks[WorldMap[x][y]])})
 			}
 		}
 	}
@@ -56,8 +59,8 @@ func generateHeights() [WorldWidth]int {
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			world[x][y] = 1
-			if world[x][y+1] == 2 {
+			WorldMap[x][y] = 1
+			if WorldMap[x][y+1] == 2 {
 				break
 			}
 		}

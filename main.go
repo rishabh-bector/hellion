@@ -1,19 +1,16 @@
 package main
 
 import (
-	"math/rand"
 	"rapidengine"
 	"rapidengine/configuration"
 	"runtime"
-
-	perlin "github.com/aquilax/go-perlin"
 )
 
 var engine rapidengine.Engine
 var config configuration.EngineConfig
 
-var child1 rapidengine.Child2D
-var child2 rapidengine.Child2D
+var WorldChild rapidengine.Child2D
+var Player rapidengine.Child2D
 
 var blocks []string
 
@@ -24,10 +21,10 @@ func init() {
 func main() {
 	config = rapidengine.NewEngineConfig(1920, 1080, 2)
 	engine = rapidengine.NewEngine(config, render)
-	err := engine.Initialize()
-	if err != nil {
-		panic(err)
-	}
+
+	engine.Renderer.SetRenderDistance(1000)
+	engine.Renderer.MainCamera.SetPosition(100, 100)
+	engine.Renderer.MainCamera.SetSpeed(0.2)
 
 	engine.TextureControl.NewTexture("./sprites/sky.png", "sky")
 	engine.TextureControl.NewTexture("./sprites/dirt.png", "dirt")
@@ -37,41 +34,53 @@ func main() {
 	blocks = append(blocks, "dirt")
 	blocks = append(blocks, "grass")
 
-	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
-
-	engine.Renderer.SetRenderDistance(1000)
-	engine.Renderer.MainCamera.SetPosition(100, 100)
-	engine.Renderer.MainCamera.SetSpeed(0.2)
-
-	child1 = engine.NewChild2D()
-	child1.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
-	child1.AttachTexturePrimitive(engine.TextureControl.GetTexture("grass"))
-	child1.EnableCopying()
-	child1.AttachCollider(0, 0, 25, 25)
+	WorldChild = engine.NewChild2D()
+	WorldChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	WorldChild.AttachTexturePrimitive(engine.TextureControl.GetTexture("grass"))
+	WorldChild.EnableCopying()
+	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
 	engine.Config.Logger.Info("Generating world...")
 	generateWorld()
 	createCopies()
 
 	engine.CollisionControl.CreateGroup("ground")
-	engine.CollisionControl.AddChildToGroup(&child1, "ground")
+	engine.CollisionControl.AddChildToGroup(&WorldChild, "ground")
 
-	child2 = engine.NewChild2D()
-	child2.AttachPrimitive(rapidengine.NewRectangle(50, 50, &config))
-	child2.AttachTexturePrimitive(engine.TextureControl.GetTexture("sky"))
-	child2.SetPosition(1000, 20000)
-	child2.AttachCollider(0, 0, 100, 100)
-	child2.SetGravity(1)
+	Player = engine.NewChild2D()
+	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
+	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("sky"))
+	Player.SetPosition(1000, 20000)
+	Player.AttachCollider(0, 0, 30, 50)
+	Player.SetGravity(1)
 
-	engine.Instance(&child2)
-	engine.Instance(&child1)
-	engine.InitializeRenderer()
+	engine.Instance(&Player)
+	engine.Instance(&WorldChild)
+
+	err := engine.Initialize()
+	if err != nil {
+		panic(err)
+	}
 
 	engine.StartRenderer()
 	<-engine.Done()
 }
 
-func render(renderer *rapidengine.Renderer) {
+func render(renderer *rapidengine.Renderer, keys map[string]bool) {
 	renderer.RenderChildren()
-	renderer.MainCamera.SetPosition(child2.X, child2.Y)
+	renderer.MainCamera.SetPosition(Player.X, Player.Y)
+	movePlayer(keys)
+}
+
+func movePlayer(keys map[string]bool) {
+	if keys["w"] {
+		Player.SetVelocityY(10)
+	}
+	if keys["a"] {
+		Player.SetVelocityX(4)
+	} else if keys["d"] {
+		Player.SetVelocityX(-4)
+	} else {
+		Player.SetVelocityX(0)
+	}
 }
