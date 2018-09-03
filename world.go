@@ -11,7 +11,7 @@ const WorldHeight = 1000
 const WorldWidth = 1000
 const BlockSize = 25
 const Flatness = 0.3
-
+ 
 var p *perlin.Perlin
 var WorldMap [WorldWidth][WorldHeight]int
 

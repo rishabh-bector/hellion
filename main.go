@@ -26,11 +26,11 @@ func main() {
 	engine.Renderer.MainCamera.SetPosition(100, 100)
 	engine.Renderer.MainCamera.SetSpeed(0.2)
 
-	engine.TextureControl.NewTexture("./sprites/sky.png", "sky")
-	engine.TextureControl.NewTexture("./sprites/dirt.png", "dirt")
-	engine.TextureControl.NewTexture("./sprites/grass.png", "grass")
+	engine.TextureControl.NewTexture("./assets/player/player.png", "player")
+	engine.TextureControl.NewTexture("./assets/blocks/dirt.png", "dirt")
+	engine.TextureControl.NewTexture("./assets/blocks/grass.png", "grass")
 
-	blocks = append(blocks, "sky")
+	blocks = append(blocks, "player")
 	blocks = append(blocks, "dirt")
 	blocks = append(blocks, "grass")
 
@@ -49,7 +49,7 @@ func main() {
 
 	Player = engine.NewChild2D()
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
-	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("sky"))
+	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("player"))
 	Player.SetPosition(1000, 20000)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
