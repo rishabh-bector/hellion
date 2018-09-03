@@ -54,8 +54,8 @@ func main() {
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
 
-	engine.Instance(&Player)
 	engine.Instance(&WorldChild)
+	engine.Instance(&Player)
 
 	err := engine.Initialize()
 	if err != nil {
