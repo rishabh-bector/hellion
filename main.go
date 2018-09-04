@@ -50,12 +50,12 @@ func main() {
 	Player = engine.NewChild2D()
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
 	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("player"))
-	Player.SetPosition(1000, 20000)
+	Player.SetPosition(1000, 5000)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
 
-	engine.Instance(&Player)
 	engine.Instance(&WorldChild)
+	engine.Instance(&Player)
 
 	err := engine.Initialize()
 	if err != nil {
