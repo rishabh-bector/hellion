@@ -11,7 +11,10 @@ const WorldHeight = 1000
 const WorldWidth = 1000
 const BlockSize = 25
 const Flatness = 0.3
- 
+
+const CaveNoiseScalar = 30
+const CaveNoiseThreshold = 0.75
+
 var p *perlin.Perlin
 var WorldMap [WorldWidth][WorldHeight]int
 
@@ -28,6 +31,7 @@ func generateWorld() {
 		WorldMap[x][heights[x]] = 2
 	}
 	fillHeights()
+	generateCaves()
 }
 
 func createCopies() {
@@ -51,9 +55,21 @@ func noise1D(x float64) float64 {
 func generateHeights() [WorldWidth]int {
 	heights := [WorldWidth]int{}
 	for x := 0; x < WorldWidth; x++ {
-		heights[x] = int(Flatness * noise1D(float64(x)/WorldWidth) * WorldHeight)
+		heights[x] = 500 + int(Flatness*noise1D(float64(x)/WorldWidth)*WorldHeight)
 	}
 	return heights
+}
+
+func generateCaves() {
+	p = perlin.NewPerlin(1.5, 2, 3, int64(rand.Int()))
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth, CaveNoiseScalar*float64(y)/WorldHeight)
+			if n > CaveNoiseThreshold {
+				WorldMap[x][y] = 0
+			}
+		}
+	}
 }
 
 func fillHeights() {

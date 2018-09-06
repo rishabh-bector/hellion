@@ -74,12 +74,12 @@ func render(renderer *rapidengine.Renderer, keys map[string]bool) {
 
 func movePlayer(keys map[string]bool) {
 	if keys["w"] {
-		Player.SetVelocityY(10)
+		Player.SetVelocityY(30)
 	}
 	if keys["a"] {
-		Player.SetVelocityX(4)
+		Player.SetVelocityX(20)
 	} else if keys["d"] {
-		Player.SetVelocityX(-4)
+		Player.SetVelocityX(-20)
 	} else {
 		Player.SetVelocityX(0)
 	}
