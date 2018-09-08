@@ -1,8 +1,12 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	_ "net/http/pprof"
 	"rapidengine"
 	"rapidengine/configuration"
+	"rapidengine/input"
 	"runtime"
 )
 
@@ -19,11 +23,14 @@ func init() {
 }
 
 func main() {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:8080", nil))
+	}()
 	config = rapidengine.NewEngineConfig(1920, 1080, 2)
 	engine = rapidengine.NewEngine(config, render)
 
 	engine.Renderer.SetRenderDistance(1000)
-	engine.Renderer.MainCamera.SetPosition(100, 100)
+	engine.Renderer.MainCamera.SetPosition(100, 100, 0)
 	engine.Renderer.MainCamera.SetSpeed(0.2)
 
 	engine.TextureControl.NewTexture("./assets/player/player.png", "player")
@@ -50,36 +57,37 @@ func main() {
 	Player = engine.NewChild2D()
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
 	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("player"))
-	Player.SetPosition(1000, 5000)
+	Player.SetPosition(3000, 20000)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
+
+	Player.EnableAnimation()
+	Player.SetAnimationSpeed(1)
+	Player.AddFrame(engine.TextureControl.GetTexture("dirt"))
+	Player.AddFrame(engine.TextureControl.GetTexture("player"))
 
 	engine.Instance(&WorldChild)
 	engine.Instance(&Player)
 
-	err := engine.Initialize()
-	if err != nil {
-		panic(err)
-	}
+	engine.Initialize()
 
 	engine.StartRenderer()
 	<-engine.Done()
 }
 
-func render(renderer *rapidengine.Renderer, keys map[string]bool) {
-	renderer.RenderChildren()
-	renderer.MainCamera.SetPosition(Player.X, Player.Y)
-	movePlayer(keys)
+func render(renderer *rapidengine.Renderer, inputs *input.Input) {
+	renderer.MainCamera.SetPosition(Player.X, Player.Y, 0)
+	movePlayer(inputs.Keys)
 }
 
 func movePlayer(keys map[string]bool) {
 	if keys["w"] {
-		Player.SetVelocityY(30)
+		Player.SetVelocityY(10)
 	}
 	if keys["a"] {
-		Player.SetVelocityX(20)
+		Player.SetVelocityX(5)
 	} else if keys["d"] {
-		Player.SetVelocityX(-20)
+		Player.SetVelocityX(-5)
 	} else {
 		Player.SetVelocityX(0)
 	}
