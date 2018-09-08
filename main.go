@@ -15,6 +15,7 @@ var config configuration.EngineConfig
 
 var WorldChild rapidengine.Child2D
 var Player rapidengine.Child2D
+var SkyChild rapidengine.Child2D
 
 var blocks []string
 
@@ -36,6 +37,7 @@ func main() {
 	engine.TextureControl.NewTexture("./assets/player/player.png", "player")
 	engine.TextureControl.NewTexture("./assets/blocks/dirt.png", "dirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass.png", "grass")
+	engine.TextureControl.NewTexture("./assets/back.png", "back")
 
 	blocks = append(blocks, "player")
 	blocks = append(blocks, "dirt")
@@ -66,6 +68,11 @@ func main() {
 	Player.AddFrame(engine.TextureControl.GetTexture("dirt"))
 	Player.AddFrame(engine.TextureControl.GetTexture("player"))
 
+	SkyChild = engine.NewChild2D()
+	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2000, 1150, &config))
+	SkyChild.AttachTexturePrimitive(engine.TextureControl.GetTexture("back"))
+
+	engine.Instance(&SkyChild)
 	engine.Instance(&WorldChild)
 	engine.Instance(&Player)
 
@@ -77,6 +84,7 @@ func main() {
 
 func render(renderer *rapidengine.Renderer, inputs *input.Input) {
 	renderer.MainCamera.SetPosition(Player.X, Player.Y, 0)
+	SkyChild.SetPosition(Player.X-1950/2, Player.Y-1110/2)
 	movePlayer(inputs.Keys)
 }
 
