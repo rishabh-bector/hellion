@@ -61,7 +61,7 @@ func main() {
 	Player.AttachShader(engine.ShaderControl.GetShader("texture"))
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
 	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("player"))
-	Player.SetPosition(3000, 20000)
+	Player.SetPosition(3000, 1000*25)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
 

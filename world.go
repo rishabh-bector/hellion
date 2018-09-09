@@ -12,10 +12,10 @@ import (
 //  World Generation Parameters
 //  --------------------------------------------------
 
-const WorldHeight = 1000
-const WorldWidth = 1000
+const WorldHeight = 4000
+const WorldWidth = 200
 const BlockSize = 25
-const Flatness = 0.3
+const Flatness = 0.3 / 4
 
 const GrassMinimum = 500
 
@@ -83,7 +83,7 @@ func generateCaves() {
 	p = perlin.NewPerlin(1.5, 2, 3, int64(rand.Int()))
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth, CaveNoiseScalar*float64(y)/WorldHeight)
+			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
 			if n > CaveNoiseThreshold {
 				WorldMap[x][y] = 0
 			}
@@ -113,7 +113,7 @@ func fillStone() {
 	stoneFrequency := StoneStartingFrequency
 	for y := 0; y < WorldHeight; y++ {
 		for x := 0; x < WorldWidth; x++ {
-			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth, StoneNoiseScalar*float64(y)/WorldHeight)
+			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
 			if n > stoneFrequency {
 				WorldMap[x][y] = 3
 			}
