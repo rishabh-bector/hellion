@@ -63,6 +63,9 @@ func generateWorld() {
 
 	// Generate caves
 	generateCaves()
+
+	// Put grass on dirt with air above it
+	growGrass()
 }
 
 func createCopies() {
@@ -126,14 +129,22 @@ func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
 		if WorldMap[x][grassHeight] == 3 {
-			if WorldMap[x][grassHeight+StoneTopDeviation] == 0 {
-				for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
-					WorldMap[x][y] = 0
-				}
+			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
+				WorldMap[x][y] = 0
 			}
 		} else {
 			for y := grassHeight + 1; y < WorldHeight; y++ {
 				WorldMap[x][y] = 0
+			}
+		}
+	}
+}
+
+func growGrass() {
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			if WorldMap[x][y] == 1 && WorldMap[x][y+1] == 0 {
+				WorldMap[x][y] = 2
 			}
 		}
 	}

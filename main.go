@@ -61,7 +61,7 @@ func main() {
 	Player.AttachShader(engine.ShaderControl.GetShader("texture"))
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
 	Player.AttachTexturePrimitive(engine.TextureControl.GetTexture("player"))
-	Player.SetPosition(3000, 2000*25)
+	Player.SetPosition(3000, 1000*25)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
 
@@ -72,7 +72,7 @@ func main() {
 
 	SkyChild = engine.NewChild2D()
 	SkyChild.AttachShader(engine.ShaderControl.GetShader("texture"))
-	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2000, 1150, &config))
+	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2000, 1500, &config))
 	SkyChild.AttachTexturePrimitive(engine.TextureControl.GetTexture("back"))
 
 	engine.Instance(&SkyChild)
@@ -86,6 +86,7 @@ func main() {
 }
 
 func render(renderer *rapidengine.Renderer, inputs *input.Input) {
+	//println(Player.VY)
 	movePlayer(inputs.Keys)
 	renderer.MainCamera.SetPosition(Player.X, Player.Y, 0)
 	SkyChild.SetPosition(Player.X-1950/2, Player.Y-1110/2)
@@ -93,12 +94,12 @@ func render(renderer *rapidengine.Renderer, inputs *input.Input) {
 
 func movePlayer(keys map[string]bool) {
 	if keys["w"] {
-		Player.SetVelocityY(10)
+		Player.SetVelocityY(20)
 	}
 	if keys["a"] {
-		Player.SetVelocityX(7)
+		Player.SetVelocityX(10)
 	} else if keys["d"] {
-		Player.SetVelocityX(-7)
+		Player.SetVelocityX(-10)
 	} else {
 		Player.SetVelocityX(0)
 	}
