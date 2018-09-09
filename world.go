@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"rapidengine"
+	"time"
 
 	perlin "github.com/aquilax/go-perlin"
 )
@@ -35,6 +36,7 @@ var WorldMap [WorldWidth][WorldHeight]int
 var HeightMap [WorldWidth]int
 
 func generateWorld() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
 
 	// Fill world with 0s
