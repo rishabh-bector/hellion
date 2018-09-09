@@ -13,9 +13,9 @@ import (
 //  --------------------------------------------------
 
 const WorldHeight = 4000
-const WorldWidth = 200
+const WorldWidth = 2000
 const BlockSize = 25
-const Flatness = 0.3 / 4
+const Flatness = 0.1
 
 const GrassMinimum = 500
 
@@ -23,7 +23,7 @@ const CaveNoiseScalar = 30
 const CaveNoiseThreshold = 0.75
 
 const StoneNoiseScalar = 30.0
-const StoneTop = 500.0
+const StoneTop = 600.0
 const StoneTopDeviation = 5
 const StoneStartingFrequency = -0.3
 
