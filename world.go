@@ -75,7 +75,7 @@ func createCopies() {
 				WorldChild.AddCopy(rapidengine.ChildCopy{
 					float32(x * BlockSize),
 					float32(y * BlockSize),
-					engine.TextureControl.GetTexture(blocks[WorldMap[x][y]]),
+					&blocks[WorldMap[x][y]],
 				})
 			}
 		}
