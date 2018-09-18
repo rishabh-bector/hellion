@@ -57,7 +57,7 @@ func main() {
 	stoneMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	stoneMaterial.BecomeTexture(engine.TextureControl.GetTexture("stone"))
 
-	backgroundMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("texture"))
+	backgroundMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	backgroundMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
 
 	blocks = append(blocks, playerMaterial)
@@ -92,7 +92,7 @@ func main() {
 	//Player.AddFrame(engine.TextureControl.GetTexture("player3"))
 
 	SkyChild = engine.NewChild2D()
-	SkyChild.AttachShader(engine.ShaderControl.GetShader("texture"))
+	SkyChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
 	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2000, 1500, &config))
 	SkyChild.AttachTextureCoordsPrimitive()
 	SkyChild.AttachMaterial(&backgroundMaterial)
