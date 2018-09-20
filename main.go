@@ -37,6 +37,14 @@ func main() {
 	engine.TextureControl.NewTexture("./assets/player/player.png", "player")
 	engine.TextureControl.NewTexture("./assets/player/playerWalking3.png", "player3")
 	engine.TextureControl.NewTexture("./assets/blocks/dirt.png", "dirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/topDirt.png", "topDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/topLeftDirt.png", "topLeftDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/topRightdirt.png", "topRightDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/bottomDirt.png", "bottomDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/bottomRightDirt.png", "bottomRightDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/bottomLeftDirt.png", "bottomLeftDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/leftDirt.png", "leftDirt")
+	engine.TextureControl.NewTexture("./assets/testBlocks/rightDirt.png", "rightDirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone.png", "stone")
 	engine.TextureControl.NewTexture("./assets/back.png", "back")
@@ -54,16 +62,44 @@ func main() {
 	dirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	dirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("dirt"))
 
+	topDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	topDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("topDirt"))
+
+	topRightDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	topRightDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("topRightDirt"))
+
+	topLeftDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	topLeftDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("topLeftDirt"))
+
+	bottomRightDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	bottomRightDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("bottomRightDirt"))
+
+	bottomLeftDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	bottomLeftDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("bottomLeftDirt"))
+
+	rightDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	rightDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("rightDirt"))
+
+	leftDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	leftDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("leftDirt"))
+
 	stoneMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	stoneMaterial.BecomeTexture(engine.TextureControl.GetTexture("stone"))
 
 	backgroundMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	backgroundMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
 
-	blocks = append(blocks, playerMaterial)
-	blocks = append(blocks, dirtMaterial)
-	blocks = append(blocks, grassMaterial)
-	blocks = append(blocks, stoneMaterial)
+	blocks = append(blocks, playerMaterial)          //0
+	blocks = append(blocks, dirtMaterial)            //1
+	blocks = append(blocks, grassMaterial)           //2
+	blocks = append(blocks, stoneMaterial)           //3
+	blocks = append(blocks, topDirtMaterial)         //4
+	blocks = append(blocks, topLeftDirtMaterial)     //5
+	blocks = append(blocks, topRightDirtMaterial)    //6
+	blocks = append(blocks, bottomRightDirtMaterial) //7
+	blocks = append(blocks, bottomLeftDirtMaterial)  //8
+	blocks = append(blocks, rightDirtMaterial)       //9
+	blocks = append(blocks, leftDirtMaterial)        //10
 
 	//   --------------------------------------------------
 	//   Children
@@ -82,14 +118,8 @@ func main() {
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*25)
-	//Player.SetPosition(0, 0)
 	Player.AttachCollider(0, 0, 30, 50)
 	Player.SetGravity(1)
-
-	//Player.EnableAnimation()
-	//Player.SetAnimationSpeed(10)
-	//Player.AddFrame(engine.TextureControl.GetTexture("player"))
-	//Player.AddFrame(engine.TextureControl.GetTexture("player3"))
 
 	SkyChild = engine.NewChild2D()
 	SkyChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
@@ -148,6 +178,7 @@ func render(renderer *rapidengine.Renderer, inputs *input.Input) {
 }
 
 func movePlayer(keys map[string]bool) {
+
 	if keys["w"] {
 		Player.SetVelocityY(20)
 	}

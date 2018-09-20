@@ -35,6 +35,20 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth][WorldHeight]int
 var HeightMap [WorldWidth]int
 
+var blocksMap = map[string]int{
+	"sky":             0,
+	"dirtMaterial":    1,
+	"grass":           2,
+	"stone":           3,
+	"topDirt":         4,
+	"topLeftDirt":     5,
+	"topRightDirt":    6,
+	"bottomRightDirt": 7,
+	"bottomLeftDIrt":  8,
+	"rightDirt":       9,
+	"leftDirt":        10,
+}
+
 func generateWorld() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
@@ -42,14 +56,14 @@ func generateWorld() {
 	// Fill world with 0s
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			WorldMap[x][y] = 0
+			WorldMap[x][y] = blocksMap["sky"]
 		}
 	}
 
 	// Generate heightmap and place grass
 	generateHeights()
 	for x := 0; x < WorldWidth; x++ {
-		WorldMap[x][HeightMap[x]] = 2
+		WorldMap[x][HeightMap[x]] = blocksMap["grass"]
 	}
 
 	// Fill everything underneath grass with dirt
@@ -66,12 +80,15 @@ func generateWorld() {
 
 	// Put grass on dirt with air above it
 	growGrass()
+
+	// Fix the orientation of Dirt in the world
+	//orientDirt()
 }
 
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] != 0 {
+			if WorldMap[x][y] != blocksMap["sky"] {
 				WorldChild.AddCopy(rapidengine.ChildCopy{
 					float32(x * BlockSize),
 					float32(y * BlockSize),
@@ -88,7 +105,7 @@ func generateCaves() {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
 			if n > CaveNoiseThreshold {
-				WorldMap[x][y] = 0
+				WorldMap[x][y] = blocksMap["sky"]
 			}
 		}
 	}
@@ -103,8 +120,8 @@ func generateHeights() {
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			WorldMap[x][y] = 1
-			if WorldMap[x][y+1] == 2 {
+			WorldMap[x][y] = blocksMap["dirt"]
+			if WorldMap[x][y+1] == blocksMap["grass"] {
 				break
 			}
 		}
@@ -118,7 +135,7 @@ func fillStone() {
 		for x := 0; x < WorldWidth; x++ {
 			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
 			if n > stoneFrequency {
-				WorldMap[x][y] = 3
+				WorldMap[x][y] = blocksMap["stone"]
 			}
 		}
 		stoneFrequency += (1 / StoneTop)
@@ -128,13 +145,13 @@ func fillStone() {
 func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
-		if WorldMap[x][grassHeight] == 3 {
+		if WorldMap[x][grassHeight] == blocksMap["stone"] {
 			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
-				WorldMap[x][y] = 0
+				WorldMap[x][y] = blocksMap["sky"]
 			}
 		} else {
 			for y := grassHeight + 1; y < WorldHeight; y++ {
-				WorldMap[x][y] = 0
+				WorldMap[x][y] = blocksMap["sky"]
 			}
 		}
 	}
@@ -142,9 +159,9 @@ func cleanStone() {
 
 func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] == 1 && WorldMap[x][y+1] == 0 {
-				WorldMap[x][y] = 2
+		for y := 0; y < WorldHeight/5; y++ {
+			if WorldMap[x][y] == blocksMap["dirt"] && WorldMap[x][y+1] == blocksMap["sky"] {
+				WorldMap[x][y] = blocksMap["grass"]
 			}
 		}
 	}
@@ -156,4 +173,34 @@ func noise2D(x, y float64) float64 {
 
 func noise1D(x float64) float64 {
 	return (p.Noise1D(x) + 0.4) / 0.8
+}
+
+func orientDirt() {
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			if x > 1 && x < WorldWidth-1 && y > 1 && y < WorldHeight-1 {
+				if WorldMap[x][y] == blocksMap["dirt"] {
+					if WorldMap[x+1][y] == blocksMap["sky"] { //Right
+						if WorldMap[x][y+1] == blocksMap["sky"] {
+							WorldMap[x][y] = blocksMap["bottomRightDirt"]
+						} else if WorldMap[x][y-1] == blocksMap["sky"] {
+							WorldMap[x][y] = blocksMap["topRightDirt"]
+						} else {
+							WorldMap[x][y] = blocksMap["rightDirt"]
+						}
+					} else if WorldMap[x-1][y] == blocksMap["sky"] { //Left
+						if WorldMap[x][y+1] == blocksMap["sky"] {
+							WorldMap[x][y] = blocksMap["bottomLeftDirt"]
+						} else if WorldMap[x][y-1] == blocksMap["sky"] {
+							WorldMap[x][y] = blocksMap["topLefttDirt"]
+						} else {
+							WorldMap[x][y] = blocksMap["leftDirt"]
+						}
+					} else if WorldMap[x][y-1] == blocksMap["sky"] { //Top
+						WorldMap[x][y] = blocksMap["topRightDirt"]
+					}
+				}
+			}
+		}
+	}
 }
