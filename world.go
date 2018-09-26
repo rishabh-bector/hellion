@@ -37,7 +37,7 @@ var HeightMap [WorldWidth]int
 
 var blocksMap = map[string]int{
 	"sky":             0,
-	"dirtMaterial":    1,
+	"dirt":            1,
 	"grass":           2,
 	"stone":           3,
 	"topDirt":         4,
@@ -82,7 +82,7 @@ func generateWorld() {
 	growGrass()
 
 	// Fix the orientation of Dirt in the world
-	//orientDirt()
+	orientDirt()
 }
 
 func createCopies() {
@@ -119,7 +119,7 @@ func generateHeights() {
 
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
+		for y := 0; y < WorldHeight-1; y++ {
 			WorldMap[x][y] = blocksMap["dirt"]
 			if WorldMap[x][y+1] == blocksMap["grass"] {
 				break
@@ -159,7 +159,7 @@ func cleanStone() {
 
 func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight/5; y++ {
+		for y := 0; y < WorldHeight; y++ {
 			if WorldMap[x][y] == blocksMap["dirt"] && WorldMap[x][y+1] == blocksMap["sky"] {
 				WorldMap[x][y] = blocksMap["grass"]
 			}
@@ -181,22 +181,22 @@ func orientDirt() {
 			if x > 1 && x < WorldWidth-1 && y > 1 && y < WorldHeight-1 {
 				if WorldMap[x][y] == blocksMap["dirt"] {
 					if WorldMap[x+1][y] == blocksMap["sky"] { //Right
-						if WorldMap[x][y+1] == blocksMap["sky"] {
+						if WorldMap[x][y-1] == blocksMap["sky"] {
 							WorldMap[x][y] = blocksMap["bottomRightDirt"]
-						} else if WorldMap[x][y-1] == blocksMap["sky"] {
+						} else if WorldMap[x][y+1] == blocksMap["sky"] {
 							WorldMap[x][y] = blocksMap["topRightDirt"]
 						} else {
 							WorldMap[x][y] = blocksMap["rightDirt"]
 						}
 					} else if WorldMap[x-1][y] == blocksMap["sky"] { //Left
-						if WorldMap[x][y+1] == blocksMap["sky"] {
+						if WorldMap[x][y-1] == blocksMap["sky"] {
 							WorldMap[x][y] = blocksMap["bottomLeftDirt"]
-						} else if WorldMap[x][y-1] == blocksMap["sky"] {
+						} else if WorldMap[x][y+1] == blocksMap["sky"] {
 							WorldMap[x][y] = blocksMap["topLefttDirt"]
 						} else {
 							WorldMap[x][y] = blocksMap["leftDirt"]
 						}
-					} else if WorldMap[x][y-1] == blocksMap["sky"] { //Top
+					} else if WorldMap[x][y+1] == blocksMap["sky"] { //Top
 						WorldMap[x][y] = blocksMap["topRightDirt"]
 					}
 				}
