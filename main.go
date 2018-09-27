@@ -123,7 +123,7 @@ func main() {
 
 	SkyChild = engine.NewChild2D()
 	SkyChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2500, 1100, &config))
+	SkyChild.AttachPrimitive(rapidengine.NewRectangle(4000, 1100, &config))
 	SkyChild.AttachTextureCoordsPrimitive()
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
@@ -150,8 +150,8 @@ func main() {
 		[]float32{0, 0, 0},
 		[]float32{0.9, 0.9, 0.7},
 		[]float32{0, 0, 0},
-		//1.0, -300, 299.8,
-		1.0, 0.5, 0.1,
+		1.0, -300, 299.8,
+		//1.0, 0.5, 0.1,
 	)
 	l.SetPosition([]float32{0, 0, 1})
 
