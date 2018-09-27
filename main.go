@@ -47,7 +47,7 @@ func main() {
 	engine.TextureControl.NewTexture("./assets/testBlocks/rightDirt.png", "rightDirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone.png", "stone")
-	engine.TextureControl.NewTexture("./assets/back.png", "back")
+	engine.TextureControl.NewTexture("./assets/backTest.png", "back")
 
 	//   --------------------------------------------------
 	//   Materials
@@ -123,7 +123,7 @@ func main() {
 
 	SkyChild = engine.NewChild2D()
 	SkyChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2000, 1500, &config))
+	SkyChild.AttachPrimitive(rapidengine.NewRectangle(2500, 1100, &config))
 	SkyChild.AttachTextureCoordsPrimitive()
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
