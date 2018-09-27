@@ -56,7 +56,7 @@ func main() {
 	grassMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	grassMaterial.BecomeTexture(engine.TextureControl.GetTexture("grass"))
 
-	playerMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("texture"))
+	playerMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
 	playerMaterial.BecomeTexture(engine.TextureControl.GetTexture("player"))
 
 	dirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
@@ -113,7 +113,7 @@ func main() {
 	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
 	Player = engine.NewChild2D()
-	Player.AttachShader(engine.ShaderControl.GetShader("texture"))
+	Player.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
 	Player.AttachPrimitive(rapidengine.NewRectangle(30, 50, &config))
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
@@ -150,8 +150,8 @@ func main() {
 		[]float32{0, 0, 0},
 		[]float32{0.9, 0.9, 0.7},
 		[]float32{0, 0, 0},
-		1.0, -300, 299.8,
-		//1.0, 0.5, 0.1,
+		//1.0, -300, 299.8,
+		1.0, 0.5, 0.1,
 	)
 	l.SetPosition([]float32{0, 0, 1})
 

@@ -90,9 +90,9 @@ func createCopies() {
 		for y := 0; y < WorldHeight; y++ {
 			if WorldMap[x][y] != blocksMap["sky"] {
 				WorldChild.AddCopy(rapidengine.ChildCopy{
-					float32(x * BlockSize),
-					float32(y * BlockSize),
-					&blocks[WorldMap[x][y]],
+					X:        float32(x * BlockSize),
+					Y:        float32(y * BlockSize),
+					Material: &blocks[WorldMap[x][y]],
 				})
 			}
 		}
