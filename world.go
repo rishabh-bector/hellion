@@ -12,12 +12,12 @@ import (
 //  World Generation Parameters
 //  --------------------------------------------------
 
-const WorldHeight = 4000
+const WorldHeight = 4000 //4000
 const WorldWidth = 2000
 const BlockSize = 25
 const Flatness = 0.1
 
-const GrassMinimum = 500
+const GrassMinimum = 700
 
 const CaveNoiseScalar = 30
 const CaveNoiseThreshold = 0.75
@@ -35,35 +35,23 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth][WorldHeight]int
 var HeightMap [WorldWidth]int
 
-var blocksMap = map[string]int{
-	"sky":             0,
-	"dirt":            1,
-	"grass":           2,
-	"stone":           3,
-	"topDirt":         4,
-	"topLeftDirt":     5,
-	"topRightDirt":    6,
-	"bottomRightDirt": 7,
-	"bottomLeftDIrt":  8,
-	"rightDirt":       9,
-	"leftDirt":        10,
-}
-
 func generateWorld() {
+	LoadBlocks()
+
 	rand.Seed(time.Now().UTC().UnixNano())
 	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
 
 	// Fill world with 0s
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			WorldMap[x][y] = blocksMap["sky"]
+			WorldMap[x][y] = NameMap["sky"]
 		}
 	}
 
 	// Generate heightmap and place grass
 	generateHeights()
 	for x := 0; x < WorldWidth; x++ {
-		WorldMap[x][HeightMap[x]] = blocksMap["grass"]
+		WorldMap[x][HeightMap[x]] = NameMap["grass"]
 	}
 
 	// Fill everything underneath grass with dirt
@@ -82,17 +70,17 @@ func generateWorld() {
 	growGrass()
 
 	// Fix the orientation of Dirt in the world
-	orientDirt()
+	//orientDirt()
 }
 
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] != blocksMap["sky"] {
+			if WorldMap[x][y] != NameMap["sky"] {
 				WorldChild.AddCopy(rapidengine.ChildCopy{
 					X:        float32(x * BlockSize),
 					Y:        float32(y * BlockSize),
-					Material: &blocks[WorldMap[x][y]],
+					Material: GetBlockIndex(WorldMap[x][y]).GetMaterial(),
 				})
 			}
 		}
@@ -105,7 +93,7 @@ func generateCaves() {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
 			if n > CaveNoiseThreshold {
-				WorldMap[x][y] = blocksMap["sky"]
+				WorldMap[x][y] = NameMap["sky"]
 			}
 		}
 	}
@@ -113,15 +101,15 @@ func generateCaves() {
 
 func generateHeights() {
 	for x := 0; x < WorldWidth; x++ {
-		HeightMap[x] = GrassMinimum + int(Flatness*noise1D(float64(x)/WorldWidth)*WorldHeight)
+		HeightMap[x] = GrassMinimum + int(Flatness*noise1D(float64(x)/(WorldWidth/2))*WorldHeight)
 	}
 }
 
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
-			WorldMap[x][y] = blocksMap["dirt"]
-			if WorldMap[x][y+1] == blocksMap["grass"] {
+			WorldMap[x][y] = NameMap["dirt"]
+			if WorldMap[x][y+1] == NameMap["grass"] {
 				break
 			}
 		}
@@ -135,7 +123,7 @@ func fillStone() {
 		for x := 0; x < WorldWidth; x++ {
 			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
 			if n > stoneFrequency {
-				WorldMap[x][y] = blocksMap["stone"]
+				WorldMap[x][y] = NameMap["stone"]
 			}
 		}
 		stoneFrequency += (1 / StoneTop)
@@ -145,13 +133,13 @@ func fillStone() {
 func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
-		if WorldMap[x][grassHeight] == blocksMap["stone"] {
+		if WorldMap[x][grassHeight] == NameMap["stone"] {
 			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
-				WorldMap[x][y] = blocksMap["sky"]
+				WorldMap[x][y] = NameMap["sky"]
 			}
 		} else {
 			for y := grassHeight + 1; y < WorldHeight; y++ {
-				WorldMap[x][y] = blocksMap["sky"]
+				WorldMap[x][y] = NameMap["sky"]
 			}
 		}
 	}
@@ -160,8 +148,8 @@ func cleanStone() {
 func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] == blocksMap["dirt"] && WorldMap[x][y+1] == blocksMap["sky"] {
-				WorldMap[x][y] = blocksMap["grass"]
+			if WorldMap[x][y] == NameMap["dirt"] && WorldMap[x][y+1] == NameMap["sky"] {
+				WorldMap[x][y] = NameMap["grass"]
 			}
 		}
 	}
@@ -179,25 +167,25 @@ func orientDirt() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			if x > 1 && x < WorldWidth-1 && y > 1 && y < WorldHeight-1 {
-				if WorldMap[x][y] == blocksMap["dirt"] {
-					if WorldMap[x+1][y] == blocksMap["sky"] { //Right
-						if WorldMap[x][y-1] == blocksMap["sky"] {
-							WorldMap[x][y] = blocksMap["bottomRightDirt"]
-						} else if WorldMap[x][y+1] == blocksMap["sky"] {
-							WorldMap[x][y] = blocksMap["topRightDirt"]
+				if WorldMap[x][y] == NameMap["dirt"] {
+					if WorldMap[x+1][y] == NameMap["sky"] { //Right
+						if WorldMap[x][y-1] == NameMap["sky"] {
+							WorldMap[x][y] = NameMap["bottomRightDirt"]
+						} else if WorldMap[x][y+1] == NameMap["sky"] {
+							WorldMap[x][y] = NameMap["topRightDirt"]
 						} else {
-							WorldMap[x][y] = blocksMap["rightDirt"]
+							WorldMap[x][y] = NameMap["rightDirt"]
 						}
-					} else if WorldMap[x-1][y] == blocksMap["sky"] { //Left
-						if WorldMap[x][y-1] == blocksMap["sky"] {
-							WorldMap[x][y] = blocksMap["bottomLeftDirt"]
-						} else if WorldMap[x][y+1] == blocksMap["sky"] {
-							WorldMap[x][y] = blocksMap["topLefttDirt"]
+					} else if WorldMap[x-1][y] == NameMap["sky"] { //Left
+						if WorldMap[x][y-1] == NameMap["sky"] {
+							WorldMap[x][y] = NameMap["bottomLeftDirt"]
+						} else if WorldMap[x][y+1] == NameMap["sky"] {
+							WorldMap[x][y] = NameMap["topLefttDirt"]
 						} else {
-							WorldMap[x][y] = blocksMap["leftDirt"]
+							WorldMap[x][y] = NameMap["leftDirt"]
 						}
-					} else if WorldMap[x][y+1] == blocksMap["sky"] { //Top
-						WorldMap[x][y] = blocksMap["topRightDirt"]
+					} else if WorldMap[x][y+1] == NameMap["sky"] { //Top
+						WorldMap[x][y] = NameMap["topRightDirt"]
 					}
 				}
 			}
