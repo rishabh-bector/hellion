@@ -178,11 +178,60 @@ func growGrass() {
 
 func orientBlock(name string) {
 	block := NameMap[name]
-	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
+	above := false
+	under := false
+	left := false
+	right := false
+	for x := 1; x < WorldWidth-1; x++ {
+		for y := 1; y < WorldHeight-1; y++ {
 			if WorldMap[x][y].ID == block {
 				if WorldMap[x-1][y].ID == NameMap["sky"] {
+					left = true
+				}
+				if WorldMap[x+1][y].ID == NameMap["sky"] {
+					right = true
+				}
+				if WorldMap[x][y-1].ID == NameMap["sky"] {
+					under = true
+				}
+				if WorldMap[x][y+1].ID == NameMap["sky"] {
+					above = true
+				}
+				if left && right && under && above {
+					WorldMap[x][y].Orientation = "AA"
+				}
+				if left && right && !under && !above {
+					WorldMap[x][y].Orientation = "AN"
+				}
+				if !left && !right && under && above {
+					WorldMap[x][y].Orientation = "NA"
+				}
+				if left && !right && under && above {
+					WorldMap[x][y].Orientation = "LA"
+				}
+				if !left && right && under && above {
+					WorldMap[x][y].Orientation = "RA"
+				}
+				if left && !right && !under && !above {
 					WorldMap[x][y].Orientation = "LN"
+				}
+				if !left && right && !under && !above {
+					WorldMap[x][y].Orientation = "RN"
+				}
+				if !left && !right && !under && above {
+					WorldMap[x][y].Orientation = "NT"
+				}
+				if !left && !right && under && !above {
+					WorldMap[x][y].Orientation = "NB"
+				}
+				if left && right && under && !above {
+					WorldMap[x][y].Orientation = "AB"
+				}
+				if left && right && !under && above {
+					WorldMap[x][y].Orientation = "AT"
+				}
+				if !left && !right && !under && !above {
+					WorldMap[x][y].Orientation = "NN"
 				}
 			}
 		}
