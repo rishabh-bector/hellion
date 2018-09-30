@@ -212,6 +212,12 @@ func orientBlock(name string) {
 				if !left && right && under && above {
 					WorldMap[x][y].Orientation = "RA"
 				}
+				if left && right && !under && above {
+					WorldMap[x][y].Orientation = "AT"
+				}
+				if left && right && under && !above {
+					WorldMap[x][y].Orientation = "AB"
+				}
 				if left && !right && !under && !above {
 					WorldMap[x][y].Orientation = "LN"
 				}
@@ -232,6 +238,12 @@ func orientBlock(name string) {
 				}
 				if !left && !right && !under && !above {
 					WorldMap[x][y].Orientation = "NN"
+				}
+				if !left && right && !under && above {
+					WorldMap[x][y].Orientation = "RT"
+				}
+				if !left && !right && !under && above {
+					WorldMap[x][y].Orientation = "LT"
 				}
 			}
 		}
