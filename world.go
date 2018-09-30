@@ -82,8 +82,12 @@ func generateWorld() {
 	// Put grass on dirt with air above it
 	growGrass()
 
-	// Fix the orientation of Dirt in the world
+	// Fix the orientation of blocks in the world
 	orientBlock("dirt")
+	orientBlock("grass")
+	orientBlock("stone")
+
+	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+10)*BlockSize))
 }
 
 func createCopies() {
@@ -242,7 +246,7 @@ func orientBlock(name string) {
 				if !left && right && !under && above {
 					WorldMap[x][y].Orientation = "RT"
 				}
-				if !left && !right && !under && above {
+				if left && !right && !under && above {
 					WorldMap[x][y].Orientation = "LT"
 				}
 			}

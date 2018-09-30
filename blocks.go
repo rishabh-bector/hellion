@@ -107,6 +107,8 @@ func LoadBlocks() {
 	}
 
 	BlockMap["dirt"].CreateOrientations()
+	BlockMap["grass"].CreateOrientations()
+	BlockMap["stone"].CreateOrientations()
 
 	NameMap = make(map[string]int)
 	NameMap = map[string]int{
