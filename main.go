@@ -34,7 +34,7 @@ func main() {
 
 	engine.TextureControl.NewTexture("./assets/player/player.png", "player")
 	engine.TextureControl.NewTexture("./assets/player/playerWalking3.png", "player3")
-	engine.TextureControl.NewTexture("./assets/backTest.png", "back")
+	engine.TextureControl.NewTexture("./assets/backgrounds/backTest.png", "back")
 
 	//   --------------------------------------------------
 	//   Materials
@@ -87,8 +87,8 @@ func main() {
 	generateWorld()
 	createCopies()
 
-	//engine.CollisionControl.CreateGroup("ground")
-	//engine.CollisionControl.AddChildToGroup(&WorldChild, "ground")
+	engine.CollisionControl.CreateGroup("ground")
+	engine.CollisionControl.AddChildToGroup(&WorldChild, "ground")
 
 	l = rapidengine.NewPointLight(
 		engine.ShaderControl.GetShader("colorLighting"),

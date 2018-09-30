@@ -32,8 +32,21 @@ const StoneStartingFrequency = -0.3
 //  --------------------------------------------------
 
 var p *perlin.Perlin
-var WorldMap [WorldWidth][WorldHeight]int
+var WorldMap [WorldWidth][WorldHeight]WorldBlock
 var HeightMap [WorldWidth]int
+
+type WorldBlock struct {
+	ID          int
+	Orientation string
+}
+
+func NewBlock(id string) WorldBlock {
+	return WorldBlock{ID: NameMap[id], Orientation: "E"}
+}
+
+func NewOrientBlock(id, orientation string) WorldBlock {
+	return WorldBlock{ID: NameMap[id], Orientation: orientation}
+}
 
 func generateWorld() {
 	LoadBlocks()
@@ -44,14 +57,14 @@ func generateWorld() {
 	// Fill world with 0s
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			WorldMap[x][y] = NameMap["sky"]
+			WorldMap[x][y] = NewBlock("sky")
 		}
 	}
 
 	// Generate heightmap and place grass
 	generateHeights()
 	for x := 0; x < WorldWidth; x++ {
-		WorldMap[x][HeightMap[x]] = NameMap["grass"]
+		WorldMap[x][HeightMap[x]] = NewBlock("grass")
 	}
 
 	// Fill everything underneath grass with dirt
@@ -70,18 +83,26 @@ func generateWorld() {
 	growGrass()
 
 	// Fix the orientation of Dirt in the world
-	//orientDirt()
+	orientBlock("dirt")
 }
 
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] != NameMap["sky"] {
-				WorldChild.AddCopy(rapidengine.ChildCopy{
-					X:        float32(x * BlockSize),
-					Y:        float32(y * BlockSize),
-					Material: GetBlockIndex(WorldMap[x][y]).GetMaterial(),
-				})
+			if WorldMap[x][y].ID != NameMap["sky"] {
+				if WorldMap[x][y].Orientation == "E" {
+					WorldChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+					})
+				} else {
+					WorldChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
+					})
+				}
 			}
 		}
 	}
@@ -93,7 +114,7 @@ func generateCaves() {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
 			if n > CaveNoiseThreshold {
-				WorldMap[x][y] = NameMap["sky"]
+				WorldMap[x][y] = NewBlock("sky")
 			}
 		}
 	}
@@ -108,8 +129,8 @@ func generateHeights() {
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
-			WorldMap[x][y] = NameMap["dirt"]
-			if WorldMap[x][y+1] == NameMap["grass"] {
+			WorldMap[x][y] = NewOrientBlock("dirt", "E")
+			if WorldMap[x][y+1].ID == NameMap["grass"] {
 				break
 			}
 		}
@@ -123,7 +144,7 @@ func fillStone() {
 		for x := 0; x < WorldWidth; x++ {
 			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
 			if n > stoneFrequency {
-				WorldMap[x][y] = NameMap["stone"]
+				WorldMap[x][y] = NewBlock("stone")
 			}
 		}
 		stoneFrequency += (1 / StoneTop)
@@ -133,13 +154,13 @@ func fillStone() {
 func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
-		if WorldMap[x][grassHeight] == NameMap["stone"] {
+		if WorldMap[x][grassHeight].ID == NameMap["stone"] {
 			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
-				WorldMap[x][y] = NameMap["sky"]
+				WorldMap[x][y] = NewBlock("sky")
 			}
 		} else {
 			for y := grassHeight + 1; y < WorldHeight; y++ {
-				WorldMap[x][y] = NameMap["sky"]
+				WorldMap[x][y] = NewBlock("sky")
 			}
 		}
 	}
@@ -148,8 +169,21 @@ func cleanStone() {
 func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y] == NameMap["dirt"] && WorldMap[x][y+1] == NameMap["sky"] {
-				WorldMap[x][y] = NameMap["grass"]
+			if WorldMap[x][y].ID == NameMap["dirt"] && WorldMap[x][y+1].ID == NameMap["sky"] {
+				WorldMap[x][y] = NewBlock("grass")
+			}
+		}
+	}
+}
+
+func orientBlock(name string) {
+	block := NameMap[name]
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			if WorldMap[x][y].ID == block {
+				if WorldMap[x-1][y].ID == NameMap["sky"] {
+					WorldMap[x][y].Orientation = "LN"
+				}
 			}
 		}
 	}
@@ -161,34 +195,4 @@ func noise2D(x, y float64) float64 {
 
 func noise1D(x float64) float64 {
 	return (p.Noise1D(x) + 0.4) / 0.8
-}
-
-func orientDirt() {
-	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
-			if x > 1 && x < WorldWidth-1 && y > 1 && y < WorldHeight-1 {
-				if WorldMap[x][y] == NameMap["dirt"] {
-					if WorldMap[x+1][y] == NameMap["sky"] { //Right
-						if WorldMap[x][y-1] == NameMap["sky"] {
-							WorldMap[x][y] = NameMap["bottomRightDirt"]
-						} else if WorldMap[x][y+1] == NameMap["sky"] {
-							WorldMap[x][y] = NameMap["topRightDirt"]
-						} else {
-							WorldMap[x][y] = NameMap["rightDirt"]
-						}
-					} else if WorldMap[x-1][y] == NameMap["sky"] { //Left
-						if WorldMap[x][y-1] == NameMap["sky"] {
-							WorldMap[x][y] = NameMap["bottomLeftDirt"]
-						} else if WorldMap[x][y+1] == NameMap["sky"] {
-							WorldMap[x][y] = NameMap["topLefttDirt"]
-						} else {
-							WorldMap[x][y] = NameMap["leftDirt"]
-						}
-					} else if WorldMap[x][y+1] == NameMap["sky"] { //Top
-						WorldMap[x][y] = NameMap["topRightDirt"]
-					}
-				}
-			}
-		}
-	}
 }
