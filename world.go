@@ -178,13 +178,13 @@ func growGrass() {
 
 func orientBlock(name string) {
 	block := NameMap[name]
-	above := false
-	under := false
-	left := false
-	right := false
 	for x := 1; x < WorldWidth-1; x++ {
 		for y := 1; y < WorldHeight-1; y++ {
 			if WorldMap[x][y].ID == block {
+				above := false
+				under := false
+				left := false
+				right := false
 				if WorldMap[x-1][y].ID == NameMap["sky"] {
 					left = true
 				}

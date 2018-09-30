@@ -116,7 +116,7 @@ func main() {
 
 func render(renderer *rapidengine.Renderer, inputs *input.Input) {
 	movePlayer(inputs.Keys)
-	renderer.MainCamera.SetPosition(Player.X, Player.Y, 0)
+	renderer.MainCamera.SetPosition(Player.X, Player.Y, -10)
 	SkyChild.SetPosition(Player.X-1950/2, Player.Y-1110/2)
 
 	x, y := rapidengine.ScaleCoordinates(Player.X, Player.Y+30, 1920, 1080)

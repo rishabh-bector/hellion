@@ -34,7 +34,7 @@ type Block struct {
 	// Second character - Top/Bottom (T/B)
 	// Either can have A (all) or N (none)
 	OrientEnabled bool
-	Orientations  []rapidengine.Material
+	Orientations  [16]rapidengine.Material
 }
 
 func (block *Block) GetMaterial() *rapidengine.Material {
@@ -47,10 +47,10 @@ func (block *Block) GetOrientMaterial(direction string) *rapidengine.Material {
 
 func (block *Block) CreateOrientations() {
 	block.OrientEnabled = true
-	for dir := range OrientationsMap {
+	for dir, ind := range OrientationsMap {
 		newM := block.Material
 		newM.AttachTransparency(engine.TextureControl.GetTexture(dir))
-		block.Orientations = append(block.Orientations, newM)
+		block.Orientations[ind] = newM
 	}
 }
 
