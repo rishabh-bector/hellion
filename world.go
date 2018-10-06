@@ -32,7 +32,7 @@ const StoneStartingFrequency = -0.3
 //  --------------------------------------------------
 
 var p *perlin.Perlin
-var WorldMap [WorldWidth][WorldHeight]WorldBlock
+var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
 
 type WorldBlock struct {
@@ -87,14 +87,22 @@ func generateWorld() {
 	orientBlock("grass")
 	orientBlock("stone")
 
-	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+10)*BlockSize))
+	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
 
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
+			if WorldMap[x][y].ID == NameMap["backdirt"] {
+				NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+					X:        float32(x * BlockSize),
+					Y:        float32(y * BlockSize),
+					Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+				})
+				continue
+			}
 			if WorldMap[x][y].ID != NameMap["sky"] {
-				if WorldMap[x][y].Orientation == "E" {
+				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					WorldChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
@@ -106,6 +114,14 @@ func createCopies() {
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 					})
+					if WorldMap[x][y].ID != NameMap["grass"] {
+						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+							X:        float32(x * BlockSize),
+							Y:        float32(y * BlockSize),
+							Material: GetBlockIndex(NameMap["backdirt"]).GetMaterial(),
+						})
+
+					}
 				}
 			}
 		}
@@ -117,8 +133,8 @@ func generateCaves() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
-			if n > CaveNoiseThreshold {
-				WorldMap[x][y] = NewBlock("sky")
+			if n > CaveNoiseThreshold && y <= HeightMap[x] {
+				WorldMap[x][y] = NewBlock("backdirt")
 			}
 		}
 	}
@@ -189,16 +205,16 @@ func orientBlock(name string) {
 				under := false
 				left := false
 				right := false
-				if WorldMap[x-1][y].ID == NameMap["sky"] {
+				if WorldMap[x-1][y].ID == NameMap["sky"] || WorldMap[x-1][y].ID == NameMap["backdirt"] {
 					left = true
 				}
-				if WorldMap[x+1][y].ID == NameMap["sky"] {
+				if WorldMap[x+1][y].ID == NameMap["sky"] || WorldMap[x+1][y].ID == NameMap["backdirt"] {
 					right = true
 				}
-				if WorldMap[x][y-1].ID == NameMap["sky"] {
+				if WorldMap[x][y-1].ID == NameMap["sky"] || WorldMap[x][y-1].ID == NameMap["backdirt"] {
 					under = true
 				}
-				if WorldMap[x][y+1].ID == NameMap["sky"] {
+				if WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"] {
 					above = true
 				}
 				if left && right && under && above {
