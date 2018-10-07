@@ -86,10 +86,10 @@ func generateWorld() {
 	generateTrees()
 
 	// Fix the orientation of blocks in the world
-	orientBlock("dirt")
-	orientBlock("grass")
-	orientBlock("stone")
-	orientBlock("leaves")
+	orientBlock("dirt", true)
+	orientBlock("grass", false)
+	orientBlock("stone", true)
+	orientBlock("leaves", true)
 
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
@@ -98,11 +98,13 @@ func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			if WorldMap[x][y].ID == NameMap["backdirt"] {
-				NoCollisionChild.AddCopy(rapidengine.ChildCopy{
-					X:        float32(x * BlockSize),
-					Y:        float32(y * BlockSize),
-					Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
-				})
+				if y < HeightMap[x] {
+					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+					})
+				}
 				continue
 			}
 			if WorldMap[x][y].ID != NameMap["sky"] {
@@ -118,14 +120,6 @@ func createCopies() {
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 					})
-					if WorldMap[x][y].ID != NameMap["grass"] {
-						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
-							X:        float32(x * BlockSize),
-							Y:        float32(y * BlockSize),
-							Material: GetBlockIndex(NameMap["backdirt"]).GetMaterial(),
-						})
-
-					}
 				}
 			}
 		}
@@ -200,7 +194,7 @@ func growGrass() {
 	}
 }
 
-func orientBlock(name string) {
+func orientBlock(name string, topBlock bool) {
 	block := NameMap[name]
 	for x := 1; x < WorldWidth-1; x++ {
 		for y := 1; y < WorldHeight-1; y++ {
@@ -248,7 +242,7 @@ func orientBlock(name string) {
 				if !left && right && !under && !above {
 					WorldMap[x][y].Orientation = "RN"
 				}
-				if !left && !right && !under && above {
+				if !left && !right && !under && above && topBlock {
 					WorldMap[x][y].Orientation = "NT"
 				}
 				if !left && !right && under && !above {
