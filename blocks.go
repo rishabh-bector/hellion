@@ -5,7 +5,7 @@ import "rapidengine"
 var BlockMap map[string]*Block
 
 var NameMap map[string]int
-var NameList = []string{"sky", "dirt", "grass", "stone"}
+var NameList = []string{"sky", "dirt", "grass", "stone", "backdirt"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
@@ -58,6 +58,7 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
+	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
 
 	// Transparency Maps
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "LN")
@@ -77,17 +78,20 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "AN")
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "NA")
 
-	skyMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	skyMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	skyMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
 
-	dirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	dirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	dirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("dirt"))
 
-	stoneMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	stoneMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	stoneMaterial.BecomeTexture(engine.TextureControl.GetTexture("stone"))
 
-	grassMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"))
+	grassMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	grassMaterial.BecomeTexture(engine.TextureControl.GetTexture("grass"))
+
+	backDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	backDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("backdirt"))
 
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
@@ -104,6 +108,9 @@ func LoadBlocks() {
 		"stone": &Block{
 			Material: stoneMaterial,
 		},
+		"backdirt": &Block{
+			Material: backDirtMaterial,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations()
@@ -112,10 +119,11 @@ func LoadBlocks() {
 
 	NameMap = make(map[string]int)
 	NameMap = map[string]int{
-		"sky":   0,
-		"dirt":  1,
-		"grass": 2,
-		"stone": 3,
+		"sky":      0,
+		"dirt":     1,
+		"grass":    2,
+		"stone":    3,
+		"backdirt": 4,
 	}
 }
 
