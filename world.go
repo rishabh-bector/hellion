@@ -82,10 +82,14 @@ func generateWorld() {
 	// Put grass on dirt with air above it
 	growGrass()
 
+	// Place Trees
+	generateTrees()
+
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt")
 	orientBlock("grass")
 	orientBlock("stone")
+	orientBlock("leaves")
 
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
@@ -264,6 +268,33 @@ func orientBlock(name string) {
 				}
 				if left && !right && !under && above {
 					WorldMap[x][y].Orientation = "LT"
+				}
+			}
+		}
+	}
+}
+
+func generateTrees() {
+	for x := 1; x < WorldWidth-1; x++ {
+		for y := 1; y < WorldHeight-32; y++ {
+			if rand.Intn(8) == 4 {
+				if WorldMap[x][y].ID == NameMap["grass"] && WorldMap[x+1][y].ID == NameMap["grass"] && WorldMap[x-1][y].ID == NameMap["grass"] && WorldMap[x-1][y+1].ID != NameMap["treeTrunk"] && WorldMap[x-1][y+1].ID != NameMap["treeRightRoot"] {
+					WorldMap[x-1][y+1] = NewBlock("treeLeftRoot")
+					WorldMap[x][y+1] = NewBlock("treeBottomRoot")
+					WorldMap[x+1][y+1] = NewBlock("treeRightRoot")
+					height := 6 + rand.Intn(16)
+					for i := 0; i < height; i++ {
+						WorldMap[x][y+i+2] = NewBlock("treeTrunk")
+					}
+					WorldMap[x-1][y+height+1] = NewBlock("leaves") // TL
+					WorldMap[x][y+height+1] = NewBlock("leaves")   // TM
+					WorldMap[x+1][y+height+1] = NewBlock("leaves") // TR
+					WorldMap[x-1][y+height] = NewBlock("leaves")   // ML
+					WorldMap[x][y+height] = NewBlock("leaves")     // MM
+					WorldMap[x+1][y+height] = NewBlock("leaves")   // MR
+					WorldMap[x-1][y+height-1] = NewBlock("leaves") //BL
+					WorldMap[x][y+height-1] = NewBlock("leaves")   // BM
+					WorldMap[x+1][y+height-1] = NewBlock("leaves") //BL
 				}
 			}
 		}

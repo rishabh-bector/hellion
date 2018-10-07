@@ -5,7 +5,7 @@ import "rapidengine"
 var BlockMap map[string]*Block
 
 var NameMap map[string]int
-var NameList = []string{"sky", "dirt", "grass", "stone", "backdirt"}
+var NameList = []string{"sky", "dirt", "grass", "stone", "backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
@@ -55,10 +55,20 @@ func (block *Block) CreateOrientations() {
 }
 
 func LoadBlocks() {
+	// Main Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
+
+	// Back-Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
+
+	// Tree
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk.png", "treeTrunk")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot.png", "treeLeftRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
 	// Transparency Maps
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "LN")
@@ -93,6 +103,21 @@ func LoadBlocks() {
 	backDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	backDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("backdirt"))
 
+	leavesMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	leavesMaterial.BecomeTexture(engine.TextureControl.GetTexture("leaves"))
+
+	treeRightRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeRightRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeRightRoot"))
+
+	treeLeftRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeLeftRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeLeftRoot"))
+
+	treeTrunkMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeTrunkMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeTrunk"))
+
+	treeBottomRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBottomRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeBottomRoot"))
+
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
@@ -100,7 +125,7 @@ func LoadBlocks() {
 		},
 		"dirt": &Block{
 			Material:      dirtMaterial,
-			OrientEnabled: true,
+			OrientEnabled: true, // Do we still need this?
 		},
 		"grass": &Block{
 			Material: grassMaterial,
@@ -111,19 +136,41 @@ func LoadBlocks() {
 		"backdirt": &Block{
 			Material: backDirtMaterial,
 		},
+		"leaves": &Block{
+			Material: leavesMaterial,
+		},
+		"treeRightRoot": &Block{
+			Material: treeRightRootMaterial,
+		},
+		"treeLeftRoot": &Block{
+			Material: treeLeftRootMaterial,
+		},
+		"treeTrunk": &Block{
+			Material: treeTrunkMaterial,
+		},
+		"treeBottomRoot": &Block{
+			Material: treeBottomRootMaterial,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations()
 	BlockMap["grass"].CreateOrientations()
 	BlockMap["stone"].CreateOrientations()
+	BlockMap["leaves"].CreateOrientations()
+	BlockMap["backdirt"].CreateOrientations() // why doesn't this work?
 
 	NameMap = make(map[string]int)
 	NameMap = map[string]int{
-		"sky":      0,
-		"dirt":     1,
-		"grass":    2,
-		"stone":    3,
-		"backdirt": 4,
+		"sky":            0,
+		"dirt":           1,
+		"grass":          2,
+		"stone":          3,
+		"backdirt":       4,
+		"leaves":         5,
+		"treeRightRoot":  6,
+		"treeLeftRoot":   7,
+		"treeTrunk":      8,
+		"treeBottomRoot": 9,
 	}
 }
 
