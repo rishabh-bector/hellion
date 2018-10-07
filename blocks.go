@@ -1,11 +1,20 @@
 package main
 
-import "rapidengine"
+import (
+	"fmt"
+	"rapidengine"
+)
 
 var BlockMap map[string]*Block
 
 var NameMap map[string]int
-var NameList = []string{"sky", "dirt", "grass", "stone", "backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
+var NameList = []string{
+	"sky",
+	"dirt",
+	"grass",
+	"stone",
+	"backdirt",
+	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
@@ -33,8 +42,9 @@ type Block struct {
 	// First character - Left/Right (L/R)
 	// Second character - Top/Bottom (T/B)
 	// Either can have A (all) or N (none)
-	OrientEnabled bool
-	Orientations  [16]rapidengine.Material
+	OrientEnabled   bool
+	OrientVariation int32
+	Orientations    [16]rapidengine.Material
 }
 
 func (block *Block) GetMaterial() *rapidengine.Material {
@@ -45,11 +55,12 @@ func (block *Block) GetOrientMaterial(direction string) *rapidengine.Material {
 	return &(block.Orientations[OrientationsMap[direction]])
 }
 
-func (block *Block) CreateOrientations() {
+func (block *Block) CreateOrientations(orientVariation int32) {
 	block.OrientEnabled = true
+	block.OrientVariation = orientVariation
 	for dir, ind := range OrientationsMap {
 		newM := block.Material
-		newM.AttachTransparency(engine.TextureControl.GetTexture(dir))
+		newM.AttachTransparency(engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir)))
 		block.Orientations[ind] = newM
 	}
 }
@@ -57,36 +68,53 @@ func (block *Block) CreateOrientations() {
 func LoadBlocks() {
 	// Main Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
-	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/grass2.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
 
 	// Back-Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
 
 	// Tree
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk.png", "treeTrunk")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot.png", "treeLeftRoot")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk2.png", "treeTrunk")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot2.png", "treeLeftRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot2.png", "treeRightRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot2.png", "treeBottomRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
 	// Transparency Maps
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "LN")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/RN.png", "RN")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/NT.png", "NT")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/NB.png", "NB")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/LA.png", "LA")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/RA.png", "RA")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/AT.png", "AT")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/AB.png", "AB")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/NN.png", "NN")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/AA.png", "AA")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/LT.png", "LT")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/LB.png", "LB")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/RT.png", "RT")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/RB.png", "RB")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "AN")
-	engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "NA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "0LN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RN.png", "0RN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NT.png", "0NT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NB.png", "0NB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LA.png", "0LA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RA.png", "0RA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AT.png", "0AT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AB.png", "0AB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NN.png", "0NN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AA.png", "0AA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LT.png", "0LT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LB.png", "0LB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RT.png", "0RT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RB.png", "0RB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "0AN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "0NA")
+
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "1LN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RN.png", "1RN")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/transparency/NT.png", "1NT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NB.png", "1NB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LA.png", "1LA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RA.png", "1RA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AT.png", "1AT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AB.png", "1AB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NN.png", "1NN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AA.png", "1AA")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LT.png", "1LT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/LB.png", "1LB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RT.png", "1RT")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/RB.png", "1RB")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "1AN")
+	engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "1NA")
 
 	skyMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	skyMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
@@ -152,11 +180,11 @@ func LoadBlocks() {
 		},
 	}
 
-	BlockMap["dirt"].CreateOrientations()
-	BlockMap["grass"].CreateOrientations()
-	BlockMap["stone"].CreateOrientations()
-	BlockMap["leaves"].CreateOrientations()
-	BlockMap["backdirt"].CreateOrientations() // why doesn't this work?
+	BlockMap["dirt"].CreateOrientations(0)
+	BlockMap["grass"].CreateOrientations(1)
+	BlockMap["stone"].CreateOrientations(0)
+	BlockMap["leaves"].CreateOrientations(0)
+	BlockMap["backdirt"].CreateOrientations(0) // why doesn't this work?
 
 	NameMap = make(map[string]int)
 	NameMap = map[string]int{

@@ -74,7 +74,7 @@ func main() {
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*25)
-	Player.AttachCollider(0, 0, 30, 50)
+	Player.AttachCollider(5, 5, 20, 15)
 	Player.SetGravity(1)
 
 	SkyChild = engine.NewChild2D()

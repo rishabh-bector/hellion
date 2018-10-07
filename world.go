@@ -87,7 +87,7 @@ func generateWorld() {
 
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
-	orientBlock("grass", false)
+	orientBlock("grass", true)
 	orientBlock("stone", true)
 	orientBlock("leaves", true)
 
@@ -97,6 +97,8 @@ func generateWorld() {
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
+
+			// Non collision blocks
 			if WorldMap[x][y].ID == NameMap["backdirt"] {
 				if y < HeightMap[x] {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
@@ -107,6 +109,8 @@ func createCopies() {
 				}
 				continue
 			}
+
+			// Normal blocks
 			if WorldMap[x][y].ID != NameMap["sky"] {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					WorldChild.AddCopy(rapidengine.ChildCopy{
