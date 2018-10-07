@@ -137,7 +137,7 @@ func generateCaves() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
-			if n > CaveNoiseThreshold && y <= HeightMap[x] {
+			if n > CaveNoiseThreshold && y <= HeightMap[x] && WorldMap[x][y].Orientation == "E" {
 				WorldMap[x][y] = NewBlock("backdirt")
 			}
 		}
@@ -193,7 +193,7 @@ func cleanStone() {
 func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			if WorldMap[x][y].ID == NameMap["dirt"] && WorldMap[x][y+1].ID == NameMap["sky"] {
+			if WorldMap[x][y].ID == NameMap["dirt"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
 				WorldMap[x][y] = NewBlock("grass")
 			}
 		}
@@ -276,26 +276,24 @@ func orientBlock(name string) {
 
 func generateTrees() {
 	for x := 1; x < WorldWidth-1; x++ {
-		for y := 1; y < WorldHeight-32; y++ {
-			if rand.Intn(8) == 4 {
-				if WorldMap[x][y].ID == NameMap["grass"] && WorldMap[x+1][y].ID == NameMap["grass"] && WorldMap[x-1][y].ID == NameMap["grass"] && WorldMap[x-1][y+1].ID != NameMap["treeTrunk"] && WorldMap[x-1][y+1].ID != NameMap["treeRightRoot"] {
-					WorldMap[x-1][y+1] = NewBlock("treeLeftRoot")
-					WorldMap[x][y+1] = NewBlock("treeBottomRoot")
-					WorldMap[x+1][y+1] = NewBlock("treeRightRoot")
-					height := 6 + rand.Intn(16)
-					for i := 0; i < height; i++ {
-						WorldMap[x][y+i+2] = NewBlock("treeTrunk")
-					}
-					WorldMap[x-1][y+height+1] = NewBlock("leaves") // TL
-					WorldMap[x][y+height+1] = NewBlock("leaves")   // TM
-					WorldMap[x+1][y+height+1] = NewBlock("leaves") // TR
-					WorldMap[x-1][y+height] = NewBlock("leaves")   // ML
-					WorldMap[x][y+height] = NewBlock("leaves")     // MM
-					WorldMap[x+1][y+height] = NewBlock("leaves")   // MR
-					WorldMap[x-1][y+height-1] = NewBlock("leaves") //BL
-					WorldMap[x][y+height-1] = NewBlock("leaves")   // BM
-					WorldMap[x+1][y+height-1] = NewBlock("leaves") //BL
+		if rand.Intn(6) == 4 {
+			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x+1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeBottomRoot"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeRightRoot"] {
+				WorldMap[x-1][(HeightMap[x] + 1)] = NewBlock("treeLeftRoot")
+				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeBottomRoot")
+				WorldMap[x+1][(HeightMap[x] + 1)] = NewBlock("treeRightRoot")
+				height := 4 + rand.Intn(8)
+				for i := 0; i < height; i++ {
+					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
 				}
+				WorldMap[x-1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TL
+				WorldMap[x][(HeightMap[x] + height + 1)] = NewBlock("leaves")   // TM
+				WorldMap[x+1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TR
+				WorldMap[x-1][(HeightMap[x] + height)] = NewBlock("leaves")     // ML
+				WorldMap[x][(HeightMap[x] + height)] = NewBlock("leaves")       // MM
+				WorldMap[x+1][(HeightMap[x] + height)] = NewBlock("leaves")     // MR
+				WorldMap[x-1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
+				WorldMap[x][(HeightMap[x] + height - 1)] = NewBlock("leaves")   // BM
+				WorldMap[x+1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
 			}
 		}
 	}

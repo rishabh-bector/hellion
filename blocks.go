@@ -124,8 +124,7 @@ func LoadBlocks() {
 			Material: skyMaterial,
 		},
 		"dirt": &Block{
-			Material:      dirtMaterial,
-			OrientEnabled: true, // Do we still need this?
+			Material: dirtMaterial,
 		},
 		"grass": &Block{
 			Material: grassMaterial,
