@@ -68,7 +68,7 @@ func (block *Block) CreateOrientations(orientVariation int32) {
 func LoadBlocks() {
 	// Main Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
-	engine.TextureControl.NewTexture("./assets/blocks/grass/grass2.png", "grass")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
 
 	// Back-Blocks
