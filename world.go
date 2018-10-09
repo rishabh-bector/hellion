@@ -87,7 +87,7 @@ func generateWorld() {
 
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
-	//orientBlock("grass", true)
+	orientBlock("grass", true)
 	orientBlock("stone", true)
 	orientBlock("leaves", true)
 
