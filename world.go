@@ -35,6 +35,8 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
 
+var transparentBlocks = []string{"backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
+
 type WorldBlock struct {
 	ID          int
 	Orientation string
@@ -87,7 +89,7 @@ func generateWorld() {
 
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
-	//orientBlock("grass", true)
+	orientBlock("grass", true)
 	orientBlock("stone", true)
 	orientBlock("leaves", true)
 
@@ -99,12 +101,26 @@ func createCopies() {
 		for y := 0; y < WorldHeight; y++ {
 
 			// Non collision blocks
-			if WorldMap[x][y].ID == NameMap["backdirt"] {
-				if y < HeightMap[x] {
+			collision := false
+			for _, transparent := range transparentBlocks {
+				if WorldMap[x][y].ID == NameMap[transparent] {
+					collision = true
+					break
+				}
+			}
+
+			if collision {
+				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+					})
+				} else {
+					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 					})
 				}
 				continue
@@ -124,6 +140,14 @@ func createCopies() {
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 					})
+
+					if y < HeightMap[x]-1 {
+						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+							X:        float32(x * BlockSize),
+							Y:        float32(y * BlockSize),
+							Material: GetBlockName("backdirt").GetMaterial(),
+						})
+					}
 				}
 			}
 		}
