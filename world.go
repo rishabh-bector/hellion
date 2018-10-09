@@ -87,7 +87,7 @@ func generateWorld() {
 
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
-	orientBlock("grass", true)
+	//orientBlock("grass", true)
 	orientBlock("stone", true)
 	orientBlock("leaves", true)
 
@@ -276,22 +276,22 @@ func generateTrees() {
 	for x := 1; x < WorldWidth-1; x++ {
 		if rand.Intn(6) == 4 {
 			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x+1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeBottomRoot"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeRightRoot"] {
-				WorldMap[x-1][(HeightMap[x])] = NewBlock("treeLeftRoot")
-				WorldMap[x][(HeightMap[x])] = NewBlock("treeBottomRoot")
-				WorldMap[x+1][(HeightMap[x])] = NewBlock("treeRightRoot")
+				WorldMap[x-1][(HeightMap[x] + 1)] = NewBlock("treeLeftRoot")
+				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeBottomRoot")
+				WorldMap[x+1][(HeightMap[x] + 1)] = NewBlock("treeRightRoot")
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
-					WorldMap[x][(HeightMap[x] + 1 + i)] = NewBlock("treeTrunk")
+					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
 				}
-				WorldMap[x-1][(HeightMap[x] + height)] = NewBlock("leaves")     // TL
-				WorldMap[x][(HeightMap[x] + height)] = NewBlock("leaves")       // TM
-				WorldMap[x+1][(HeightMap[x] + height)] = NewBlock("leaves")     // TR
-				WorldMap[x-1][(HeightMap[x] + height - 1)] = NewBlock("leaves") // ML
-				WorldMap[x][(HeightMap[x] + height - 1)] = NewBlock("leaves")   // MM
-				WorldMap[x+1][(HeightMap[x] + height - 1)] = NewBlock("leaves") // MR
-				WorldMap[x-1][(HeightMap[x] + height - 2)] = NewBlock("leaves") //BL
-				WorldMap[x][(HeightMap[x] + height - 2)] = NewBlock("leaves")   // BM
-				WorldMap[x+1][(HeightMap[x] + height - 2)] = NewBlock("leaves") //BL
+				WorldMap[x-1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TL
+				WorldMap[x][(HeightMap[x] + height + 1)] = NewBlock("leaves")   // TM
+				WorldMap[x+1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TR
+				WorldMap[x-1][(HeightMap[x] + height)] = NewBlock("leaves")     // ML
+				WorldMap[x][(HeightMap[x] + height)] = NewBlock("leaves")       // MM
+				WorldMap[x+1][(HeightMap[x] + height)] = NewBlock("leaves")     // MR
+				WorldMap[x-1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
+				WorldMap[x][(HeightMap[x] + height - 1)] = NewBlock("leaves")   // BM
+				WorldMap[x+1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
 			}
 		}
 	}
