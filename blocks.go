@@ -75,10 +75,10 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
 
 	// Tree
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk2.png", "treeTrunk")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot2.png", "treeLeftRoot")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot2.png", "treeRightRoot")
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot2.png", "treeBottomRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk.png", "treeTrunk")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot.png", "treeLeftRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
 	// Transparency Maps
