@@ -14,7 +14,7 @@ import (
 
 const WorldHeight = 4000 //4000
 const WorldWidth = 2000
-const BlockSize = 25
+const BlockSize = 32
 const Flatness = 0.1
 
 const GrassMinimum = 700
