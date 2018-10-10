@@ -31,6 +31,12 @@ const StoneStartingFrequency = -0.3
 //  --------------------------------------------------
 //  --------------------------------------------------
 
+var WorldChild rapidengine.Child2D
+var NoCollisionChild rapidengine.Child2D
+
+var CloudChild rapidengine.Child2D
+var cloudMaterial rapidengine.Material
+
 var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
@@ -51,6 +57,30 @@ func NewOrientBlock(id, orientation string) WorldBlock {
 }
 
 func generateWorld() {
+	WorldChild = engine.NewChild2D()
+	WorldChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
+	WorldChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	WorldChild.AttachTextureCoordsPrimitive()
+	WorldChild.EnableCopying()
+	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
+
+	NoCollisionChild = engine.NewChild2D()
+	NoCollisionChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
+	NoCollisionChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	NoCollisionChild.AttachTextureCoordsPrimitive()
+	NoCollisionChild.EnableCopying()
+
+	CloudChild = engine.NewChild2D()
+	CloudChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
+	CloudChild.AttachPrimitive(rapidengine.NewRectangle(300, 145, &config))
+	CloudChild.AttachTextureCoordsPrimitive()
+	CloudChild.EnableCopying()
+	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
+	engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1")
+	cloudMaterial = rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	cloudMaterial.BecomeTexture(engine.TextureControl.GetTexture("cloud1"))
+	CloudChild.AttachMaterial(&cloudMaterial)
+
 	LoadBlocks()
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -87,11 +117,15 @@ func generateWorld() {
 	// Place Trees
 	generateTrees()
 
+	// Create clouds
+	generateClouds()
+
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
 	orientBlock("grass", true)
 	orientBlock("stone", true)
 	orientBlock("leaves", true)
+	orientBlock("backdirt", true)
 
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
@@ -100,16 +134,7 @@ func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 
-			// Non collision blocks
-			collision := false
-			for _, transparent := range transparentBlocks {
-				if WorldMap[x][y].ID == NameMap[transparent] {
-					collision = true
-					break
-				}
-			}
-
-			if collision {
+			if isBackBlock(NameList[WorldMap[x][y].ID]) {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
@@ -231,16 +256,16 @@ func orientBlock(name string, topBlock bool) {
 				under := false
 				left := false
 				right := false
-				if WorldMap[x-1][y].ID == NameMap["sky"] || WorldMap[x-1][y].ID == NameMap["backdirt"] {
+				if WorldMap[x-1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x-1][y].ID]) && !isBackBlock(name)) {
 					left = true
 				}
-				if WorldMap[x+1][y].ID == NameMap["sky"] || WorldMap[x+1][y].ID == NameMap["backdirt"] {
+				if WorldMap[x+1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x+1][y].ID]) && !isBackBlock(name)) {
 					right = true
 				}
-				if WorldMap[x][y-1].ID == NameMap["sky"] || WorldMap[x][y-1].ID == NameMap["backdirt"] {
+				if WorldMap[x][y-1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y-1].ID]) && !isBackBlock(name)) {
 					under = true
 				}
-				if WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"] {
+				if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
 					above = true
 				}
 				if left && right && under && above {
@@ -319,6 +344,30 @@ func generateTrees() {
 			}
 		}
 	}
+}
+
+func generateClouds() {
+	for x := 0; x < WorldWidth; x++ {
+		if rand.Float32() < 0.4 {
+			CloudChild.AddCopy(
+				rapidengine.ChildCopy{
+					X:        float32(x * BlockSize),
+					Y:        float32((rand.Intn(20) + HeightMap[x] + 15) * BlockSize),
+					Material: &cloudMaterial,
+				},
+			)
+			x += 400 / BlockSize
+		}
+	}
+}
+
+func isBackBlock(name string) bool {
+	for _, transparent := range transparentBlocks {
+		if NameMap[name] == NameMap[transparent] {
+			return true
+		}
+	}
+	return false
 }
 
 func noise2D(x, y float64) float64 {

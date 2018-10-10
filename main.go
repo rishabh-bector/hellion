@@ -11,9 +11,6 @@ import (
 var engine rapidengine.Engine
 var config configuration.EngineConfig
 
-var WorldChild rapidengine.Child2D
-var NoCollisionChild rapidengine.Child2D
-
 var Player rapidengine.Child2D
 var SkyChild rapidengine.Child2D
 
@@ -54,19 +51,6 @@ func main() {
 	//   --------------------------------------------------
 	//   Children
 	//   --------------------------------------------------
-
-	WorldChild = engine.NewChild2D()
-	WorldChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	WorldChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
-	WorldChild.AttachTextureCoordsPrimitive()
-	WorldChild.EnableCopying()
-	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
-
-	NoCollisionChild = engine.NewChild2D()
-	NoCollisionChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	NoCollisionChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
-	NoCollisionChild.AttachTextureCoordsPrimitive()
-	NoCollisionChild.EnableCopying()
 
 	Player = engine.NewChild2D()
 	Player.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
@@ -115,6 +99,7 @@ func main() {
 	engine.InstanceLight(&l)
 
 	engine.Instance(&SkyChild)
+	engine.Instance(&CloudChild)
 	engine.Instance(&NoCollisionChild)
 	engine.Instance(&WorldChild)
 	engine.Instance(&Player)
