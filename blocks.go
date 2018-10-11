@@ -14,7 +14,7 @@ var NameList = []string{
 	"grass",
 	"stone",
 	"backdirt",
-	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
+	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "grassTop1", "grassTop2", "grassTop3"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
