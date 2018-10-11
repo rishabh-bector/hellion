@@ -75,7 +75,7 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
 
 	// Tree
-	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk.png", "treeTrunk")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk3.png", "treeTrunk")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot.png", "treeLeftRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")

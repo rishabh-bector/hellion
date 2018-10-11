@@ -325,9 +325,9 @@ func generateTrees() {
 	for x := 1; x < WorldWidth-1; x++ {
 		if rand.Intn(6) == 4 {
 			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x+1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeBottomRoot"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeRightRoot"] {
-				WorldMap[x-1][(HeightMap[x] + 1)] = NewBlock("treeLeftRoot")
-				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeBottomRoot")
-				WorldMap[x+1][(HeightMap[x] + 1)] = NewBlock("treeRightRoot")
+				//WorldMap[x-1][(HeightMap[x] + 1)] = NewBlock("treeLeftRoot")
+				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeTrunk") //NewBlock("treeBottomRoot")
+				//WorldMap[x+1][(HeightMap[x] + 1)] = NewBlock("treeRightRoot")
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
 					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
