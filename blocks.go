@@ -82,7 +82,7 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
 	// Flora
-	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "topGrass1") //fix
+	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2.png", "topGrass2")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3.png", "topGrass3")
 
