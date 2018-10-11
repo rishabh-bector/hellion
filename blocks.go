@@ -14,7 +14,7 @@ var NameList = []string{
 	"grass",
 	"stone",
 	"backdirt",
-	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "grassTop1", "grassTop2", "grassTop3"}
+	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "topGrass1", "topGrass2", "topGrass3"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
@@ -82,7 +82,7 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
 	// Flora
-	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "topGrass1") //fix
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2.png", "topGrass2")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3.png", "topGrass3")
 
