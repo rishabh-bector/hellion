@@ -81,6 +81,11 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
 
+	// Flora
+	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2.png", "topGrass2")
+	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3.png", "topGrass3")
+
 	// Transparency Maps
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "0LN")
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/RN.png", "0RN")
@@ -146,6 +151,15 @@ func LoadBlocks() {
 	treeBottomRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeBottomRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeBottomRoot"))
 
+	topGrass1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass1Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass1"))
+
+	topGrass2Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass2Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass2"))
+
+	topGrass3Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass3Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass3"))
+
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
@@ -178,6 +192,15 @@ func LoadBlocks() {
 		"treeBottomRoot": &Block{
 			Material: treeBottomRootMaterial,
 		},
+		"topGrass1": &Block{
+			Material: topGrass1Material,
+		},
+		"topGrass2": &Block{
+			Material: topGrass2Material,
+		},
+		"topGrass3": &Block{
+			Material: topGrass3Material,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
@@ -198,6 +221,9 @@ func LoadBlocks() {
 		"treeLeftRoot":   7,
 		"treeTrunk":      8,
 		"treeBottomRoot": 9,
+		"topGrass1":      10,
+		"topGrass2":      11,
+		"topGrass3":      12,
 	}
 }
 

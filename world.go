@@ -243,6 +243,11 @@ func growGrass() {
 			if WorldMap[x][y].ID == NameMap["dirt"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
 				WorldMap[x][y] = NewBlock("grass")
 			}
+			if WorldMap[x][y].ID == NameMap["grass"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
+				//grassRand := rand.Intn(3) + 1
+				//grassType := "grassTop" + string(grassRand)
+				WorldMap[x][y+1] = NewBlock("grassTop1")
+			}
 		}
 	}
 }
