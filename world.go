@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"rapidengine"
 	"time"
@@ -41,7 +42,7 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
 
-var transparentBlocks = []string{"backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot"}
+var transparentBlocks = []string{"backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "topGrass1", "topGrass2", "topGrass3"}
 
 type WorldBlock struct {
 	ID          int
@@ -244,9 +245,11 @@ func growGrass() {
 				WorldMap[x][y] = NewBlock("grass")
 			}
 			if WorldMap[x][y].ID == NameMap["grass"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
-				//grassRand := rand.Intn(3) + 1
-				//grassType := "grassTop" + string(grassRand)
-				WorldMap[x][y+1] = NewBlock("topGrass1")
+				if rand.Intn(4) == 0 {
+					grassRand := rand.Intn(3) + 1
+					grassType := fmt.Sprintf("topGrass%d", grassRand)
+					WorldMap[x][y+1] = NewBlock(grassType)
+				}
 			}
 		}
 	}
@@ -328,14 +331,18 @@ func orientBlock(name string, topBlock bool) {
 
 func generateTrees() {
 	for x := 1; x < WorldWidth-1; x++ {
-		if rand.Intn(6) == 4 {
-			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x+1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeBottomRoot"] && WorldMap[x-1][(HeightMap[x]+1)].ID != NameMap["treeRightRoot"] {
-				//WorldMap[x-1][(HeightMap[x] + 1)] = NewBlock("treeLeftRoot")
-				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeTrunk") //NewBlock("treeBottomRoot")
-				//WorldMap[x+1][(HeightMap[x] + 1)] = NewBlock("treeRightRoot")
+		if rand.Intn(16) == 4 {
+			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID != NameMap["treeTrunk"] {
+				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeTrunk")
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
 					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
+					/*if rand.Intn(4) == 0 && i < height-1 {
+						WorldMap[x-1][(HeightMap[x] + i)] = NewBlock("treeBranchL1")
+					}
+					if rand.Intn(4) == 0 && i < height-1 {
+						WorldMap[x+1][(HeightMap[x] + i)] = NewBlock("treeBranchR1")
+					}*/
 				}
 				WorldMap[x-1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TL
 				WorldMap[x][(HeightMap[x] + height + 1)] = NewBlock("leaves")   // TM

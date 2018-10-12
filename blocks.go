@@ -14,7 +14,9 @@ var NameList = []string{
 	"grass",
 	"stone",
 	"backdirt",
-	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "topGrass1", "topGrass2", "topGrass3"}
+	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot",
+	"topGrass1", "topGrass2", "topGrass3",
+	"treeBranchR1", "treeBranchL1"}
 
 var OrientationsMap = map[string]int{
 	"LN": 0,
@@ -80,6 +82,8 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot")
 	engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBranchR1.png", "treeBranchR1")
+	engine.TextureControl.NewTexture("./assets/blocks/tree/treeBranchL1.png", "treeBranchL1")
 
 	// Flora
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1")
@@ -160,6 +164,12 @@ func LoadBlocks() {
 	topGrass3Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	topGrass3Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass3"))
 
+	treeBranchR1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBranchR1Material.BecomeTexture(engine.TextureControl.GetTexture("treeBranchR1"))
+
+	treeBranchL1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBranchL1Material.BecomeTexture(engine.TextureControl.GetTexture("treeBranchL1"))
+
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
@@ -201,6 +211,12 @@ func LoadBlocks() {
 		"topGrass3": &Block{
 			Material: topGrass3Material,
 		},
+		"treeBranchR1": &Block{
+			Material: treeBranchR1Material,
+		},
+		"treeBranchL1": &Block{
+			Material: treeBranchL1Material,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
@@ -224,6 +240,8 @@ func LoadBlocks() {
 		"topGrass1":      10,
 		"topGrass2":      11,
 		"topGrass3":      12,
+		"treeBranchR1":   13,
+		"treeBranchL1":   14,
 	}
 }
 
