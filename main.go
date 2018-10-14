@@ -101,6 +101,7 @@ func main() {
 	engine.Instance(&SkyChild)
 	engine.Instance(&CloudChild)
 	engine.Instance(&NoCollisionChild)
+	engine.Instance(&NatureChild)
 	engine.Instance(&WorldChild)
 	engine.Instance(&Player)
 	//engine.Instance(&light)

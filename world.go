@@ -34,6 +34,7 @@ const StoneStartingFrequency = -0.3
 
 var WorldChild rapidengine.Child2D
 var NoCollisionChild rapidengine.Child2D
+var NatureChild rapidengine.Child2D
 
 var CloudChild rapidengine.Child2D
 var cloudMaterial rapidengine.Material
@@ -42,7 +43,8 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
 
-var transparentBlocks = []string{"backdirt", "leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "topGrass1", "topGrass2", "topGrass3"}
+var transparentBlocks = []string{"backdirt", "topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1"}
+var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3"}
 
 type WorldBlock struct {
 	ID          int
@@ -70,6 +72,12 @@ func generateWorld() {
 	NoCollisionChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
 	NoCollisionChild.AttachTextureCoordsPrimitive()
 	NoCollisionChild.EnableCopying()
+
+	NatureChild = engine.NewChild2D()
+	NatureChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
+	NatureChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	NatureChild.AttachTextureCoordsPrimitive()
+	NatureChild.EnableCopying()
 
 	CloudChild = engine.NewChild2D()
 	CloudChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
@@ -144,6 +152,24 @@ func createCopies() {
 					})
 				} else {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
+					})
+				}
+				continue
+			}
+
+			// Nature Blocks
+			if blockType(NameList[WorldMap[x][y].ID]) == "nature" {
+				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
+					NatureChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32(y * BlockSize),
+						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+					})
+				} else {
+					NatureChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
@@ -248,7 +274,11 @@ func growGrass() {
 				if rand.Intn(4) == 0 {
 					grassRand := rand.Intn(3) + 1
 					grassType := fmt.Sprintf("topGrass%d", grassRand)
-					WorldMap[x][y+1] = NewBlock(grassType)
+					NatureChild.AddCopy(rapidengine.ChildCopy{
+						X:        float32(x * BlockSize),
+						Y:        float32((y + 1) * BlockSize),
+						Material: GetBlockIndex(NameMap[grassType]).GetMaterial(),
+					})
 				}
 			}
 		}
@@ -336,13 +366,13 @@ func generateTrees() {
 				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeTrunk")
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
-					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
-					/*if rand.Intn(4) == 0 && i < height-1 {
-						WorldMap[x-1][(HeightMap[x] + i)] = NewBlock("treeBranchL1")
+					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
+						WorldMap[x-1][(HeightMap[x] + i + 2)] = NewBlock("treeBranchL1")
 					}
-					if rand.Intn(4) == 0 && i < height-1 {
-						WorldMap[x+1][(HeightMap[x] + i)] = NewBlock("treeBranchR1")
-					}*/
+					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
+						WorldMap[x+1][(HeightMap[x] + i + 2)] = NewBlock("treeBranchR1")
+					}
+					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
 				}
 				WorldMap[x-1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TL
 				WorldMap[x][(HeightMap[x] + height + 1)] = NewBlock("leaves")   // TM
@@ -380,6 +410,14 @@ func isBackBlock(name string) bool {
 		}
 	}
 	return false
+}
+func blockType(name string) string {
+	for _, green := range natureBlocks {
+		if NameMap[name] == NameMap[green] {
+			return "nature"
+		}
+	}
+	return "idk"
 }
 
 func noise2D(x, y float64) float64 {
