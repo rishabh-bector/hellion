@@ -198,7 +198,7 @@ func LoadBlocks() {
 		},
 		"dirt": &Block{
 			Material:   dirtMaterial,
-			LightBlock: 0.1,
+			LightBlock: 0.15,
 		},
 		"grass": &Block{
 			Material:   grassMaterial,
@@ -206,11 +206,11 @@ func LoadBlocks() {
 		},
 		"stone": &Block{
 			Material:   stoneMaterial,
-			LightBlock: 0.1,
+			LightBlock: 0.15,
 		},
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
-			LightBlock: 0,
+			LightBlock: 0.1,
 		},
 		"leaves": &Block{
 			Material:   leavesMaterial,
