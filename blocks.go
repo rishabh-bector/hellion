@@ -49,6 +49,8 @@ type Block struct {
 	OrientEnabled   bool
 	OrientVariation int32
 	Orientations    [16]rapidengine.Material
+
+	LightBlock float32
 }
 
 func (block *Block) GetMaterial() *rapidengine.Material {
@@ -191,61 +193,80 @@ func LoadBlocks() {
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
-			Material: skyMaterial,
+			Material:   skyMaterial,
+			LightBlock: 0,
 		},
 		"dirt": &Block{
-			Material: dirtMaterial,
+			Material:   dirtMaterial,
+			LightBlock: 0.1,
 		},
 		"grass": &Block{
-			Material: grassMaterial,
+			Material:   grassMaterial,
+			LightBlock: 0.1,
 		},
 		"stone": &Block{
-			Material: stoneMaterial,
+			Material:   stoneMaterial,
+			LightBlock: 0.1,
 		},
 		"backdirt": &Block{
-			Material: backDirtMaterial,
+			Material:   backDirtMaterial,
+			LightBlock: 0,
 		},
 		"leaves": &Block{
-			Material: leavesMaterial,
+			Material:   leavesMaterial,
+			LightBlock: 0,
 		},
 		"treeRightRoot": &Block{
-			Material: treeRightRootMaterial,
+			Material:   treeRightRootMaterial,
+			LightBlock: 0,
 		},
 		"treeLeftRoot": &Block{
-			Material: treeLeftRootMaterial,
+			Material:   treeLeftRootMaterial,
+			LightBlock: 0,
 		},
 		"treeTrunk": &Block{
-			Material: treeTrunkMaterial,
+			Material:   treeTrunkMaterial,
+			LightBlock: 0,
 		},
 		"treeBottomRoot": &Block{
-			Material: treeBottomRootMaterial,
+			Material:   treeBottomRootMaterial,
+			LightBlock: 0,
 		},
 		"topGrass1": &Block{
-			Material: topGrass1Material,
+			Material:   topGrass1Material,
+			LightBlock: 0,
 		},
 		"topGrass2": &Block{
-			Material: topGrass2Material,
+			Material:   topGrass2Material,
+			LightBlock: 0,
 		},
 		"topGrass3": &Block{
-			Material: topGrass3Material,
+			Material:   topGrass3Material,
+			LightBlock: 0,
 		},
 		"treeBranchR1": &Block{
-			Material: treeBranchR1Material,
+			Material:   treeBranchR1Material,
+			LightBlock: 0,
 		},
 		"treeBranchL1": &Block{
-			Material: treeBranchL1Material,
+			Material:   treeBranchL1Material,
+			LightBlock: 0,
 		},
 		"flower1": &Block{
-			Material: flower1Material,
+			Material:   flower1Material,
+			LightBlock: 0,
 		},
 		"flower2": &Block{
-			Material: flower2Material,
+			Material:   flower2Material,
+			LightBlock: 0,
 		},
 		"flower3": &Block{
-			Material: flower3Material,
+			Material:   flower3Material,
+			LightBlock: 0,
 		},
 		"pebble": &Block{
-			Material: pebbleMaterial,
+			Material:   pebbleMaterial,
+			LightBlock: 0,
 		},
 	}
 

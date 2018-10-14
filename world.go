@@ -13,7 +13,7 @@ import (
 //  World Generation Parameters
 //  --------------------------------------------------
 
-const WorldHeight = 4000 //4000
+const WorldHeight = 3000 //4000
 const WorldWidth = 2000
 const BlockSize = 32
 const Flatness = 0.1
@@ -49,14 +49,15 @@ var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrun
 type WorldBlock struct {
 	ID          int
 	Orientation string
+	Darkness    float32
 }
 
 func NewBlock(id string) WorldBlock {
-	return WorldBlock{ID: NameMap[id], Orientation: "E"}
+	return WorldBlock{ID: NameMap[id], Orientation: "E", Darkness: 0}
 }
 
 func NewOrientBlock(id, orientation string) WorldBlock {
-	return WorldBlock{ID: NameMap[id], Orientation: orientation}
+	return WorldBlock{ID: NameMap[id], Orientation: orientation, Darkness: 0}
 }
 
 func generateWorld() {
@@ -98,7 +99,9 @@ func generateWorld() {
 	// Fill world with 0s
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			WorldMap[x][y] = NewBlock("sky")
+			b := NewBlock("sky")
+			b.Darkness = 0
+			WorldMap[x][y] = b
 		}
 	}
 
@@ -112,7 +115,7 @@ func generateWorld() {
 	fillHeights()
 
 	// Generate stone based on height
-	fillStone()
+	//fillStone()
 
 	// Clean up stone above ground
 	cleanStone()
@@ -123,14 +126,10 @@ func generateWorld() {
 	// Put grass and some top grass on dirt with air above it
 	growGrass()
 
-	// Place Trees
-	//generateTrees() //lklkl
-
 	// Create clouds
 	generateClouds()
 
 	// Place flowers and pebbles above grass
-	//generateFlowersAndPebbles() //kjjkj
 
 	generateNature()
 
@@ -141,25 +140,30 @@ func generateWorld() {
 	orientBlock("leaves", true)
 	orientBlock("backdirt", true)
 
+	//WorldMap[WorldWidth/2][HeightMap[WorldWidth/2]+10].Darkness = 0.9
+	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.8)
+
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
 
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-
+			//println(WorldMap[x][y].Darkness)
 			if isBackBlock(NameList[WorldMap[x][y].ID]) {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 				} else {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 				}
 				continue
@@ -172,12 +176,14 @@ func createCopies() {
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 				} else {
 					NatureChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 				}
 				continue
@@ -190,12 +196,14 @@ func createCopies() {
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 				} else {
 					WorldChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
+						Darkness: WorldMap[x][y].Darkness,
 					})
 
 					if y < HeightMap[x]-1 {
@@ -203,6 +211,7 @@ func createCopies() {
 							X:        float32(x * BlockSize),
 							Y:        float32(y * BlockSize),
 							Material: GetBlockName("backdirt").GetMaterial(),
+							Darkness: WorldMap[x][y].Darkness,
 						})
 					}
 				}
@@ -444,4 +453,36 @@ func hardAddCopy(x int, y int, name string, child string) {
 			Material: GetBlockIndex(NameMap[name]).GetMaterial(),
 		})
 	}
+}
+
+func CreateLighting(x, y int, light float32) {
+	if !IsValidPosition(x, y) {
+		return
+	}
+	newLight := light - GetLightBlockAmount(x, y)
+	if newLight <= GetLightAt(x, y) {
+		return
+	}
+	WorldMap[x][y].Darkness = newLight
+	CreateLighting(x+1, y, newLight)
+	CreateLighting(x, y+1, newLight)
+	CreateLighting(x-1, y, newLight)
+	CreateLighting(x, y-1, newLight)
+}
+
+func GetLightAt(x, y int) float32 {
+	return WorldMap[x][y].Darkness
+}
+
+func GetLightBlockAmount(x, y int) float32 {
+	return BlockMap[NameList[WorldMap[x][y].ID]].LightBlock
+}
+
+func IsValidPosition(x, y int) bool {
+	if x > 0 && x < WorldWidth {
+		if y > 0 && y < WorldHeight {
+			return true
+		}
+	}
+	return false
 }

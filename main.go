@@ -16,8 +16,8 @@ var SkyChild rapidengine.Child2D
 
 var l rapidengine.PointLight
 
-var ScreenWidth = 1440
-var ScreenHeight = 900
+var ScreenWidth = 1920
+var ScreenHeight = 1080
 
 func init() {
 	runtime.LockOSThread()
