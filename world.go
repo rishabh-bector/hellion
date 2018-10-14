@@ -43,8 +43,8 @@ var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
 var HeightMap [WorldWidth]int
 
-var transparentBlocks = []string{"backdirt", "topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1"}
-var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3"}
+var transparentBlocks = []string{"backdirt"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
+var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
 
 type WorldBlock struct {
 	ID          int
@@ -120,14 +120,19 @@ func generateWorld() {
 	// Generate caves
 	generateCaves()
 
-	// Put grass on dirt with air above it
+	// Put grass and some top grass on dirt with air above it
 	growGrass()
 
 	// Place Trees
-	generateTrees()
+	//generateTrees() //lklkl
 
 	// Create clouds
 	generateClouds()
+
+	// Place flowers and pebbles above grass
+	//generateFlowersAndPebbles() //kjjkj
+
+	generateNature()
 
 	// Fix the orientation of blocks in the world
 	orientBlock("dirt", true)
@@ -270,17 +275,6 @@ func growGrass() {
 			if WorldMap[x][y].ID == NameMap["dirt"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
 				WorldMap[x][y] = NewBlock("grass")
 			}
-			if WorldMap[x][y].ID == NameMap["grass"] && (WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["backdirt"]) {
-				if rand.Intn(4) == 0 {
-					grassRand := rand.Intn(3) + 1
-					grassType := fmt.Sprintf("topGrass%d", grassRand)
-					NatureChild.AddCopy(rapidengine.ChildCopy{
-						X:        float32(x * BlockSize),
-						Y:        float32((y + 1) * BlockSize),
-						Material: GetBlockIndex(NameMap[grassType]).GetMaterial(),
-					})
-				}
-			}
 		}
 	}
 }
@@ -359,35 +353,6 @@ func orientBlock(name string, topBlock bool) {
 	}
 }
 
-func generateTrees() {
-	for x := 1; x < WorldWidth-1; x++ {
-		if rand.Intn(16) == 4 {
-			if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && WorldMap[x-1][HeightMap[x]].ID != NameMap["treeTrunk"] {
-				WorldMap[x][(HeightMap[x] + 1)] = NewBlock("treeTrunk")
-				height := 4 + rand.Intn(8)
-				for i := 0; i < height; i++ {
-					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						WorldMap[x-1][(HeightMap[x] + i + 2)] = NewBlock("treeBranchL1")
-					}
-					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						WorldMap[x+1][(HeightMap[x] + i + 2)] = NewBlock("treeBranchR1")
-					}
-					WorldMap[x][(HeightMap[x] + 2 + i)] = NewBlock("treeTrunk")
-				}
-				WorldMap[x-1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TL
-				WorldMap[x][(HeightMap[x] + height + 1)] = NewBlock("leaves")   // TM
-				WorldMap[x+1][(HeightMap[x] + height + 1)] = NewBlock("leaves") // TR
-				WorldMap[x-1][(HeightMap[x] + height)] = NewBlock("leaves")     // ML
-				WorldMap[x][(HeightMap[x] + height)] = NewBlock("leaves")       // MM
-				WorldMap[x+1][(HeightMap[x] + height)] = NewBlock("leaves")     // MR
-				WorldMap[x-1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
-				WorldMap[x][(HeightMap[x] + height - 1)] = NewBlock("leaves")   // BM
-				WorldMap[x+1][(HeightMap[x] + height - 1)] = NewBlock("leaves") //BL
-			}
-		}
-	}
-}
-
 func generateClouds() {
 	for x := 0; x < WorldWidth; x++ {
 		if rand.Float32() < 0.4 {
@@ -401,6 +366,49 @@ func generateClouds() {
 			x += 400 / BlockSize
 		}
 	}
+}
+
+func generateNature() {
+	for x := 1; x < WorldWidth-1; x++ {
+		if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && (WorldMap[x][HeightMap[x]+1].ID == NameMap["sky"] || WorldMap[x][HeightMap[x]+1].ID == NameMap["backdirt"]) {
+			natureRand := rand.Intn(16)
+			if natureRand == 15 && WorldMap[x-1][HeightMap[x]+2].ID != NameMap["treeTrunk"] {
+				hardAddCopy(x, HeightMap[x]+1, "treeTrunk", "nature")
+				height := 4 + rand.Intn(8)
+				for i := 0; i < height; i++ {
+					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
+						WorldMap[x-1][HeightMap[x]+i+2] = NewBlock("treeBranchL1")
+					}
+					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
+						WorldMap[x+1][HeightMap[x]+i+2] = NewBlock("treeBranchR1")
+					}
+					WorldMap[x][HeightMap[x]+2+i] = NewBlock("treeTrunk")
+				}
+				WorldMap[x-1][HeightMap[x]+height+1] = NewBlock("leaves") // TL
+				WorldMap[x][HeightMap[x]+height+1] = NewBlock("leaves")   // TM
+				WorldMap[x+1][HeightMap[x]+height+1] = NewBlock("leaves") // TR
+				WorldMap[x-1][HeightMap[x]+height] = NewBlock("leaves")   // ML
+				WorldMap[x][HeightMap[x]+height] = NewBlock("leaves")     // MM
+				WorldMap[x+1][HeightMap[x]+height] = NewBlock("leaves")   // MR
+				WorldMap[x-1][HeightMap[x]+height-1] = NewBlock("leaves") //BL
+				WorldMap[x][HeightMap[x]+height-1] = NewBlock("leaves")   // BM
+				WorldMap[x+1][HeightMap[x]+height-1] = NewBlock("leaves") //BL
+			} else if natureRand > 13 {
+				floraRand := rand.Intn(4) + 1
+				floraType := fmt.Sprintf("flower%d", floraRand)
+				if floraRand != 4 {
+					hardAddCopy(x, HeightMap[x]+1, floraType, "nature")
+				} else {
+					hardAddCopy(x, HeightMap[x]+1, "pebble", "nature")
+				}
+			} else if natureRand > 9 {
+				grassRand := rand.Intn(3) + 1
+				grassType := fmt.Sprintf("topGrass%d", grassRand)
+				hardAddCopy(x, HeightMap[x]+1, grassType, "nature")
+			}
+		}
+	}
+
 }
 
 func isBackBlock(name string) bool {
@@ -417,7 +425,7 @@ func blockType(name string) string {
 			return "nature"
 		}
 	}
-	return "idk"
+	return "shit spelling"
 }
 
 func noise2D(x, y float64) float64 {
@@ -426,4 +434,14 @@ func noise2D(x, y float64) float64 {
 
 func noise1D(x float64) float64 {
 	return (p.Noise1D(x) + 0.4) / 0.8
+}
+
+func hardAddCopy(x int, y int, name string, child string) {
+	if child == "nature" {
+		NatureChild.AddCopy(rapidengine.ChildCopy{
+			X:        float32(x * BlockSize),
+			Y:        float32((y) * BlockSize),
+			Material: GetBlockIndex(NameMap[name]).GetMaterial(),
+		})
+	}
 }

@@ -17,6 +17,7 @@ var NameList = []string{
 	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot",
 	"topGrass1", "topGrass2", "topGrass3",
 	"treeBranchR1", "treeBranchL1",
+	"flower1", "flower2", "flower3", "pebble",
 }
 
 var OrientationsMap = map[string]int{
@@ -90,6 +91,10 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2.png", "topGrass2")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3.png", "topGrass3")
+	engine.TextureControl.NewTexture("./assets/blocks/nature/flower1.png", "flower1")
+	engine.TextureControl.NewTexture("./assets/blocks/nature/flower2.png", "flower2")
+	engine.TextureControl.NewTexture("./assets/blocks/nature/flower3.png", "flower3")
+	engine.TextureControl.NewTexture("./assets/blocks/nature/pebble.png", "pebble")
 
 	// Transparency Maps
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "0LN")
@@ -171,6 +176,18 @@ func LoadBlocks() {
 	treeBranchL1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeBranchL1Material.BecomeTexture(engine.TextureControl.GetTexture("treeBranchL1"))
 
+	flower1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower1Material.BecomeTexture(engine.TextureControl.GetTexture("flower1"))
+
+	flower2Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower2Material.BecomeTexture(engine.TextureControl.GetTexture("flower2"))
+
+	flower3Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower3Material.BecomeTexture(engine.TextureControl.GetTexture("flower3"))
+
+	pebbleMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	pebbleMaterial.BecomeTexture(engine.TextureControl.GetTexture("pebble"))
+
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
@@ -218,6 +235,18 @@ func LoadBlocks() {
 		"treeBranchL1": &Block{
 			Material: treeBranchL1Material,
 		},
+		"flower1": &Block{
+			Material: flower1Material,
+		},
+		"flower2": &Block{
+			Material: flower2Material,
+		},
+		"flower3": &Block{
+			Material: flower3Material,
+		},
+		"pebble": &Block{
+			Material: pebbleMaterial,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
@@ -243,6 +272,10 @@ func LoadBlocks() {
 		"topGrass3":      12,
 		"treeBranchR1":   13,
 		"treeBranchL1":   14,
+		"flower1":        15,
+		"flower2":        16,
+		"flower3":        17,
+		"pebble":         18,
 	}
 }
 
