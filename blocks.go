@@ -198,7 +198,7 @@ func LoadBlocks() {
 		},
 		"dirt": &Block{
 			Material:   dirtMaterial,
-			LightBlock: 0.15,
+			LightBlock: 0.1,
 		},
 		"grass": &Block{
 			Material:   grassMaterial,

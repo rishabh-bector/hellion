@@ -123,6 +123,8 @@ func generateWorld() {
 	// Generate caves
 	generateCaves()
 
+	cleanBackDirt()
+
 	// Put grass and some top grass on dirt with air above it
 	growGrass()
 
@@ -370,6 +372,7 @@ func generateClouds() {
 					X:        float32(x * BlockSize),
 					Y:        float32((rand.Intn(20) + HeightMap[x] + 15) * BlockSize),
 					Material: &cloudMaterial,
+					Darkness: 1,
 				},
 			)
 			x += 400 / BlockSize
@@ -451,7 +454,31 @@ func hardAddCopy(x int, y int, name string, child string) {
 			X:        float32(x * BlockSize),
 			Y:        float32((y) * BlockSize),
 			Material: GetBlockIndex(NameMap[name]).GetMaterial(),
+			Darkness: 1,
 		})
+	}
+}
+
+func cleanBackDirt() {
+	for i := 0; i < 2; i++ {
+		for x := 1; x < WorldWidth-1; x++ {
+			for y := WorldHeight - 2; y > 0; y-- {
+				if WorldMap[x][y].ID == NameMap["backdirt"] {
+					if WorldMap[x][y+1].ID == NameMap["sky"] {
+						WorldMap[x][y] = NewBlock("sky")
+					}
+				}
+			}
+		}
+	}
+	for i := 0; i < 2; i++ {
+		for x := 1; x < WorldWidth-1; x++ {
+			for y := WorldHeight - 2; y > 0; y-- {
+				if WorldMap[x][y].ID == NameMap["backdirt"] {
+
+				}
+			}
+		}
 	}
 }
 
