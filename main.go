@@ -25,6 +25,7 @@ func init() {
 
 func main() {
 	config = rapidengine.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
+	config.ShowFPS = true
 	engine = rapidengine.NewEngine(config, render)
 	engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	engine.Renderer.MainCamera.SetPosition(100, 100, 0)
