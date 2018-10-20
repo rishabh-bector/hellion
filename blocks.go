@@ -210,7 +210,7 @@ func LoadBlocks() {
 		},
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
-			LightBlock: 0.1,
+			LightBlock: 0.05,
 		},
 		"leaves": &Block{
 			Material:   leavesMaterial,
@@ -274,7 +274,7 @@ func LoadBlocks() {
 	BlockMap["grass"].CreateOrientations(1)
 	BlockMap["stone"].CreateOrientations(0)
 	BlockMap["leaves"].CreateOrientations(0)
-	BlockMap["backdirt"].CreateOrientations(0) // why doesn't this work?
+	BlockMap["backdirt"].CreateOrientations(0)
 
 	NameMap = make(map[string]int)
 	NameMap = map[string]int{

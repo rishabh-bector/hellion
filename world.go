@@ -142,8 +142,7 @@ func generateWorld() {
 	orientBlock("leaves", true)
 	orientBlock("backdirt", true)
 
-	//WorldMap[WorldWidth/2][HeightMap[WorldWidth/2]+10].Darkness = 0.9
-	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.8)
+	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
 
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 }
@@ -151,7 +150,6 @@ func generateWorld() {
 func createCopies() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
-			//println(WorldMap[x][y].Darkness)
 			if isBackBlock(NameList[WorldMap[x][y].ID]) {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
@@ -176,14 +174,14 @@ func createCopies() {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
 					NatureChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
-						Y:        float32(y * BlockSize),
+						Y:        float32(y*BlockSize - 10),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
 						Darkness: WorldMap[x][y].Darkness,
 					})
 				} else {
 					NatureChild.AddCopy(rapidengine.ChildCopy{
 						X:        float32(x * BlockSize),
-						Y:        float32(y * BlockSize),
+						Y:        float32(y*BlockSize - 10),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 						Darkness: WorldMap[x][y].Darkness,
 					})
@@ -208,7 +206,14 @@ func createCopies() {
 						Darkness: WorldMap[x][y].Darkness,
 					})
 
-					if y < HeightMap[x]-1 {
+					if y <= HeightMap[x] && (WorldMap[x+1][y].ID == NameMap["sky"] || WorldMap[x-1][y].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y-1].ID == NameMap["sky"]) {
+						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+							X:        float32(x * BlockSize),
+							Y:        float32(y * BlockSize),
+							Material: GetBlockName("backdirt").GetOrientMaterial(WorldMap[x][y].Orientation),
+							Darkness: WorldMap[x][y].Darkness,
+						})
+					} else {
 						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
 							X:        float32(x * BlockSize),
 							Y:        float32(y * BlockSize),
@@ -385,7 +390,7 @@ func generateNature() {
 		if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && (WorldMap[x][HeightMap[x]+1].ID == NameMap["sky"] || WorldMap[x][HeightMap[x]+1].ID == NameMap["backdirt"]) {
 			natureRand := rand.Intn(16)
 			if natureRand == 15 && WorldMap[x-1][HeightMap[x]+2].ID != NameMap["treeTrunk"] {
-				hardAddCopy(x, HeightMap[x]+1, "treeTrunk", "nature")
+				hardAddCopy(x, HeightMap[x]+1, "treeTrunk", "nature", 0.9)
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
 					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
@@ -409,14 +414,14 @@ func generateNature() {
 				floraRand := rand.Intn(4) + 1
 				floraType := fmt.Sprintf("flower%d", floraRand)
 				if floraRand != 4 {
-					hardAddCopy(x, HeightMap[x]+1, floraType, "nature")
+					hardAddCopy(x, HeightMap[x]+1, floraType, "nature", 1)
 				} else {
-					hardAddCopy(x, HeightMap[x]+1, "pebble", "nature")
+					hardAddCopy(x, HeightMap[x]+1, "pebble", "nature", 1)
 				}
 			} else if natureRand > 9 {
 				grassRand := rand.Intn(3) + 1
 				grassType := fmt.Sprintf("topGrass%d", grassRand)
-				hardAddCopy(x, HeightMap[x]+1, grassType, "nature")
+				hardAddCopy(x, HeightMap[x]+1, grassType, "nature", 1)
 			}
 		}
 	}
@@ -448,13 +453,13 @@ func noise1D(x float64) float64 {
 	return (p.Noise1D(x) + 0.4) / 0.8
 }
 
-func hardAddCopy(x int, y int, name string, child string) {
+func hardAddCopy(x int, y int, name string, child string, dark float32) {
 	if child == "nature" {
 		NatureChild.AddCopy(rapidengine.ChildCopy{
 			X:        float32(x * BlockSize),
-			Y:        float32((y) * BlockSize),
+			Y:        float32((y)*BlockSize - 5),
 			Material: GetBlockIndex(NameMap[name]).GetMaterial(),
-			Darkness: 1,
+			Darkness: dark,
 		})
 	}
 }
@@ -471,11 +476,61 @@ func cleanBackDirt() {
 			}
 		}
 	}
-	for i := 0; i < 2; i++ {
-		for x := 1; x < WorldWidth-1; x++ {
-			for y := WorldHeight - 2; y > 0; y-- {
+	for x := 3; x < WorldWidth-3; x++ {
+		for y := 3; y < WorldHeight-3; y++ {
+			if WorldMap[x][y].ID == NameMap["backdirt"] {
+				if WorldMap[x][y+1].ID != NameMap["backdirt"] && WorldMap[x+1][y].ID == NameMap["sky"] {
+					cx := x
+					for dy := y; dy > 0; dy-- {
+						if WorldMap[cx][dy].ID != NameMap["backdirt"] {
+							break
+						}
+						ccx := cx
+						for {
+							if WorldMap[ccx][dy].ID != NameMap["backdirt"] {
+								break
+							}
+							WorldMap[ccx][dy] = NewBlock("sky")
+							ccx++
+						}
+						cx--
+					}
+				}
+				if WorldMap[x][y+1].ID != NameMap["backdirt"] && WorldMap[x-1][y].ID == NameMap["sky"] {
+					cx := x
+					for dy := y; dy > 0; dy-- {
+						if WorldMap[cx][dy].ID != NameMap["backdirt"] {
+							break
+						}
+						ccx := cx
+						for {
+							if WorldMap[ccx][dy].ID != NameMap["backdirt"] {
+								break
+							}
+							WorldMap[ccx][dy] = NewBlock("sky")
+							ccx--
+						}
+						cx++
+					}
+				}
+			}
+		}
+	}
+	for i := 0; i < 10; i++ {
+		for x := 2; x < WorldWidth-2; x++ {
+			for y := 2; y < WorldHeight-2; y++ {
+				if WorldMap[x][y].ID == NameMap["backdirt"] && WorldMap[x][y+1].ID == NameMap["sky"] {
+					for cy := y; y > 0; y-- {
+						if WorldMap[x][cy].ID != NameMap["backdirt"] {
+							break
+						}
+						WorldMap[x][cy] = NewBlock("sky")
+					}
+				}
 				if WorldMap[x][y].ID == NameMap["backdirt"] {
-
+					if WorldMap[x-1][y].ID == NameMap["sky"] && WorldMap[x+1][y].ID == NameMap["sky"] {
+						WorldMap[x][y] = NewBlock("sky")
+					}
 				}
 			}
 		}
