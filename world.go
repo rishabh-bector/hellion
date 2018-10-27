@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"rapidengine"
+	"rapidengine/child"
+	"rapidengine/geometry"
+	"rapidengine/material"
 	"time"
 
 	perlin "github.com/aquilax/go-perlin"
@@ -32,12 +34,17 @@ const StoneStartingFrequency = -0.3
 //  --------------------------------------------------
 //  --------------------------------------------------
 
-var WorldChild rapidengine.Child2D
-var NoCollisionChild rapidengine.Child2D
-var NatureChild rapidengine.Child2D
+var WorldChild child.Child2D
+var WorldCopies [WorldWidth][WorldHeight]child.ChildCopy
 
-var CloudChild rapidengine.Child2D
-var cloudMaterial rapidengine.Material
+var NoCollisionChild child.Child2D
+var NoCollisionCopies [WorldWidth][WorldHeight]child.ChildCopy
+
+var NatureChild child.Child2D
+var NatureCopies [WorldWidth][WorldHeight]child.ChildCopy
+
+var CloudChild child.Child2D
+var cloudMaterial material.Material
 
 var p *perlin.Perlin
 var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
@@ -63,31 +70,31 @@ func NewOrientBlock(id, orientation string) WorldBlock {
 func generateWorld() {
 	WorldChild = engine.NewChild2D()
 	WorldChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	WorldChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	WorldChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
 	WorldChild.AttachTextureCoordsPrimitive()
 	WorldChild.EnableCopying()
 	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
 	NoCollisionChild = engine.NewChild2D()
 	NoCollisionChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	NoCollisionChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	NoCollisionChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
 	NoCollisionChild.AttachTextureCoordsPrimitive()
 	NoCollisionChild.EnableCopying()
 
 	NatureChild = engine.NewChild2D()
 	NatureChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	NatureChild.AttachPrimitive(rapidengine.NewRectangle(BlockSize, BlockSize, &config))
+	NatureChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
 	NatureChild.AttachTextureCoordsPrimitive()
 	NatureChild.EnableCopying()
 
 	CloudChild = engine.NewChild2D()
 	CloudChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	CloudChild.AttachPrimitive(rapidengine.NewRectangle(300, 145, &config))
+	CloudChild.AttachPrimitive(geometry.NewRectangle(300, 145, &config))
 	CloudChild.AttachTextureCoordsPrimitive()
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
 	engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1")
-	cloudMaterial = rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	cloudMaterial = material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	cloudMaterial.BecomeTexture(engine.TextureControl.GetTexture("cloud1"))
 	CloudChild.AttachMaterial(&cloudMaterial)
 
@@ -115,7 +122,7 @@ func generateWorld() {
 	fillHeights()
 
 	// Generate stone based on height
-	//fillStone()
+	fillStone()
 
 	// Clean up stone above ground
 	cleanStone()
@@ -132,7 +139,6 @@ func generateWorld() {
 	generateClouds()
 
 	// Place flowers and pebbles above grass
-
 	generateNature()
 
 	// Fix the orientation of blocks in the world
@@ -152,19 +158,21 @@ func createCopies() {
 		for y := 0; y < WorldHeight; y++ {
 			if isBackBlock(NameList[WorldMap[x][y].ID]) {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+					NoCollisionCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 				} else {
-					NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+					NoCollisionCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 				}
 				continue
 			}
@@ -172,19 +180,21 @@ func createCopies() {
 			// Nature Blocks
 			if blockType(NameList[WorldMap[x][y].ID]) == "nature" {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-					NatureChild.AddCopy(rapidengine.ChildCopy{
+					NatureCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y*BlockSize - 10),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 				} else {
-					NatureChild.AddCopy(rapidengine.ChildCopy{
+					NatureCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y*BlockSize - 10),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 				}
 				continue
 			}
@@ -192,34 +202,38 @@ func createCopies() {
 			// Normal blocks
 			if WorldMap[x][y].ID != NameMap["sky"] {
 				if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-					WorldChild.AddCopy(rapidengine.ChildCopy{
+					WorldCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 				} else {
-					WorldChild.AddCopy(rapidengine.ChildCopy{
+					WorldCopies[x][y] = child.ChildCopy{
 						X:        float32(x * BlockSize),
 						Y:        float32(y * BlockSize),
 						Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
 						Darkness: WorldMap[x][y].Darkness,
-					})
+						ID:       1,
+					}
 
 					if y <= HeightMap[x] && (WorldMap[x+1][y].ID == NameMap["sky"] || WorldMap[x-1][y].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y-1].ID == NameMap["sky"]) {
-						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+						NoCollisionCopies[x][y] = child.ChildCopy{
 							X:        float32(x * BlockSize),
 							Y:        float32(y * BlockSize),
 							Material: GetBlockName("backdirt").GetOrientMaterial(WorldMap[x][y].Orientation),
 							Darkness: WorldMap[x][y].Darkness,
-						})
+							ID:       1,
+						}
 					} else {
-						NoCollisionChild.AddCopy(rapidengine.ChildCopy{
+						NoCollisionCopies[x][y] = child.ChildCopy{
 							X:        float32(x * BlockSize),
 							Y:        float32(y * BlockSize),
 							Material: GetBlockName("backdirt").GetMaterial(),
 							Darkness: WorldMap[x][y].Darkness,
-						})
+							ID:       1,
+						}
 					}
 				}
 			}
@@ -373,7 +387,7 @@ func generateClouds() {
 	for x := 0; x < WorldWidth; x++ {
 		if rand.Float32() < 0.4 {
 			CloudChild.AddCopy(
-				rapidengine.ChildCopy{
+				child.ChildCopy{
 					X:        float32(x * BlockSize),
 					Y:        float32((rand.Intn(20) + HeightMap[x] + 15) * BlockSize),
 					Material: &cloudMaterial,
@@ -453,14 +467,15 @@ func noise1D(x float64) float64 {
 	return (p.Noise1D(x) + 0.4) / 0.8
 }
 
-func hardAddCopy(x int, y int, name string, child string, dark float32) {
-	if child == "nature" {
-		NatureChild.AddCopy(rapidengine.ChildCopy{
+func hardAddCopy(x int, y int, name string, c string, dark float32) {
+	if c == "nature" {
+		NatureCopies[x][y] = child.ChildCopy{
 			X:        float32(x * BlockSize),
 			Y:        float32((y)*BlockSize - 5),
 			Material: GetBlockIndex(NameMap[name]).GetMaterial(),
 			Darkness: dark,
-		})
+			ID:       1,
+		}
 	}
 }
 
@@ -536,6 +551,10 @@ func cleanBackDirt() {
 		}
 	}
 }
+
+//   --------------------------------------------------
+//   Lighting
+//   --------------------------------------------------
 
 func CreateLighting(x, y int, light float32) {
 	if !IsValidPosition(x, y) {

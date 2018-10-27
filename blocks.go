@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"rapidengine"
+	"rapidengine/material"
 )
 
 var BlockMap map[string]*Block
@@ -40,7 +40,7 @@ var OrientationsMap = map[string]int{
 }
 
 type Block struct {
-	Material rapidengine.Material
+	Material material.Material
 
 	// Block orientations (16 possible):
 	// First character - Left/Right (L/R)
@@ -48,16 +48,16 @@ type Block struct {
 	// Either can have A (all) or N (none)
 	OrientEnabled   bool
 	OrientVariation int32
-	Orientations    [16]rapidengine.Material
+	Orientations    [16]material.Material
 
 	LightBlock float32
 }
 
-func (block *Block) GetMaterial() *rapidengine.Material {
+func (block *Block) GetMaterial() *material.Material {
 	return &block.Material
 }
 
-func (block *Block) GetOrientMaterial(direction string) *rapidengine.Material {
+func (block *Block) GetOrientMaterial(direction string) *material.Material {
 	return &(block.Orientations[OrientationsMap[direction]])
 }
 
@@ -133,61 +133,61 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "1AN")
 	engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "1NA")
 
-	skyMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	skyMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	skyMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
 
-	dirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	dirtMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	dirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("dirt"))
 
-	stoneMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	stoneMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	stoneMaterial.BecomeTexture(engine.TextureControl.GetTexture("stone"))
 
-	grassMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	grassMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	grassMaterial.BecomeTexture(engine.TextureControl.GetTexture("grass"))
 
-	backDirtMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	backDirtMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	backDirtMaterial.BecomeTexture(engine.TextureControl.GetTexture("backdirt"))
 
-	leavesMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	leavesMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	leavesMaterial.BecomeTexture(engine.TextureControl.GetTexture("leaves"))
 
-	treeRightRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeRightRootMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeRightRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeRightRoot"))
 
-	treeLeftRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeLeftRootMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeLeftRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeLeftRoot"))
 
-	treeTrunkMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeTrunkMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeTrunkMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeTrunk"))
 
-	treeBottomRootMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBottomRootMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeBottomRootMaterial.BecomeTexture(engine.TextureControl.GetTexture("treeBottomRoot"))
 
-	topGrass1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass1Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	topGrass1Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass1"))
 
-	topGrass2Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass2Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	topGrass2Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass2"))
 
-	topGrass3Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	topGrass3Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	topGrass3Material.BecomeTexture(engine.TextureControl.GetTexture("topGrass3"))
 
-	treeBranchR1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBranchR1Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeBranchR1Material.BecomeTexture(engine.TextureControl.GetTexture("treeBranchR1"))
 
-	treeBranchL1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	treeBranchL1Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	treeBranchL1Material.BecomeTexture(engine.TextureControl.GetTexture("treeBranchL1"))
 
-	flower1Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower1Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	flower1Material.BecomeTexture(engine.TextureControl.GetTexture("flower1"))
 
-	flower2Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower2Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	flower2Material.BecomeTexture(engine.TextureControl.GetTexture("flower2"))
 
-	flower3Material := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	flower3Material := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	flower3Material.BecomeTexture(engine.TextureControl.GetTexture("flower3"))
 
-	pebbleMaterial := rapidengine.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	pebbleMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	pebbleMaterial.BecomeTexture(engine.TextureControl.GetTexture("pebble"))
 
 	BlockMap = make(map[string]*Block)
