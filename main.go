@@ -17,7 +17,7 @@ var config configuration.EngineConfig
 
 var Player child.Child2D
 var SkyChild child.Child2D
-var b child.Child2D
+var BlockSelect child.Child2D
 
 var l lighting.PointLight
 
@@ -74,12 +74,13 @@ func main() {
 	SkyChild.AttachTextureCoordsPrimitive()
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
-	b = engine.NewChild2D()
-	b.AttachShader(engine.ShaderControl.GetShader("color"))
+	BlockSelect = engine.NewChild2D()
+	BlockSelect.AttachShader(engine.ShaderControl.GetShader("color"))
 	m := material.NewMaterial(engine.ShaderControl.GetShader("color"), &config)
-	m.BecomeColor([]float32{0.5, 0.5, 0.5})
-	b.AttachMaterial(&m)
-	b.AttachPrimitive(geometry.NewRectangle(32, 32, &config))
+	m.BecomeColor([]float32{0.5, 0.5, 0.5, 0.5})
+
+	BlockSelect.AttachMaterial(&m)
+	BlockSelect.AttachPrimitive(geometry.NewRectangle(32, 32, &config))
 
 	//   --------------------------------------------------
 	//   World Gen
@@ -113,7 +114,7 @@ func main() {
 	engine.Instance(&WorldChild)
 	engine.Instance(&Player)
 
-	engine.Instance(&b)
+	engine.Instance(&BlockSelect)
 
 	engine.EnableLighting()
 	engine.Initialize()
@@ -131,12 +132,20 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	renderer.RenderChild(&Player)
 
-	renderer.RenderChild(&b)
+	// Block Selector
+	renderer.RenderChild(&BlockSelect)
+	cx, cy, _ := renderer.MainCamera.GetPosition()
+	bx, by := engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
+	snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
+	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
+
+	if inputs.LeftMouseButton {
+		destroyBlock(snapx, snapy)
+	}
 
 	// Player Logic
-
 	movePlayer(inputs.Keys)
-	Player.VY -= 0.5
+	Player.VY -= 1.2
 
 	top, left, bottom, right := CheckPlayerCollision()
 	if bottom && Player.VY < 0 {
@@ -200,8 +209,6 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	px := int((Player.X + BlockSize/2) / BlockSize)
 	py := int((Player.Y)/BlockSize + 1)
 
-	//b.SetPosition(float32(px*BlockSize), float32(py*BlockSize))
-
 	if WorldCopies[px][py+1].ID != 0 {
 		top = true
 	}
@@ -216,4 +223,39 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	}
 
 	return top, left, bottom, right
+}
+
+func destroyBlock(x, y int) {
+
+	if WorldMap[x][y].ID == NameMap["sky"] || WorldMap[x][y].ID == NameMap["backdirt"] {
+		return
+	}
+
+	WorldCopies[x][y] = child.ChildCopy{
+		ID: 0,
+	}
+	NoCollisionCopies[x][y] = child.ChildCopy{
+		ID: 0,
+	}
+
+	if y <= HeightMap[x] {
+		WorldMap[x][y] = NewBlock("backdirt")
+	} else {
+		WorldMap[x][y] = NewBlock("sky")
+	}
+
+	FixLightingAt(x, y)
+
+	fixBlock(x, y)
+
+	fixBlock(x+1, y)
+	fixBlock(x, y+1)
+	fixBlock(x-1, y)
+	fixBlock(x, y-1)
+}
+
+func fixBlock(x, y int) {
+	orientSingleBlock(NameList[WorldMap[x][y].ID], WorldMap[x][y].ID, true, x, y)
+	createSingleExtraBackdirt(x, y)
+	createSingleCopy(x, y)
 }
