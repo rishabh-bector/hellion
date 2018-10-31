@@ -62,7 +62,7 @@ func main() {
 
 	Player = engine.NewChild2D()
 	Player.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	Player.AttachPrimitive(geometry.NewRectangle(32, 64, &config))
+	Player.AttachPrimitive(geometry.NewRectangle(32, 56, &config))
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*BlockSize)
@@ -88,7 +88,6 @@ func main() {
 
 	engine.Config.Logger.Info("Generating world...")
 	generateWorld()
-	createCopies()
 
 	l = lighting.NewPointLight(
 		engine.ShaderControl.GetShader("colorLighting"),
@@ -143,6 +142,10 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		destroyBlock(snapx, snapy)
 	}
 
+	if inputs.RightMouseButton {
+		placeTransparentBlock(snapx, snapy)
+	}
+
 	// Player Logic
 	movePlayer(inputs.Keys)
 	Player.VY -= 1.2
@@ -166,7 +169,9 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	SkyChild.SetPosition(Player.X-1950/2, Player.Y-1110/2)
 
 	// Lighting
-	x, y := child.ScaleCoordinates(Player.X, float32(HeightMap[int(Player.X/BlockSize)])*BlockSize, float32(ScreenWidth), float32(ScreenHeight))
+	//x, y := child.ScaleCoordinates(Player.X, float32(HeightMap[int(Player.X/BlockSize)])*BlockSize, float32(ScreenWidth), float32(ScreenHeight))
+	//l.SetPosition([]float32{x, y, 1})
+	x, y := child.ScaleCoordinates(Player.X, Player.Y, float32(ScreenWidth), float32(ScreenHeight))
 	l.SetPosition([]float32{x, y, 1})
 }
 
@@ -215,14 +220,29 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	if WorldCopies[px][py-1].ID != 0 {
 		bottom = true
 	}
-	if WorldCopies[px-1][py].ID != 0 {
+	if WorldCopies[px-1][py].ID != 0 || WorldCopies[px-1][py+1].ID != 0 {
 		left = true
 	}
-	if WorldCopies[px+1][py].ID != 0 {
+	if WorldCopies[px+1][py].ID != 0 || WorldCopies[px+1][py+1].ID != 0 {
 		right = true
 	}
 
 	return top, left, bottom, right
+}
+
+func placeTransparentBlock(x, y int) {
+	if WorldMap[x][y].ID != NameMap["sky"] && WorldMap[x][y].ID != NameMap["backdirt"] {
+		return
+	}
+
+	WorldMap[x][y] = NewBlock("torch")
+	WorldMap[x][y].Darkness = 0.8
+	createSingleCopy(x, y)
+	createNewLightSource(x, y)
+}
+
+func createNewLightSource(x, y int) {
+	CreateLightingLimit(x, y, 0.9, 50)
 }
 
 func destroyBlock(x, y int) {

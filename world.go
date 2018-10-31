@@ -153,7 +153,11 @@ func generateWorld() {
 	// Fix backdirt
 	createAllExtraBackdirt()
 
-	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
+	// Set player starting position
+	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
+
+	// Create block children
+	createCopies()
 }
 
 func createCopies() {
@@ -388,6 +392,25 @@ func CreateLighting(x, y int, light float32) {
 	CreateLighting(x, y+1, newLight)
 	CreateLighting(x-1, y, newLight)
 	CreateLighting(x, y-1, newLight)
+}
+
+func CreateLightingLimit(x, y int, light float32, limit int) {
+	if limit < 1 {
+		return
+	}
+	if !IsValidPosition(x, y) {
+		return
+	}
+	newLight := light - GetLightBlockAmount(x, y)
+	if newLight <= GetLightAt(x, y) {
+		return
+	}
+	WorldMap[x][y].Darkness = newLight
+	createSingleCopy(x, y)
+	CreateLightingLimit(x+1, y, newLight, limit-1)
+	CreateLightingLimit(x, y+1, newLight, limit-1)
+	CreateLightingLimit(x-1, y, newLight, limit-1)
+	CreateLightingLimit(x, y-1, newLight, limit-1)
 }
 
 func FixLightingAt(x, y int) {

@@ -18,6 +18,7 @@ var NameList = []string{
 	"topGrass1", "topGrass2", "topGrass3",
 	"treeBranchR1", "treeBranchL1",
 	"flower1", "flower2", "flower3", "pebble",
+	"torch",
 }
 
 var OrientationsMap = map[string]int{
@@ -76,6 +77,8 @@ func LoadBlocks() {
 	engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
 	engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
 	engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
+
+	engine.TextureControl.NewTexture("./assets/blocks/torch.png", "torch")
 
 	// Back-Blocks
 	engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt")
@@ -190,6 +193,9 @@ func LoadBlocks() {
 	pebbleMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
 	pebbleMaterial.BecomeTexture(engine.TextureControl.GetTexture("pebble"))
 
+	torchMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
+	torchMaterial.BecomeTexture(engine.TextureControl.GetTexture("torch"))
+
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
@@ -268,6 +274,10 @@ func LoadBlocks() {
 			Material:   pebbleMaterial,
 			LightBlock: 0,
 		},
+		"torch": &Block{
+			Material:   torchMaterial,
+			LightBlock: 0,
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
@@ -297,6 +307,7 @@ func LoadBlocks() {
 		"flower2":        16,
 		"flower3":        17,
 		"pebble":         18,
+		"torch":          19,
 	}
 }
 
