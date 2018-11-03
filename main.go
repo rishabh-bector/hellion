@@ -12,7 +12,7 @@ import (
 	"runtime"
 )
 
-var engine cmd.Engine
+var engine *cmd.Engine
 var config configuration.EngineConfig
 
 var Player child.Child2D
@@ -32,6 +32,7 @@ func main() {
 	config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 	config.ShowFPS = true
 	config.FullScreen = false
+	config.VSync = false
 	engine = cmd.NewEngine(config, render)
 	engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	engine.Renderer.MainCamera.SetPosition(100, 100, 0)
@@ -76,6 +77,7 @@ func main() {
 
 	BlockSelect = engine.NewChild2D()
 	BlockSelect.AttachShader(engine.ShaderControl.GetShader("color"))
+
 	m := material.NewMaterial(engine.ShaderControl.GetShader("color"), &config)
 	m.BecomeColor([]float32{0.5, 0.5, 0.5, 0.5})
 
@@ -143,12 +145,12 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 
 	if inputs.RightMouseButton {
-		placeTransparentBlock(snapx, snapy)
+		placeTorch(snapx, snapy)
 	}
 
 	// Player Logic
 	movePlayer(inputs.Keys)
-	Player.VY -= 1.2
+	Player.VY -= 1.1
 
 	top, left, bottom, right := CheckPlayerCollision()
 	if bottom && Player.VY < 0 {
@@ -230,7 +232,7 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	return top, left, bottom, right
 }
 
-func placeTransparentBlock(x, y int) {
+func placeTorch(x, y int) {
 	if WorldMap[x][y].ID != NameMap["sky"] && WorldMap[x][y].ID != NameMap["backdirt"] {
 		return
 	}
@@ -241,12 +243,16 @@ func placeTransparentBlock(x, y int) {
 	createNewLightSource(x, y)
 }
 
+func destroyTorch(x, y int) {
+	destroyBlock(x, y)
+	RemoveLightingLimit(x, y, 0.9, 50)
+}
+
 func createNewLightSource(x, y int) {
-	CreateLightingLimit(x, y, 0.9, 50)
+	CreateLightingLimit(x, y, 0.9, 40)
 }
 
 func destroyBlock(x, y int) {
-
 	if WorldMap[x][y].ID == NameMap["sky"] || WorldMap[x][y].ID == NameMap["backdirt"] {
 		return
 	}
