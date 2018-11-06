@@ -29,6 +29,11 @@ func init() {
 }
 
 func main() {
+	if runtime.GOOS == "darwin" {
+		ScreenWidth = 1440
+		ScreenHeight = 900
+	}
+
 	config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 	config.ShowFPS = true
 	config.FullScreen = false
