@@ -1,56 +1,10 @@
 package main
 
 import (
-	"math/rand"
 	"rapidengine/child"
 	"rapidengine/geometry"
 	"rapidengine/material"
-	"time"
-
-	perlin "github.com/aquilax/go-perlin"
 )
-
-//  --------------------------------------------------
-//  World Generation Parameters
-//  --------------------------------------------------
-
-const WorldHeight = 3000 //4000
-const WorldWidth = 2000
-const BlockSize = 32
-const Flatness = 0.1
-
-const GrassMinimum = 700
-
-const CaveNoiseScalar = 30
-const CaveNoiseThreshold = 0.75
-
-const StoneNoiseScalar = 30.0
-const StoneTop = 600.0
-const StoneTopDeviation = 5
-const StoneStartingFrequency = -0.3
-
-//  --------------------------------------------------
-//  --------------------------------------------------
-//  --------------------------------------------------
-
-var WorldChild child.Child2D
-var WorldCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var NoCollisionChild child.Child2D
-var NoCollisionCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var NatureChild child.Child2D
-var NatureCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var CloudChild child.Child2D
-var cloudMaterial material.Material
-
-var p *perlin.Perlin
-var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
-var HeightMap [WorldWidth]int
-
-var transparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
-var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
 
 type WorldBlock struct {
 	ID          int
@@ -58,106 +12,44 @@ type WorldBlock struct {
 	Darkness    float32
 }
 
-func NewBlock(id string) WorldBlock {
+func newBlock(id string) WorldBlock {
 	return WorldBlock{ID: NameMap[id], Orientation: "E", Darkness: 0}
 }
 
-func NewOrientBlock(id, orientation string) WorldBlock {
+func newOrientBlock(id, orientation string) WorldBlock {
 	return WorldBlock{ID: NameMap[id], Orientation: orientation, Darkness: 0}
 }
 
-func generateWorld() {
-	WorldChild = engine.NewChild2D()
-	WorldChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	WorldChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
+func loadWorldChildren() {
+	WorldChild = Engine.NewChild2D()
+	WorldChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	WorldChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	WorldChild.AttachTextureCoordsPrimitive()
 	WorldChild.EnableCopying()
 	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
-	NoCollisionChild = engine.NewChild2D()
-	NoCollisionChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	NoCollisionChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
+	NoCollisionChild = Engine.NewChild2D()
+	NoCollisionChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	NoCollisionChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NoCollisionChild.AttachTextureCoordsPrimitive()
 	NoCollisionChild.EnableCopying()
 
-	NatureChild = engine.NewChild2D()
-	NatureChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	NatureChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &config))
+	NatureChild = Engine.NewChild2D()
+	NatureChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	NatureChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NatureChild.AttachTextureCoordsPrimitive()
 	NatureChild.EnableCopying()
 
-	CloudChild = engine.NewChild2D()
-	CloudChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	CloudChild.AttachPrimitive(geometry.NewRectangle(300, 145, &config))
+	CloudChild = Engine.NewChild2D()
+	CloudChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	CloudChild.AttachPrimitive(geometry.NewRectangle(300, 145, &Config))
 	CloudChild.AttachTextureCoordsPrimitive()
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
-	engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1")
-	cloudMaterial = material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
-	cloudMaterial.BecomeTexture(engine.TextureControl.GetTexture("cloud1"))
+	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1")
+	cloudMaterial = material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	cloudMaterial.BecomeTexture(Engine.TextureControl.GetTexture("cloud1"))
 	CloudChild.AttachMaterial(&cloudMaterial)
-
-	LoadBlocks()
-
-	rand.Seed(time.Now().UTC().UnixNano())
-	p = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
-
-	// Fill world with 0s
-	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
-			b := NewBlock("sky")
-			b.Darkness = 0
-			WorldMap[x][y] = b
-		}
-	}
-
-	// Generate heightmap and place grass
-	generateHeights()
-	for x := 0; x < WorldWidth; x++ {
-		WorldMap[x][HeightMap[x]] = NewBlock("grass")
-	}
-
-	// Fill everything underneath grass with dirt
-	fillHeights()
-
-	// Generate stone based on height
-	fillStone()
-
-	// Clean up stone above ground
-	cleanStone()
-
-	// Generate caves
-	generateCaves()
-
-	// Clean back dirt
-	cleanBackDirt()
-
-	// Put grass and some top grass on dirt with air above it
-	growGrass()
-
-	// Create clouds
-	generateClouds()
-
-	// Place flowers and pebbles above grass
-	generateNature()
-
-	// Fix the orientation of blocks in the world
-	orientBlocks("dirt", true)
-	orientBlocks("grass", true)
-	orientBlocks("stone", true)
-	orientBlocks("leaves", true)
-	orientBlocks("backdirt", true)
-
-	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
-
-	// Fix backdirt
-	createAllExtraBackdirt()
-
-	// Set player starting position
-	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
-
-	// Create block children
-	createCopies()
 }
 
 func createCopies() {
@@ -166,6 +58,10 @@ func createCopies() {
 			createSingleCopy(x, y)
 		}
 	}
+}
+
+func createSingleBlock(x, y int) {
+
 }
 
 func createSingleCopy(x, y int) {
@@ -254,7 +150,7 @@ func createSingleExtraBackdirt(x, y int) {
 				NoCollisionCopies[x][y] = child.ChildCopy{
 					X:        float32(x * BlockSize),
 					Y:        float32(y * BlockSize),
-					Material: GetBlockName("backdirt").GetOrientMaterial(GetSingleBlockOrientation("backdirt", NameMap["backdirt"], true, x, y)),
+					Material: GetBlockName("backdirt").GetOrientMaterial(getSingleBlockOrientation("backdirt", NameMap["backdirt"], true, x, y)),
 					Darkness: WorldMap[x][y].Darkness,
 					ID:       2,
 				}
@@ -298,11 +194,11 @@ func orientSingleBlock(name string, block int, topBlock bool, x, y int) {
 		if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
 			above = true
 		}
-		WorldMap[x][y].Orientation = GetOrientationLetter(left, right, under, above, topBlock)
+		WorldMap[x][y].Orientation = getOrientationLetter(left, right, under, above, topBlock)
 	}
 }
 
-func GetSingleBlockOrientation(name string, block int, topBlock bool, x, y int) string {
+func getSingleBlockOrientation(name string, block int, topBlock bool, x, y int) string {
 	above := false
 	under := false
 	left := false
@@ -319,11 +215,11 @@ func GetSingleBlockOrientation(name string, block int, topBlock bool, x, y int) 
 	if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
 		above = true
 	}
-	return GetOrientationLetter(left, right, under, above, topBlock)
+	return getOrientationLetter(left, right, under, above, topBlock)
 
 }
 
-func GetOrientationLetter(left, right, under, above, topBlock bool) string {
+func getOrientationLetter(left, right, under, above, topBlock bool) string {
 	if left && right && under && above {
 		return "AA"
 	}

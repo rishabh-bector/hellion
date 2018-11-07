@@ -4,25 +4,12 @@ import (
 	_ "net/http/pprof"
 	"rapidengine/child"
 	"rapidengine/cmd"
-	"rapidengine/configuration"
 	"rapidengine/geometry"
 	"rapidengine/input"
 	"rapidengine/lighting"
 	"rapidengine/material"
 	"runtime"
 )
-
-var engine *cmd.Engine
-var config configuration.EngineConfig
-
-var Player child.Child2D
-var SkyChild child.Child2D
-var BlockSelect child.Child2D
-
-var l lighting.PointLight
-
-var ScreenWidth = 1920
-var ScreenHeight = 1080
 
 func init() {
 	runtime.LockOSThread()
@@ -34,70 +21,70 @@ func main() {
 		ScreenHeight = 900
 	}
 
-	config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
-	config.ShowFPS = true
-	config.FullScreen = false
-	config.VSync = false
-	engine = cmd.NewEngine(config, render)
-	engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
-	engine.Renderer.MainCamera.SetPosition(100, 100, 0)
-	engine.Renderer.MainCamera.SetSpeed(0.2)
+	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
+	Config.ShowFPS = true
+	Config.FullScreen = false
+	Config.VSync = false
+	Engine = cmd.NewEngine(Config, render)
+	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
+	Engine.Renderer.MainCamera.SetPosition(100, 100, 0)
+	Engine.Renderer.MainCamera.SetSpeed(0.2)
 
-	engine.Renderer.AutomaticRendering = false
+	Engine.Renderer.AutomaticRendering = false
 
 	//   --------------------------------------------------
 	//   Textures
 	//   --------------------------------------------------
 
-	engine.TextureControl.NewTexture("assets/player/OrcBoss.png", "player")
-	engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back")
+	Engine.TextureControl.NewTexture("assets/player/OrcBoss.png", "player")
+	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back")
 
 	//   --------------------------------------------------
 	//   Materials
 	//   --------------------------------------------------
 
-	playerMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
-	playerMaterial.BecomeTexture(engine.TextureControl.GetTexture("player"))
+	playerMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	playerMaterial.BecomeTexture(Engine.TextureControl.GetTexture("player"))
 
-	backgroundMaterial := material.NewMaterial(engine.ShaderControl.GetShader("colorLighting"), &config)
-	backgroundMaterial.BecomeTexture(engine.TextureControl.GetTexture("back"))
+	backgroundMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	backgroundMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
 
 	//   --------------------------------------------------
 	//   Children
 	//   --------------------------------------------------
 
-	Player = engine.NewChild2D()
-	Player.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	Player.AttachPrimitive(geometry.NewRectangle(256, 258, &config))
+	Player = Engine.NewChild2D()
+	Player.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	Player.AttachPrimitive(geometry.NewRectangle(256, 258, &Config))
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*BlockSize)
 	Player.Gravity = 0
 
-	SkyChild = engine.NewChild2D()
-	SkyChild.AttachShader(engine.ShaderControl.GetShader("colorLighting"))
-	SkyChild.AttachPrimitive(geometry.NewRectangle(4000, 1100, &config))
+	SkyChild = Engine.NewChild2D()
+	SkyChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	SkyChild.AttachPrimitive(geometry.NewRectangle(4000, 1100, &Config))
 	SkyChild.AttachTextureCoordsPrimitive()
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
-	BlockSelect = engine.NewChild2D()
-	BlockSelect.AttachShader(engine.ShaderControl.GetShader("color"))
+	BlockSelect = Engine.NewChild2D()
+	BlockSelect.AttachShader(Engine.ShaderControl.GetShader("color"))
 
-	m := material.NewMaterial(engine.ShaderControl.GetShader("color"), &config)
+	m := material.NewMaterial(Engine.ShaderControl.GetShader("color"), &Config)
 	m.BecomeColor([]float32{0.5, 0.5, 0.5, 0.5})
 
 	BlockSelect.AttachMaterial(&m)
-	BlockSelect.AttachPrimitive(geometry.NewRectangle(32, 32, &config))
+	BlockSelect.AttachPrimitive(geometry.NewRectangle(32, 32, &Config))
 
 	//   --------------------------------------------------
 	//   World Gen
 	//   --------------------------------------------------
 
-	engine.Config.Logger.Info("Generating world...")
-	generateWorld()
+	Engine.Config.Logger.Info("Generating world...")
+	generateWorldTree()
 
 	l = lighting.NewPointLight(
-		engine.ShaderControl.GetShader("colorLighting"),
+		Engine.ShaderControl.GetShader("colorLighting"),
 		[]float32{0, 0, 0},
 		[]float32{0.9, 0.9, 0.9},
 		[]float32{0, 0, 0},
@@ -111,21 +98,21 @@ func main() {
 	//   Instancing
 	//   --------------------------------------------------
 
-	engine.InstanceLight(&l)
+	Engine.InstanceLight(&l)
 
-	engine.Instance(&SkyChild)
-	engine.Instance(&CloudChild)
-	engine.Instance(&NoCollisionChild)
-	engine.Instance(&NatureChild)
-	engine.Instance(&WorldChild)
-	engine.Instance(&Player)
+	Engine.Instance(&SkyChild)
+	Engine.Instance(&CloudChild)
+	Engine.Instance(&NoCollisionChild)
+	Engine.Instance(&NatureChild)
+	Engine.Instance(&WorldChild)
+	Engine.Instance(&Player)
 
-	engine.Instance(&BlockSelect)
+	Engine.Instance(&BlockSelect)
 
-	engine.EnableLighting()
-	engine.Initialize()
-	engine.StartRenderer()
-	<-engine.Done()
+	Engine.EnableLighting()
+	Engine.Initialize()
+	Engine.StartRenderer()
+	<-Engine.Done()
 	return
 }
 
@@ -141,7 +128,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	// Block Selector
 	renderer.RenderChild(&BlockSelect)
 	cx, cy, _ := renderer.MainCamera.GetPosition()
-	bx, by := engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
+	bx, by := Engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
 	snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
 	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
@@ -242,7 +229,7 @@ func placeTorch(x, y int) {
 		return
 	}
 
-	WorldMap[x][y] = NewBlock("torch")
+	WorldMap[x][y] = newBlock("torch")
 	WorldMap[x][y].Darkness = 0.8
 	createSingleCopy(x, y)
 	createNewLightSource(x, y)
@@ -270,9 +257,9 @@ func destroyBlock(x, y int) {
 	}
 
 	if y <= HeightMap[x] {
-		WorldMap[x][y] = NewBlock("backdirt")
+		WorldMap[x][y] = newBlock("backdirt")
 	} else {
-		WorldMap[x][y] = NewBlock("sky")
+		WorldMap[x][y] = newBlock("sky")
 	}
 
 	FixLightingAt(x, y)
