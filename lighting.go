@@ -12,7 +12,9 @@ func CreateLighting(x, y int, light float32) {
 	if newLight <= GetLightAt(x, y) {
 		return
 	}
-	WorldMap[x][y].Darkness = newLight
+
+	WorldMap.SetDarkness(x, y, newLight)
+
 	CreateLighting(x+1, y, newLight)
 	CreateLighting(x, y+1, newLight)
 	CreateLighting(x-1, y, newLight)
@@ -30,31 +32,13 @@ func CreateLightingLimit(x, y int, light float32, limit int) {
 	if newLight <= GetLightAt(x, y) {
 		return
 	}
-	WorldMap[x][y].Darkness = newLight
-	createSingleCopy(x, y)
+
+	WorldMap.SetDarkness(x, y, newLight)
+
 	CreateLightingLimit(x+1, y, newLight, limit-1)
 	CreateLightingLimit(x, y+1, newLight, limit-1)
 	CreateLightingLimit(x-1, y, newLight, limit-1)
 	CreateLightingLimit(x, y-1, newLight, limit-1)
-}
-
-func RemoveLightingLimit(x, y int, light float32, limit int) {
-	if limit < 1 {
-		return
-	}
-	if !IsValidPosition(x, y) {
-		return
-	}
-	newLight := light + GetLightBlockAmount(x, y)
-	if newLight >= GetLightAt(x, y) {
-		return
-	}
-	WorldMap[x][y].Darkness = newLight
-	createSingleCopy(x, y)
-	RemoveLightingLimit(x+1, y, newLight, limit-1)
-	RemoveLightingLimit(x, y+1, newLight, limit-1)
-	RemoveLightingLimit(x-1, y, newLight, limit-1)
-	RemoveLightingLimit(x, y-1, newLight, limit-1)
 }
 
 func FixLightingAt(x, y int) {
@@ -71,15 +55,16 @@ func FixLightingAt(x, y int) {
 	if l := GetLightAt(x, y-1); l > maxLight {
 		maxLight = l
 	}
-	WorldMap[x][y].Darkness = maxLight - GetLightBlockAmount(x, y)
+	WorldMap.SetDarkness(x, y, maxLight-GetLightBlockAmount(x, y))
 }
 
 func GetLightAt(x, y int) float32 {
-	return WorldMap[x][y].Darkness
+	return WorldMap.GetDarkness(x, y)
 }
 
 func GetLightBlockAmount(x, y int) float32 {
-	return BlockMap[NameList[WorldMap[x][y].ID]].LightBlock
+	println(WorldMap.GetBlockName(x, y))
+	return GetBlock(WorldMap.GetBlockName(x, y)).LightBlock
 }
 
 func IsValidPosition(x, y int) bool {

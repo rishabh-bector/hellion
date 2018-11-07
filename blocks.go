@@ -3,42 +3,10 @@ package main
 import (
 	"fmt"
 	"rapidengine/material"
+	"strconv"
 )
 
 var BlockMap map[string]*Block
-
-var NameMap map[string]int
-var NameList = []string{
-	"sky",
-	"dirt",
-	"grass",
-	"stone",
-	"backdirt",
-	"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot",
-	"topGrass1", "topGrass2", "topGrass3",
-	"treeBranchR1", "treeBranchL1",
-	"flower1", "flower2", "flower3", "pebble",
-	"torch",
-}
-
-var OrientationsMap = map[string]int{
-	"LN": 0,
-	"RN": 1,
-	"NT": 2,
-	"NB": 3,
-	"LA": 4,
-	"RA": 5,
-	"AT": 6,
-	"AB": 7,
-	"NN": 8,
-	"AA": 9,
-	"LT": 10,
-	"LB": 11,
-	"RT": 12,
-	"RB": 13,
-	"AN": 14,
-	"NA": 15,
-}
 
 type Block struct {
 	Material material.Material
@@ -54,12 +22,12 @@ type Block struct {
 	LightBlock float32
 }
 
-func (block *Block) GetMaterial() *material.Material {
+func (block *Block) GetMaterial(direction string) *material.Material {
+	if block.OrientEnabled {
+		i, _ := strconv.Atoi(OrientationsMap[direction])
+		return &(block.Orientations[i])
+	}
 	return &block.Material
-}
-
-func (block *Block) GetOrientMaterial(direction string) *material.Material {
-	return &(block.Orientations[OrientationsMap[direction]])
 }
 
 func (block *Block) CreateOrientations(orientVariation int32) {
@@ -68,7 +36,9 @@ func (block *Block) CreateOrientations(orientVariation int32) {
 	for dir, ind := range OrientationsMap {
 		newM := block.Material
 		newM.AttachTransparency(Engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir)))
-		block.Orientations[ind] = newM
+
+		i, _ := strconv.Atoi(OrientationsMap[ind])
+		block.Orientations[i] = newM
 	}
 }
 
@@ -285,36 +255,72 @@ func loadBlocks() {
 	BlockMap["stone"].CreateOrientations(0)
 	BlockMap["leaves"].CreateOrientations(0)
 	BlockMap["backdirt"].CreateOrientations(0)
-
-	NameMap = make(map[string]int)
-	NameMap = map[string]int{
-		"sky":            0,
-		"dirt":           1,
-		"grass":          2,
-		"stone":          3,
-		"backdirt":       4,
-		"leaves":         5,
-		"treeRightRoot":  6,
-		"treeLeftRoot":   7,
-		"treeTrunk":      8,
-		"treeBottomRoot": 9,
-		"topGrass1":      10,
-		"topGrass2":      11,
-		"topGrass3":      12,
-		"treeBranchR1":   13,
-		"treeBranchL1":   14,
-		"flower1":        15,
-		"flower2":        16,
-		"flower3":        17,
-		"pebble":         18,
-		"torch":          19,
-	}
 }
 
-func GetBlockIndex(i int) *Block {
-	return BlockMap[NameList[i]]
-}
-
-func GetBlockName(name string) *Block {
+func GetBlock(name string) *Block {
 	return BlockMap[name]
+}
+
+var IDMap = map[string]string{
+	"sky":            "000",
+	"dirt":           "001",
+	"grass":          "002",
+	"stone":          "003",
+	"backdirt":       "004",
+	"leaves":         "005",
+	"treeRightRoot":  "006",
+	"treeLeftRoot":   "007",
+	"treeTrunk":      "008",
+	"treeBottomRoot": "009",
+	"topGrass1":      "010",
+	"topGrass2":      "011",
+	"topGrass3":      "012",
+	"treeBranchR1":   "013",
+	"treeBranchL1":   "014",
+	"flower1":        "015",
+	"flower2":        "016",
+	"flower3":        "017",
+	"pebble":         "018",
+	"torch":          "019",
+}
+
+func GetIDFromName(name string) string {
+	return IDMap[name]
+}
+
+func GetNameFromID(id string) string {
+	for name, bid := range IDMap {
+		if bid == id {
+			return name
+		}
+	}
+	return "unknown"
+}
+
+var OrientationsMap = map[string]string{
+	"LN": "00",
+	"RN": "01",
+	"NT": "02",
+	"NB": "03",
+	"LA": "04",
+	"RA": "05",
+	"AT": "06",
+	"AB": "07",
+	"NN": "08",
+	"AA": "09",
+	"LT": "10",
+	"LB": "11",
+	"RT": "12",
+	"RB": "13",
+	"AN": "14",
+	"NA": "15",
+}
+
+func GetOrientationFromID(id string) string {
+	for orientation, bid := range OrientationsMap {
+		if bid == id {
+			return orientation
+		}
+	}
+	return ""
 }

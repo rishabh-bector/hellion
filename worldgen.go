@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
-	"rapidengine/child"
 	"time"
 
 	perlin "github.com/aquilax/go-perlin"
@@ -18,6 +16,9 @@ func generateWorldTree() {
 
 	// Randomize seed
 	randomizeSeed()
+
+	// Create a blank world tree
+	WorldMap = NewWorldTree()
 
 	// Generate heightmap and place grass
 	generateHeights()
@@ -35,35 +36,32 @@ func generateWorldTree() {
 	generateCaves()
 
 	// Clean back dirt
-	cleanBackDirt()
+	//cleanBackDirt()
 
 	// Put grass and some top grass on dirt with air above it
-	growGrass()
+	//growGrass()
 
 	// Create clouds
-	generateClouds()
+	//generateClouds()
 
 	// Place flowers and pebbles above grass
-	generateNature()
+	//generateNature()
 
 	// Fix the orientation of blocks in the world
-	orientBlocks("dirt", true)
-	orientBlocks("grass", true)
-	orientBlocks("stone", true)
-	orientBlocks("leaves", true)
-	orientBlocks("backdirt", true)
+	//orientBlocks("dirt", true)
+	//orientBlocks("grass", true)
+	//orientBlocks("stone", true)
+	//orientBlocks("leaves", true)
+	//orientBlocks("backdirt", true)
 
 	// Light up all blocks
 	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
 
 	// Fix backdirt
-	createAllExtraBackdirt()
+	//createAllExtraBackdirt()
 
 	// Set player starting position
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
-
-	// Create block children
-	createCopies()
 }
 
 //  --------------------------------------------------
@@ -75,15 +73,15 @@ func generateHeights() {
 		HeightMap[x] = GrassMinimum + int(Flatness*noise1D(float64(x)/(WorldWidth/2))*WorldHeight)
 	}
 	for x := 0; x < WorldWidth; x++ {
-		WorldMap[x][HeightMap[x]] = newBlock("grass")
+		createWorldBlock(x, HeightMap[x], "grass")
 	}
 }
 
 func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
-			WorldMap[x][y] = newOrientBlock("dirt", "E")
-			if WorldMap[x][y+1].ID == NameMap["grass"] {
+			createWorldBlock(x, y, "dirt")
+			if WorldMap.GetBlockName(x, y+1) == "grass" {
 				break
 			}
 		}
@@ -97,7 +95,7 @@ func fillStone() {
 		for x := 0; x < WorldWidth; x++ {
 			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
 			if n > stoneFrequency {
-				WorldMap[x][y] = newBlock("stone")
+				createWorldBlock(x, y, "stone")
 			}
 		}
 		stoneFrequency += (1 / StoneTop)
@@ -107,13 +105,13 @@ func fillStone() {
 func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
-		if WorldMap[x][grassHeight].ID == NameMap["stone"] {
+		if WorldMap.GetBlockName(x, grassHeight) == "stone" {
 			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
-				WorldMap[x][y] = newBlock("sky")
+				createWorldBlock(x, y, "sky")
 			}
 		} else {
 			for y := grassHeight + 1; y < WorldHeight; y++ {
-				WorldMap[x][y] = newBlock("sky")
+				createWorldBlock(x, y, "sky")
 			}
 		}
 	}
@@ -124,14 +122,14 @@ func generateCaves() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
-			if n > CaveNoiseThreshold && y <= HeightMap[x] && WorldMap[x][y].Orientation == "E" {
-				WorldMap[x][y] = newBlock("backdirt")
+			if n > CaveNoiseThreshold && y <= HeightMap[x] && WorldMap.GetBlockOrientation(x, y) == "NN" {
+				createBackBlock(x, y, "backdirt")
 			}
 		}
 	}
 }
 
-func cleanBackDirt() {
+/*func cleanBackDirt() {
 	for i := 0; i < 2; i++ {
 		for x := 1; x < WorldWidth-1; x++ {
 			for y := WorldHeight - 2; y > 0; y-- {
@@ -271,29 +269,29 @@ func generateNature() {
 		}
 	}
 
-}
+}*/
 
 //  --------------------------------------------------
 //  World Generation Helpers
 //  --------------------------------------------------
 
 func isBackBlock(name string) bool {
-	for _, transparent := range transparentBlocks {
-		if NameMap[name] == NameMap[transparent] {
+	for _, transparent := range TransparentBlocks {
+		if name == transparent {
 			return true
 		}
 	}
 	return false
 }
 
-func blockType(name string) string {
+/*func blockType(name string) string {
 	for _, green := range natureBlocks {
 		if NameMap[name] == NameMap[green] {
 			return "nature"
 		}
 	}
 	return "shit spelling"
-}
+}*/
 
 func noise2D(x, y float64) float64 {
 	return (Generator.Noise2D(x, y) + 0.4) / 0.8
@@ -308,7 +306,7 @@ func randomizeSeed() {
 	Generator = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
 }
 
-func hardAddCopy(x int, y int, name string, c string, dark float32) {
+/*func hardAddCopy(x int, y int, name string, c string, dark float32) {
 	if c == "nature" {
 		NatureCopies[x][y] = child.ChildCopy{
 			X:        float32(x * BlockSize),
@@ -318,4 +316,4 @@ func hardAddCopy(x int, y int, name string, c string, dark float32) {
 			ID:       1,
 		}
 	}
-}
+}*/

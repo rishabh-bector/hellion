@@ -12,14 +12,6 @@ type WorldBlock struct {
 	Darkness    float32
 }
 
-func newBlock(id string) WorldBlock {
-	return WorldBlock{ID: NameMap[id], Orientation: "E", Darkness: 0}
-}
-
-func newOrientBlock(id, orientation string) WorldBlock {
-	return WorldBlock{ID: NameMap[id], Orientation: orientation, Darkness: 0}
-}
-
 func loadWorldChildren() {
 	WorldChild = Engine.NewChild2D()
 	WorldChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
@@ -52,19 +44,37 @@ func loadWorldChildren() {
 	CloudChild.AttachMaterial(&cloudMaterial)
 }
 
-func createCopies() {
-	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
-			createSingleCopy(x, y)
-		}
-	}
+func createWorldBlock(x, y int, name string) {
+	WorldMap.AddWorldBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 1,
+		ID:       GetIDFromName(name) + "00",
+	})
 }
 
-func createSingleBlock(x, y int) {
-
+func createBackBlock(x, y int, name string) {
+	WorldMap.AddBackBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 1,
+		ID:       GetIDFromName(name) + "00",
+	})
 }
 
-func createSingleCopy(x, y int) {
+func createNatureBlock(x, y int, name string) {
+	WorldMap.AddNatureBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 1,
+		ID:       GetIDFromName(name) + "00",
+	})
+}
+
+/*func createSingleCopy(x, y int) {
 
 	// Back Blocks
 	if isBackBlock(NameList[WorldMap[x][y].ID]) {
@@ -133,9 +143,9 @@ func createSingleCopy(x, y int) {
 			}
 		}
 	}
-}
+}*/
 
-func createAllExtraBackdirt() {
+/*func createAllExtraBackdirt() {
 	for x := 2; x < WorldWidth-2; x++ {
 		for y := 2; y < WorldHeight-2; y++ {
 			createSingleExtraBackdirt(x, y)
@@ -144,16 +154,14 @@ func createAllExtraBackdirt() {
 }
 
 func createSingleExtraBackdirt(x, y int) {
-	if WorldMap[x][y].Orientation != "E" && WorldMap[x][y].Orientation != "NN" && WorldMap[x][y].ID != NameMap["sky"] {
-		if WorldMap[x+1][y].ID == NameMap["sky"] || WorldMap[x-1][y].ID == NameMap["sky"] || WorldMap[x][y+1].ID == NameMap["sky"] || WorldMap[x][y-1].ID == NameMap["sky"] {
+	orient := WorldMap.GetBlockOrientation(x, y)
+	if orient != "E" && orient != "NN" && WorldMap.GetBlockID(x, y) != "00000" {
+		if WorldMap.GetBlockID(x+1, y) == "00000" ||
+			WorldMap.GetBlockID(x-1, y) == "00000" ||
+			WorldMap.GetBlockID(x, y+1) == "00000" ||
+			WorldMap.GetBlockID(x, y-1) == "00000" {
 			if y <= HeightMap[x] {
-				NoCollisionCopies[x][y] = child.ChildCopy{
-					X:        float32(x * BlockSize),
-					Y:        float32(y * BlockSize),
-					Material: GetBlockName("backdirt").GetOrientMaterial(getSingleBlockOrientation("backdirt", NameMap["backdirt"], true, x, y)),
-					Darkness: WorldMap[x][y].Darkness,
-					ID:       2,
-				}
+				updateBackBlock(x, y, "backdirt")
 			}
 		} else {
 			NoCollisionCopies[x][y] = child.ChildCopy{
@@ -165,9 +173,9 @@ func createSingleExtraBackdirt(x, y int) {
 			}
 		}
 	}
-}
+}*/
 
-func orientBlocks(name string, topBlock bool) {
+/*func orientBlocks(name string, topBlock bool) {
 	block := NameMap[name]
 	for x := 1; x < WorldWidth-1; x++ {
 		for y := 1; y < WorldHeight-1; y++ {
@@ -194,7 +202,7 @@ func orientSingleBlock(name string, block int, topBlock bool, x, y int) {
 		if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
 			above = true
 		}
-		WorldMap[x][y].Orientation = getOrientationLetter(left, right, under, above, topBlock)
+		WorldMap[x][y].Orientation[4:] = OrientationsMap[getOrientationLetter(left, right, under, above, topBlock)]
 	}
 }
 
@@ -268,5 +276,6 @@ func getOrientationLetter(left, right, under, above, topBlock bool) string {
 	if left && !right && !under && above {
 		return "LT"
 	}
-	return "E"
+	return "NN"
 }
+*/

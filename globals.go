@@ -39,6 +39,8 @@ var CloudChild child.Child2D
 
 var l lighting.PointLight
 
+var WorldMap WorldTree
+
 //  --------------------------------------------------
 //  World Generation Parameters
 //  --------------------------------------------------
@@ -59,20 +61,14 @@ const StoneTopDeviation = 5
 const StoneStartingFrequency = -0.3
 
 var Generator *perlin.Perlin
-var WorldMap [WorldWidth + 1][WorldHeight + 1]WorldBlock
+var cloudMaterial material.Material
+
 var HeightMap [WorldWidth]int
 
-var transparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
+//  --------------------------------------------------
+//  Data
+//  --------------------------------------------------
+
+var TransparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
+
 var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
-
-//  --------------------------------------------------
-//  Children
-//  --------------------------------------------------
-
-var WorldCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var NoCollisionCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var NatureCopies [WorldWidth][WorldHeight]child.ChildCopy
-
-var cloudMaterial material.Material

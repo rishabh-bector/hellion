@@ -82,6 +82,7 @@ func main() {
 
 	Engine.Config.Logger.Info("Generating world...")
 	generateWorldTree()
+	Engine.Config.Logger.Info("World Complete")
 
 	l = lighting.NewPointLight(
 		Engine.ShaderControl.GetShader("colorLighting"),
@@ -133,11 +134,11 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
 	if inputs.LeftMouseButton {
-		destroyBlock(snapx, snapy)
+		//destroyBlock(snapx, snapy)
 	}
 
 	if inputs.RightMouseButton {
-		placeTorch(snapx, snapy)
+		//placeTorch(snapx, snapy)
 	}
 
 	// Player Logic
@@ -172,14 +173,15 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 func renderWorldInBounds(renderer *cmd.Renderer) {
 	for x := int(Player.X) - 50 - ScreenWidth/2; x < int(Player.X)+50+ScreenWidth/2; x += BlockSize {
 		for y := int(Player.Y) - 50 - ScreenHeight/2; y < int(Player.Y)+50+ScreenHeight/2; y += BlockSize {
-			if cpy := NoCollisionCopies[int(x/BlockSize)][int(y/BlockSize)]; cpy.ID != 0 {
-				renderer.RenderCopy(&NoCollisionChild, cpy)
+
+			if cpy := WorldMap.GetBackBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(&NoCollisionChild, *cpy)
 			}
-			if cpy := NatureCopies[int(x/BlockSize)][int(y/BlockSize)]; cpy.ID != 0 {
-				renderer.RenderCopy(&NatureChild, cpy)
+			if cpy := WorldMap.GetNatureBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(&NatureChild, *cpy)
 			}
-			if cpy := WorldCopies[int(x/BlockSize)][int(y/BlockSize)]; cpy.ID != 0 {
-				renderer.RenderCopy(&WorldChild, cpy)
+			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(&WorldChild, *cpy)
 			}
 		}
 	}
@@ -208,23 +210,23 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	px := int((Player.X + BlockSize/2) / BlockSize)
 	py := int((Player.Y)/BlockSize + 1)
 
-	if WorldCopies[px][py+1].ID != 0 {
+	if WorldMap.GetBlockID(px, py+1) != "00000" {
 		top = true
 	}
-	if WorldCopies[px][py-1].ID != 0 {
+	if WorldMap.GetBlockID(px, py-1) != "00000" {
 		bottom = true
 	}
-	if WorldCopies[px-1][py].ID != 0 || WorldCopies[px-1][py+1].ID != 0 {
+	if WorldMap.GetBlockID(px-1, py) != "00000" || WorldMap.GetBlockID(px-1, py+1) != "00000" {
 		left = true
 	}
-	if WorldCopies[px+1][py].ID != 0 || WorldCopies[px+1][py+1].ID != 0 {
+	if WorldMap.GetBlockID(px+1, py) != "00000" || WorldMap.GetBlockID(px+1, py+1) != "00000" {
 		right = true
 	}
 
 	return top, left, bottom, right
 }
 
-func placeTorch(x, y int) {
+/*func placeTorch(x, y int) {
 	if WorldMap[x][y].ID != NameMap["sky"] && WorldMap[x][y].ID != NameMap["backdirt"] {
 		return
 	}
@@ -244,16 +246,16 @@ func createNewLightSource(x, y int) {
 	CreateLightingLimit(x, y, 0.9, 40)
 }
 
-func destroyBlock(x, y int) {
+/*func destroyBlock(x, y int) {
 	if WorldMap[x][y].ID == NameMap["sky"] || WorldMap[x][y].ID == NameMap["backdirt"] {
 		return
 	}
 
 	WorldCopies[x][y] = child.ChildCopy{
-		ID: 0,
+		ID: "00000",
 	}
 	NoCollisionCopies[x][y] = child.ChildCopy{
-		ID: 0,
+		ID: "00000",
 	}
 
 	if y <= HeightMap[x] {
@@ -276,4 +278,4 @@ func fixBlock(x, y int) {
 	orientSingleBlock(NameList[WorldMap[x][y].ID], WorldMap[x][y].ID, true, x, y)
 	createSingleExtraBackdirt(x, y)
 	createSingleCopy(x, y)
-}
+}*/
