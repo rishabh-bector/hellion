@@ -64,7 +64,7 @@ func (tree *WorldTree) GetNatureBlock(x, y int) *child.ChildCopy {
 }
 
 func (tree *WorldTree) GetBlockName(x, y int) string {
-	return GetNameFromID(tree.blockNodes[x][y].worldBlock.ID[:4])
+	return GetNameFromID(tree.blockNodes[x][y].worldBlock.ID[:3])
 }
 
 func (tree *WorldTree) GetBlockID(x, y int) string {

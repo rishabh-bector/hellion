@@ -63,7 +63,6 @@ func GetLightAt(x, y int) float32 {
 }
 
 func GetLightBlockAmount(x, y int) float32 {
-	println(WorldMap.GetBlockName(x, y))
 	return GetBlock(WorldMap.GetBlockName(x, y)).LightBlock
 }
 

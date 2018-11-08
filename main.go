@@ -173,14 +173,14 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 func renderWorldInBounds(renderer *cmd.Renderer) {
 	for x := int(Player.X) - 50 - ScreenWidth/2; x < int(Player.X)+50+ScreenWidth/2; x += BlockSize {
 		for y := int(Player.Y) - 50 - ScreenHeight/2; y < int(Player.Y)+50+ScreenHeight/2; y += BlockSize {
-
 			if cpy := WorldMap.GetBackBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&NoCollisionChild, *cpy)
+				//renderer.RenderCopy(&NoCollisionChild, *cpy)
 			}
 			if cpy := WorldMap.GetNatureBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&NatureChild, *cpy)
+				//renderer.RenderCopy(&NatureChild, *cpy)
 			}
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				println(cpy.ID, cpy.Material.GetTexture(), GetBlock(WorldMap.GetBlockName(int(x/BlockSize), int(y/BlockSize))).GetMaterial("NN").GetTexture())
 				renderer.RenderCopy(&WorldChild, *cpy)
 			}
 		}
