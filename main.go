@@ -174,13 +174,13 @@ func renderWorldInBounds(renderer *cmd.Renderer) {
 	for x := int(Player.X) - 50 - ScreenWidth/2; x < int(Player.X)+50+ScreenWidth/2; x += BlockSize {
 		for y := int(Player.Y) - 50 - ScreenHeight/2; y < int(Player.Y)+50+ScreenHeight/2; y += BlockSize {
 			if cpy := WorldMap.GetBackBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				//renderer.RenderCopy(&NoCollisionChild, *cpy)
+				renderer.RenderCopy(&NoCollisionChild, *cpy)
 			}
 			if cpy := WorldMap.GetNatureBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				//renderer.RenderCopy(&NatureChild, *cpy)
+				renderer.RenderCopy(&NatureChild, *cpy)
 			}
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				println(cpy.ID, cpy.Material.GetTexture(), GetBlock(WorldMap.GetBlockName(int(x/BlockSize), int(y/BlockSize))).GetMaterial("NN").GetTexture())
+				//println(cpy.ID, cpy.Material.GetTexture(), GetBlock(WorldMap.GetBlockName(int(x/BlockSize), int(y/BlockSize))).GetMaterial("NN").GetTexture())
 				renderer.RenderCopy(&WorldChild, *cpy)
 			}
 		}
@@ -210,16 +210,16 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 	px := int((Player.X + BlockSize/2) / BlockSize)
 	py := int((Player.Y)/BlockSize + 1)
 
-	if WorldMap.GetBlockID(px, py+1) != "00000" {
+	if WorldMap.GetWorldBlockID(px, py+1) != "00000" {
 		top = true
 	}
-	if WorldMap.GetBlockID(px, py-1) != "00000" {
+	if WorldMap.GetWorldBlockID(px, py-1) != "00000" {
 		bottom = true
 	}
-	if WorldMap.GetBlockID(px-1, py) != "00000" || WorldMap.GetBlockID(px-1, py+1) != "00000" {
+	if WorldMap.GetWorldBlockID(px-1, py) != "00000" || WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
 		left = true
 	}
-	if WorldMap.GetBlockID(px+1, py) != "00000" || WorldMap.GetBlockID(px+1, py+1) != "00000" {
+	if WorldMap.GetWorldBlockID(px+1, py) != "00000" || WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
 		right = true
 	}
 

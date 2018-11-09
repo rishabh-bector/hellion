@@ -48,11 +48,11 @@ func generateWorldTree() {
 	//generateNature()
 
 	// Fix the orientation of blocks in the world
-	//orientBlocks("dirt", true)
-	//orientBlocks("grass", true)
-	//orientBlocks("stone", true)
-	//orientBlocks("leaves", true)
-	//orientBlocks("backdirt", true)
+	orientBlocks("dirt", true)
+	orientBlocks("grass", true)
+	orientBlocks("stone", true)
+	orientBlocks("leaves", true)
+	orientBlocks("backdirt", true)
 
 	// Light up all blocks
 	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
@@ -81,7 +81,7 @@ func fillHeights() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
 			createWorldBlock(x, y, "dirt")
-			if WorldMap.GetBlockName(x, y+1) == "grass" {
+			if WorldMap.GetWorldBlockName(x, y+1) == "grass" {
 				break
 			}
 		}
@@ -105,7 +105,7 @@ func fillStone() {
 func cleanStone() {
 	for x := 0; x < WorldWidth; x++ {
 		grassHeight := HeightMap[x]
-		if WorldMap.GetBlockName(x, grassHeight) == "stone" {
+		if WorldMap.GetWorldBlockName(x, grassHeight) == "stone" {
 			for y := grassHeight + StoneTopDeviation; y < WorldHeight; y++ {
 				createWorldBlock(x, y, "sky")
 			}

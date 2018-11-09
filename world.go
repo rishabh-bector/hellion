@@ -49,7 +49,7 @@ func createWorldBlock(x, y int, name string) {
 		X:        float32(x * BlockSize),
 		Y:        float32(y * BlockSize),
 		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 1,
+		Darkness: 0,
 		ID:       GetIDFromName(name) + "00",
 	})
 }
@@ -59,7 +59,7 @@ func createBackBlock(x, y int, name string) {
 		X:        float32(x * BlockSize),
 		Y:        float32(y * BlockSize),
 		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 1,
+		Darkness: 0,
 		ID:       GetIDFromName(name) + "00",
 	})
 }
@@ -69,7 +69,7 @@ func createNatureBlock(x, y int, name string) {
 		X:        float32(x * BlockSize),
 		Y:        float32(y * BlockSize),
 		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 1,
+		Darkness: 0,
 		ID:       GetIDFromName(name) + "00",
 	})
 }
@@ -175,52 +175,36 @@ func createSingleExtraBackdirt(x, y int) {
 	}
 }*/
 
-/*func orientBlocks(name string, topBlock bool) {
-	block := NameMap[name]
+func orientBlocks(name string, topBlock bool) {
 	for x := 1; x < WorldWidth-1; x++ {
 		for y := 1; y < WorldHeight-1; y++ {
-			orientSingleBlock(name, block, topBlock, x, y)
+			orientSingleBlock(name, topBlock, x, y)
 		}
 	}
 }
 
-func orientSingleBlock(name string, block int, topBlock bool, x, y int) {
-	if WorldMap[x][y].ID == block {
-		above := false
-		under := false
-		left := false
-		right := false
-		if WorldMap[x-1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x-1][y].ID]) && !isBackBlock(name)) {
-			left = true
-		}
-		if WorldMap[x+1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x+1][y].ID]) && !isBackBlock(name)) {
-			right = true
-		}
-		if WorldMap[x][y-1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y-1].ID]) && !isBackBlock(name)) {
-			under = true
-		}
-		if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
-			above = true
-		}
-		WorldMap[x][y].Orientation[4:] = OrientationsMap[getOrientationLetter(left, right, under, above, topBlock)]
+func orientSingleBlock(name string, topBlock bool, x, y int) {
+	if WorldMap.GetWorldBlockName(x, y) == name {
+		WorldMap.SetBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
+		WorldMap.UpdateNodeMaterials(x, y)
 	}
 }
 
-func getSingleBlockOrientation(name string, block int, topBlock bool, x, y int) string {
+func getSingleBlockOrientation(name string, topBlock bool, x, y int) string {
 	above := false
 	under := false
 	left := false
 	right := false
-	if WorldMap[x-1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x-1][y].ID]) && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x-1, y) == "sky" || (WorldMap.GetBackBlockName(x-1, y) == "backdirt" && !isBackBlock(name)) {
 		left = true
 	}
-	if WorldMap[x+1][y].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x+1][y].ID]) && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x+1, y) == "sky" || (WorldMap.GetBackBlockName(x+1, y) == "backdirt" && !isBackBlock(name)) {
 		right = true
 	}
-	if WorldMap[x][y-1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y-1].ID]) && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x, y-1) == "sky" || (WorldMap.GetBackBlockName(x, y-1) == "backdirt" && !isBackBlock(name)) {
 		under = true
 	}
-	if WorldMap[x][y+1].ID == NameMap["sky"] || (isBackBlock(NameList[WorldMap[x][y+1].ID]) && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x, y+1) == "sky" || (WorldMap.GetBackBlockName(x, y+1) == "backdirt" && !isBackBlock(name)) {
 		above = true
 	}
 	return getOrientationLetter(left, right, under, above, topBlock)
@@ -278,4 +262,3 @@ func getOrientationLetter(left, right, under, above, topBlock bool) string {
 	}
 	return "NN"
 }
-*/

@@ -33,11 +33,11 @@ func (block *Block) GetMaterial(direction string) *material.Material {
 func (block *Block) CreateOrientations(orientVariation int32) {
 	block.OrientEnabled = true
 	block.OrientVariation = orientVariation
-	for dir, ind := range OrientationsMap {
+	for dir, _ := range OrientationsMap {
 		newM := block.Material
 		newM.AttachTransparency(Engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir)))
 
-		i, _ := strconv.Atoi(OrientationsMap[ind])
+		i, _ := strconv.Atoi(OrientationsMap[dir])
 		block.Orientations[i] = newM
 	}
 }
@@ -45,7 +45,7 @@ func (block *Block) CreateOrientations(orientVariation int32) {
 func loadBlocks() {
 	// Main Blocks
 	Engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt")
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/grass.png", "grass")
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/grass2.png", "grass")
 	Engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone")
 
 	Engine.TextureControl.NewTexture("./assets/blocks/torch.png", "torch")
@@ -261,7 +261,7 @@ func GetBlock(name string) *Block {
 	return BlockMap[name]
 }
 
-var IDMap = map[string]string{
+var NameToID = map[string]string{
 	"sky":            "000",
 	"dirt":           "001",
 	"grass":          "002",
@@ -284,17 +284,35 @@ var IDMap = map[string]string{
 	"torch":          "019",
 }
 
+var IDToName = map[string]string{
+	"000": "sky",
+	"001": "dirt",
+	"002": "grass",
+	"003": "stone",
+	"004": "backdirt",
+	"005": "leaves",
+	"006": "treeRightRoot",
+	"007": "treeLeftRoot",
+	"008": "treeTrunk",
+	"009": "treeBottomRoot",
+	"010": "topGrass1",
+	"011": "topGrass2",
+	"012": "topGrass3",
+	"013": "treeBranchR1",
+	"014": "treeBranchL1",
+	"015": "flower1",
+	"016": "flower2",
+	"017": "flower3",
+	"018": "pebble",
+	"019": "torch",
+}
+
 func GetIDFromName(name string) string {
-	return IDMap[name]
+	return NameToID[name]
 }
 
 func GetNameFromID(id string) string {
-	for name, bid := range IDMap {
-		if bid == id {
-			return name
-		}
-	}
-	return "unknown"
+	return IDToName[id]
 }
 
 var OrientationsMap = map[string]string{
