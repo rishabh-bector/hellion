@@ -134,11 +134,12 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
 	if inputs.LeftMouseButton {
-		//destroyBlock(snapx, snapy)
+		destroyBlock(snapx, snapy)
 	}
 
 	if inputs.RightMouseButton {
-		//placeTorch(snapx, snapy)
+		placeBlock(snapx, snapy, "torch")
+		CreateLightingLimit(snapx, snapy, 0.75, 15)
 	}
 
 	// Player Logic
@@ -180,7 +181,6 @@ func renderWorldInBounds(renderer *cmd.Renderer) {
 				renderer.RenderCopy(&NatureChild, *cpy)
 			}
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				//println(cpy.ID, cpy.Material.GetTexture(), GetBlock(WorldMap.GetBlockName(int(x/BlockSize), int(y/BlockSize))).GetMaterial("NN").GetTexture())
 				renderer.RenderCopy(&WorldChild, *cpy)
 			}
 		}
@@ -225,57 +225,3 @@ func CheckPlayerCollision() (bool, bool, bool, bool) {
 
 	return top, left, bottom, right
 }
-
-/*func placeTorch(x, y int) {
-	if WorldMap[x][y].ID != NameMap["sky"] && WorldMap[x][y].ID != NameMap["backdirt"] {
-		return
-	}
-
-	WorldMap[x][y] = newBlock("torch")
-	WorldMap[x][y].Darkness = 0.8
-	createSingleCopy(x, y)
-	createNewLightSource(x, y)
-}
-
-func destroyTorch(x, y int) {
-	destroyBlock(x, y)
-	RemoveLightingLimit(x, y, 0.9, 50)
-}
-
-func createNewLightSource(x, y int) {
-	CreateLightingLimit(x, y, 0.9, 40)
-}
-
-/*func destroyBlock(x, y int) {
-	if WorldMap[x][y].ID == NameMap["sky"] || WorldMap[x][y].ID == NameMap["backdirt"] {
-		return
-	}
-
-	WorldCopies[x][y] = child.ChildCopy{
-		ID: "00000",
-	}
-	NoCollisionCopies[x][y] = child.ChildCopy{
-		ID: "00000",
-	}
-
-	if y <= HeightMap[x] {
-		WorldMap[x][y] = newBlock("backdirt")
-	} else {
-		WorldMap[x][y] = newBlock("sky")
-	}
-
-	FixLightingAt(x, y)
-
-	fixBlock(x, y)
-
-	fixBlock(x+1, y)
-	fixBlock(x, y+1)
-	fixBlock(x-1, y)
-	fixBlock(x, y-1)
-}
-
-func fixBlock(x, y int) {
-	orientSingleBlock(NameList[WorldMap[x][y].ID], WorldMap[x][y].ID, true, x, y)
-	createSingleExtraBackdirt(x, y)
-	createSingleCopy(x, y)
-}*/

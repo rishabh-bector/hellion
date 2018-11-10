@@ -23,10 +23,6 @@ package main
 // 	"torch":          19,
 // }
 
-import (
-	"math/rand"
-)
-
 type Structure struct {
 	Layout []Building
 
@@ -262,6 +258,7 @@ var structures = []Structure{
 	goblinCamp, goblinFortress,
 }
 
+/*
 func generateStructures() {
 	for _, current := range structures {
 		Startx := rand.Intn(current.Width/2) + current.XBeginning
@@ -288,7 +285,7 @@ func generateStructures() {
 			}
 		}
 	}
-}
+}*/
 
 func fillStructureFloor(startx int, starty int, endx int, endy int) {
 

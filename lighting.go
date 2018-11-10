@@ -44,18 +44,20 @@ func CreateLightingLimit(x, y int, light float32, limit int) {
 func FixLightingAt(x, y int) {
 	maxLight := float32(0)
 	if l := WorldMap.GetDarkness(x+1, y); l > maxLight {
-		maxLight = l
+		maxLight = l - GetLightBlockAmount(x+1, y)
 	}
 	if l := WorldMap.GetDarkness(x, y+1); l > maxLight {
-		maxLight = l
+		maxLight = l - GetLightBlockAmount(x, y+1)
 	}
 	if l := WorldMap.GetDarkness(x-1, y); l > maxLight {
-		maxLight = l
+		maxLight = l - GetLightBlockAmount(x-1, y)
 	}
 	if l := WorldMap.GetDarkness(x, y-1); l > maxLight {
-		maxLight = l
+		maxLight = l - GetLightBlockAmount(x, y-1)
 	}
 	WorldMap.SetDarkness(x, y, maxLight-GetLightBlockAmount(x, y))
+	WorldMap.UpdateBackBlockMaterial(x, y)
+	WorldMap.UpdateWorldBlockMaterial(x, y)
 }
 
 func GetLightBlockAmount(x, y int) float32 {

@@ -77,37 +77,52 @@ func orientBlocks(name string, topBlock bool) {
 
 func orientSingleBlock(name string, topBlock bool, x, y int) {
 	if WorldMap.GetWorldBlockName(x, y) == name {
-		WorldMap.SetWorldBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
+		WorldMap.SetWorldBlockOrientation(x, y, getWorldBlockOrientation(name, topBlock, x, y))
 		WorldMap.UpdateWorldBlockMaterial(x, y)
 	} else if WorldMap.GetBackBlockName(x, y) == name {
-		WorldMap.SetBackBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
+		WorldMap.SetBackBlockOrientation(x, y, getBackBlockOrientation(name, topBlock, x, y))
 		WorldMap.UpdateBackBlockMaterial(x, y)
 	}
 }
 
-func getSingleBlockOrientation(name string, topBlock bool, x, y int) string {
+func getWorldBlockOrientation(name string, topBlock bool, x, y int) string {
 	above := false
 	under := false
 	left := false
 	right := false
-	if (WorldMap.GetWorldBlockName(x-1, y) == "sky" && WorldMap.GetBackBlockName(x-1, y) != "backdirt") ||
-		(WorldMap.GetBackBlockName(x-1, y) == "backdirt" && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x-1, y) == "sky" || (WorldMap.GetBackBlockName(x-1, y) == "backdirt" && WorldMap.GetWorldBlockName(x-1, y) == "sky") {
 		left = true
 	}
-	if (WorldMap.GetWorldBlockName(x+1, y) == "sky" && WorldMap.GetBackBlockName(x+1, y) != "backdirt") ||
-		(WorldMap.GetBackBlockName(x+1, y) == "backdirt" && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x+1, y) == "sky" || (WorldMap.GetBackBlockName(x+1, y) == "backdirt" && WorldMap.GetWorldBlockName(x+1, y) == "sky") {
 		right = true
 	}
-	if (WorldMap.GetWorldBlockName(x, y-1) == "sky" && WorldMap.GetBackBlockName(x, y-1) != "backdirt") ||
-		(WorldMap.GetBackBlockName(x, y-1) == "backdirt" && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x, y-1) == "sky" || (WorldMap.GetBackBlockName(x, y-1) == "backdirt" && WorldMap.GetWorldBlockName(x, y-1) == "sky") {
 		under = true
 	}
-	if (WorldMap.GetWorldBlockName(x, y+1) == "sky" && WorldMap.GetBackBlockName(x, y+1) != "backdirt") ||
-		(WorldMap.GetBackBlockName(x, y+1) == "backdirt" && !isBackBlock(name)) {
+	if WorldMap.GetWorldBlockName(x, y+1) == "sky" || (WorldMap.GetBackBlockName(x, y+1) == "backdirt" && WorldMap.GetWorldBlockName(x, y+1) == "sky") {
 		above = true
 	}
 	return getOrientationLetter(left, right, under, above, topBlock)
+}
 
+func getBackBlockOrientation(name string, topBlock bool, x, y int) string {
+	above := false
+	under := false
+	left := false
+	right := false
+	if WorldMap.GetWorldBlockName(x-1, y) == "sky" && WorldMap.GetBackBlockName(x-1, y) != "backdirt" {
+		left = true
+	}
+	if WorldMap.GetWorldBlockName(x+1, y) == "sky" && WorldMap.GetBackBlockName(x+1, y) != "backdirt" {
+		right = true
+	}
+	if WorldMap.GetWorldBlockName(x, y-1) == "sky" && WorldMap.GetBackBlockName(x, y-1) != "backdirt" {
+		under = true
+	}
+	if WorldMap.GetWorldBlockName(x, y+1) == "sky" && WorldMap.GetBackBlockName(x, y+1) != "backdirt" {
+		above = true
+	}
+	return getOrientationLetter(left, right, under, above, topBlock)
 }
 
 func getOrientationLetter(left, right, under, above, topBlock bool) string {
@@ -160,4 +175,38 @@ func getOrientationLetter(left, right, under, above, topBlock bool) string {
 		return "LT"
 	}
 	return "NN"
+}
+
+func placeBlock(x, y int, block string) {
+	if WorldMap.GetWorldBlockID(x, y) != "00000" {
+		return
+	}
+
+	createWorldBlock(x, y, block)
+}
+
+func destroyBlock(x, y int) {
+	if y > HeightMap[x] || WorldMap.GetWorldBlockID(x, y) == "00000" {
+		return
+	}
+
+	WorldMap.RemoveWorldBlock(x, y)
+	createBackBlock(x, y, "backdirt")
+	orientSingleBlock("backdirt", true, x, y)
+
+	FixLightingAt(x, y)
+
+	fixBlock(x+1, y)
+	fixBlock(x, y+1)
+	fixBlock(x-1, y)
+	fixBlock(x, y-1)
+}
+
+func fixBlock(x, y int) {
+	if WorldMap.GetWorldBlockID(x, y) == "00000" {
+		return
+	}
+	orientSingleBlock(WorldMap.GetWorldBlockName(x, y), true, x, y)
+	createSingleExtraBackdirt(x, y)
+	orientSingleBlock("backdirt", true, x, y)
 }

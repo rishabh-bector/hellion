@@ -340,5 +340,5 @@ func GetOrientationFromID(id string) string {
 			return orientation
 		}
 	}
-	return ""
+	return "NN"
 }
