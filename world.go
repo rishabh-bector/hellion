@@ -1,7 +1,6 @@
 package main
 
 import (
-	"rapidengine/child"
 	"rapidengine/geometry"
 	"rapidengine/material"
 )
@@ -44,108 +43,7 @@ func loadWorldChildren() {
 	CloudChild.AttachMaterial(&cloudMaterial)
 }
 
-func createWorldBlock(x, y int, name string) {
-	WorldMap.AddWorldBlock(x, y, &child.ChildCopy{
-		X:        float32(x * BlockSize),
-		Y:        float32(y * BlockSize),
-		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 0,
-		ID:       GetIDFromName(name) + "00",
-	})
-}
-
-func createBackBlock(x, y int, name string) {
-	WorldMap.AddBackBlock(x, y, &child.ChildCopy{
-		X:        float32(x * BlockSize),
-		Y:        float32(y * BlockSize),
-		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 0,
-		ID:       GetIDFromName(name) + "00",
-	})
-}
-
-func createNatureBlock(x, y int, name string) {
-	WorldMap.AddNatureBlock(x, y, &child.ChildCopy{
-		X:        float32(x * BlockSize),
-		Y:        float32(y * BlockSize),
-		Material: GetBlock(name).GetMaterial("NN"),
-		Darkness: 0,
-		ID:       GetIDFromName(name) + "00",
-	})
-}
-
-/*func createSingleCopy(x, y int) {
-
-	// Back Blocks
-	if isBackBlock(NameList[WorldMap[x][y].ID]) {
-		if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-			NoCollisionCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y * BlockSize),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		} else {
-			NoCollisionCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y * BlockSize),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		}
-		return
-	}
-
-	// Nature Blocks
-	if blockType(NameList[WorldMap[x][y].ID]) == "nature" {
-		if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-			NatureCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y*BlockSize - 10),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		} else {
-			NatureCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y*BlockSize - 10),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		}
-		return
-	}
-
-	// Normal blocks
-	if WorldMap[x][y].ID != NameMap["sky"] {
-
-		// No orientation
-		if WorldMap[x][y].Orientation == "E" || WorldMap[x][y].Orientation == "NN" {
-			WorldCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y * BlockSize),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetMaterial(),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		} else {
-			// Oriented block
-			WorldCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y * BlockSize),
-				Material: GetBlockIndex(WorldMap[x][y].ID).GetOrientMaterial(WorldMap[x][y].Orientation),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       1,
-			}
-		}
-	}
-}*/
-
-/*func createAllExtraBackdirt() {
+func createAllExtraBackdirt() {
 	for x := 2; x < WorldWidth-2; x++ {
 		for y := 2; y < WorldHeight-2; y++ {
 			createSingleExtraBackdirt(x, y)
@@ -154,26 +52,20 @@ func createNatureBlock(x, y int, name string) {
 }
 
 func createSingleExtraBackdirt(x, y int) {
-	orient := WorldMap.GetBlockOrientation(x, y)
-	if orient != "E" && orient != "NN" && WorldMap.GetBlockID(x, y) != "00000" {
-		if WorldMap.GetBlockID(x+1, y) == "00000" ||
-			WorldMap.GetBlockID(x-1, y) == "00000" ||
-			WorldMap.GetBlockID(x, y+1) == "00000" ||
-			WorldMap.GetBlockID(x, y-1) == "00000" {
+	orient := WorldMap.GetWorldBlockOrientation(x, y)
+	if orient != "E" && orient != "NN" && WorldMap.GetWorldBlockID(x, y) != "00000" {
+		if WorldMap.GetWorldBlockID(x+1, y) == "00000" ||
+			WorldMap.GetWorldBlockID(x-1, y) == "00000" ||
+			WorldMap.GetWorldBlockID(x, y+1) == "00000" ||
+			WorldMap.GetWorldBlockID(x, y-1) == "00000" {
 			if y <= HeightMap[x] {
-				updateBackBlock(x, y, "backdirt")
+				createBackBlock(x, y, "backdirt")
 			}
 		} else {
-			NoCollisionCopies[x][y] = child.ChildCopy{
-				X:        float32(x * BlockSize),
-				Y:        float32(y * BlockSize),
-				Material: GetBlockName("backdirt").GetMaterial(),
-				Darkness: WorldMap[x][y].Darkness,
-				ID:       2,
-			}
+			createBackBlock(x, y, "backdirt")
 		}
 	}
-}*/
+}
 
 func orientBlocks(name string, topBlock bool) {
 	for x := 1; x < WorldWidth-1; x++ {
@@ -185,8 +77,11 @@ func orientBlocks(name string, topBlock bool) {
 
 func orientSingleBlock(name string, topBlock bool, x, y int) {
 	if WorldMap.GetWorldBlockName(x, y) == name {
-		WorldMap.SetBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
-		WorldMap.UpdateNodeMaterials(x, y)
+		WorldMap.SetWorldBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
+		WorldMap.UpdateWorldBlockMaterial(x, y)
+	} else if WorldMap.GetBackBlockName(x, y) == name {
+		WorldMap.SetBackBlockOrientation(x, y, getSingleBlockOrientation(name, topBlock, x, y))
+		WorldMap.UpdateBackBlockMaterial(x, y)
 	}
 }
 
@@ -195,16 +90,20 @@ func getSingleBlockOrientation(name string, topBlock bool, x, y int) string {
 	under := false
 	left := false
 	right := false
-	if WorldMap.GetWorldBlockName(x-1, y) == "sky" || (WorldMap.GetBackBlockName(x-1, y) == "backdirt" && !isBackBlock(name)) {
+	if (WorldMap.GetWorldBlockName(x-1, y) == "sky" && WorldMap.GetBackBlockName(x-1, y) != "backdirt") ||
+		(WorldMap.GetBackBlockName(x-1, y) == "backdirt" && !isBackBlock(name)) {
 		left = true
 	}
-	if WorldMap.GetWorldBlockName(x+1, y) == "sky" || (WorldMap.GetBackBlockName(x+1, y) == "backdirt" && !isBackBlock(name)) {
+	if (WorldMap.GetWorldBlockName(x+1, y) == "sky" && WorldMap.GetBackBlockName(x+1, y) != "backdirt") ||
+		(WorldMap.GetBackBlockName(x+1, y) == "backdirt" && !isBackBlock(name)) {
 		right = true
 	}
-	if WorldMap.GetWorldBlockName(x, y-1) == "sky" || (WorldMap.GetBackBlockName(x, y-1) == "backdirt" && !isBackBlock(name)) {
+	if (WorldMap.GetWorldBlockName(x, y-1) == "sky" && WorldMap.GetBackBlockName(x, y-1) != "backdirt") ||
+		(WorldMap.GetBackBlockName(x, y-1) == "backdirt" && !isBackBlock(name)) {
 		under = true
 	}
-	if WorldMap.GetWorldBlockName(x, y+1) == "sky" || (WorldMap.GetBackBlockName(x, y+1) == "backdirt" && !isBackBlock(name)) {
+	if (WorldMap.GetWorldBlockName(x, y+1) == "sky" && WorldMap.GetBackBlockName(x, y+1) != "backdirt") ||
+		(WorldMap.GetBackBlockName(x, y+1) == "backdirt" && !isBackBlock(name)) {
 		above = true
 	}
 	return getOrientationLetter(left, right, under, above, topBlock)

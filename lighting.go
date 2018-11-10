@@ -59,6 +59,9 @@ func FixLightingAt(x, y int) {
 }
 
 func GetLightBlockAmount(x, y int) float32 {
+	if WorldMap.GetBackBlockID(x, y) == "00000" {
+		return GetBlock(WorldMap.GetBackBlockName(x, y)).LightBlock
+	}
 	return GetBlock(WorldMap.GetWorldBlockName(x, y)).LightBlock
 }
 

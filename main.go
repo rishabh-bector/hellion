@@ -36,7 +36,7 @@ func main() {
 	//   Textures
 	//   --------------------------------------------------
 
-	Engine.TextureControl.NewTexture("assets/player/OrcBoss.png", "player")
+	Engine.TextureControl.NewTexture("assets/player/player.png", "player")
 	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back")
 
 	//   --------------------------------------------------
@@ -55,7 +55,7 @@ func main() {
 
 	Player = Engine.NewChild2D()
 	Player.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	Player.AttachPrimitive(geometry.NewRectangle(256, 258, &Config))
+	Player.AttachPrimitive(geometry.NewRectangle(32, 64, &Config))
 	Player.AttachTextureCoordsPrimitive()
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*BlockSize)
@@ -150,10 +150,10 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		Player.VY = 0
 	}
 	if left && Player.VX > 1 {
-		Player.VX = -0.1
+		Player.VX = 0
 	}
 	if right && Player.VX < 1 {
-		Player.VX = 0.1
+		Player.VX = 0
 	}
 	if top && Player.VY > 0 {
 		Player.VY = 0

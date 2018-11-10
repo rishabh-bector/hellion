@@ -68,6 +68,18 @@ func (tree *WorldTree) AddNatureBlock(x, y int, cpy *child.ChildCopy) {
 	tree.blockNodes[x][y].natureBlock = cpy
 }
 
+func (tree *WorldTree) RemoveWorldBlock(x, y int) {
+	tree.blockNodes[x][y].worldBlock = &child.ChildCopy{
+		ID: "00000",
+	}
+}
+
+func (tree *WorldTree) RemoveBackBlock(x, y int) {
+	tree.blockNodes[x][y].backBlock = &child.ChildCopy{
+		ID: "00000",
+	}
+}
+
 //  --------------------------------------------------
 //  Node Retrieval
 //  --------------------------------------------------
@@ -108,11 +120,18 @@ func (tree *WorldTree) GetNatureBlockID(x, y int) string {
 	return tree.blockNodes[x][y].worldBlock.ID
 }
 
-func (tree *WorldTree) GetBlockOrientation(x, y int) string {
+func (tree *WorldTree) GetWorldBlockOrientation(x, y int) string {
 	return GetOrientationFromID(tree.blockNodes[x][y].worldBlock.ID[3:])
 }
 
+func (tree *WorldTree) GetBackBlockOrientation(x, y int) string {
+	return GetOrientationFromID(tree.blockNodes[x][y].backBlock.ID[3:])
+}
+
 func (tree *WorldTree) GetDarkness(x, y int) float32 {
+	if back := tree.blockNodes[x][y].backBlock; back.ID != "00000" {
+		return back.Darkness
+	}
 	return tree.blockNodes[x][y].worldBlock.Darkness
 }
 
@@ -121,16 +140,21 @@ func (tree *WorldTree) GetDarkness(x, y int) float32 {
 //  --------------------------------------------------
 
 // Updates node materials, for when orientations change
-func (tree *WorldTree) UpdateNodeMaterials(x, y int) {
-	tree.blockNodes[x][y].worldBlock.Material = GetBlock(tree.GetWorldBlockName(x, y)).GetMaterial(tree.GetBlockOrientation(x, y))
-	tree.blockNodes[x][y].natureBlock.Material = GetBlock(tree.GetNatureBlockName(x, y)).GetMaterial(tree.GetBlockOrientation(x, y))
-	tree.blockNodes[x][y].backBlock.Material = GetBlock(tree.GetBackBlockName(x, y)).GetMaterial(tree.GetBlockOrientation(x, y))
+func (tree *WorldTree) UpdateWorldBlockMaterial(x, y int) {
+	tree.blockNodes[x][y].worldBlock.Material = GetBlock(tree.GetWorldBlockName(x, y)).GetMaterial(tree.GetWorldBlockOrientation(x, y))
 }
 
-func (tree *WorldTree) SetBlockOrientation(x, y int, orient string) {
+func (tree *WorldTree) UpdateBackBlockMaterial(x, y int) {
+	tree.blockNodes[x][y].backBlock.Material = GetBlock(tree.GetBackBlockName(x, y)).GetMaterial(tree.GetBackBlockOrientation(x, y))
+}
+
+func (tree *WorldTree) UpdateNatureBlockMaterial(x, y int) {
+	tree.blockNodes[x][y].natureBlock.Material = GetBlock(tree.GetNatureBlockName(x, y)).GetMaterial(tree.GetWorldBlockOrientation(x, y))
+}
+
+func (tree *WorldTree) SetWorldBlockOrientation(x, y int, orient string) {
 	tree.blockNodes[x][y].worldBlock.ID = tree.blockNodes[x][y].worldBlock.ID[:3] + OrientationsMap[orient]
 }
-
 func (tree *WorldTree) SetBackBlockOrientation(x, y int, orient string) {
 	tree.blockNodes[x][y].backBlock.ID = tree.blockNodes[x][y].backBlock.ID[:3] + OrientationsMap[orient]
 }
@@ -139,4 +163,38 @@ func (tree *WorldTree) SetDarkness(x, y int, darkness float32) {
 	tree.blockNodes[x][y].worldBlock.Darkness = darkness
 	tree.blockNodes[x][y].backBlock.Darkness = darkness
 	tree.blockNodes[x][y].natureBlock.Darkness = darkness
+}
+
+//  --------------------------------------------------
+//  Block Helpers
+//  --------------------------------------------------
+
+func createWorldBlock(x, y int, name string) {
+	WorldMap.AddWorldBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 0,
+		ID:       GetIDFromName(name) + "00",
+	})
+}
+
+func createBackBlock(x, y int, name string) {
+	WorldMap.AddBackBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 0,
+		ID:       GetIDFromName(name) + "00",
+	})
+}
+
+func createNatureBlock(x, y int, name string) {
+	WorldMap.AddNatureBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 0,
+		ID:       GetIDFromName(name) + "00",
+	})
 }
