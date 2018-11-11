@@ -14,30 +14,26 @@ type WorldBlock struct {
 func loadWorldChildren() {
 	WorldChild = Engine.NewChild2D()
 	WorldChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	WorldChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
-	WorldChild.AttachTextureCoordsPrimitive()
+	WorldChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	WorldChild.EnableCopying()
 	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
 	NoCollisionChild = Engine.NewChild2D()
 	NoCollisionChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	NoCollisionChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
-	NoCollisionChild.AttachTextureCoordsPrimitive()
+	NoCollisionChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NoCollisionChild.EnableCopying()
 
 	NatureChild = Engine.NewChild2D()
 	NatureChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	NatureChild.AttachPrimitive(geometry.NewRectangle(BlockSize, BlockSize, &Config))
-	NatureChild.AttachTextureCoordsPrimitive()
+	NatureChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NatureChild.EnableCopying()
 
 	CloudChild = Engine.NewChild2D()
 	CloudChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	CloudChild.AttachPrimitive(geometry.NewRectangle(300, 145, &Config))
-	CloudChild.AttachTextureCoordsPrimitive()
+	CloudChild.AttachMesh(geometry.NewRectangle(300, 145, &Config))
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
-	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1")
+	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1", "pixel")
 	cloudMaterial = material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
 	cloudMaterial.BecomeTexture(Engine.TextureControl.GetTexture("cloud1"))
 	CloudChild.AttachMaterial(&cloudMaterial)
@@ -181,8 +177,11 @@ func placeBlock(x, y int, block string) {
 	if WorldMap.GetWorldBlockID(x, y) != "00000" {
 		return
 	}
-
-	createWorldBlock(x, y, block)
+	if block == "torch" {
+		createLightBlock(x, y, block)
+	} else {
+		createWorldBlock(x, y, block)
+	}
 }
 
 func destroyBlock(x, y int) {

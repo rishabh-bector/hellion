@@ -27,6 +27,7 @@ type BlockNode struct {
 	worldBlock  *child.ChildCopy
 	backBlock   *child.ChildCopy
 	natureBlock *child.ChildCopy
+	lightBlock  *child.ChildCopy
 }
 
 // NewWorldTree returns an empty WorldTree
@@ -41,6 +42,9 @@ func NewWorldTree() WorldTree {
 				ID: "00000",
 			})
 			w.AddNatureBlock(x, y, &child.ChildCopy{
+				ID: "00000",
+			})
+			w.AddLightBlock(x, y, &child.ChildCopy{
 				ID: "00000",
 			})
 		}
@@ -66,6 +70,10 @@ func (tree *WorldTree) AddBackBlock(x, y int, cpy *child.ChildCopy) {
 
 func (tree *WorldTree) AddNatureBlock(x, y int, cpy *child.ChildCopy) {
 	tree.blockNodes[x][y].natureBlock = cpy
+}
+
+func (tree *WorldTree) AddLightBlock(x, y int, cpy *child.ChildCopy) {
+	tree.blockNodes[x][y].lightBlock = cpy
 }
 
 func (tree *WorldTree) RemoveWorldBlock(x, y int) {
@@ -94,6 +102,10 @@ func (tree *WorldTree) GetBackBlock(x, y int) *child.ChildCopy {
 
 func (tree *WorldTree) GetNatureBlock(x, y int) *child.ChildCopy {
 	return tree.blockNodes[x][y].natureBlock
+}
+
+func (tree *WorldTree) GetLightBlock(x, y int) *child.ChildCopy {
+	return tree.blockNodes[x][y].lightBlock
 }
 
 func (tree *WorldTree) GetWorldBlockName(x, y int) string {
@@ -195,6 +207,16 @@ func createNatureBlock(x, y int, name string) {
 		Y:        float32(y * BlockSize),
 		Material: GetBlock(name).GetMaterial("NN"),
 		Darkness: 0,
+		ID:       GetIDFromName(name) + "00",
+	})
+}
+
+func createLightBlock(x, y int, name string) {
+	WorldMap.AddLightBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y * BlockSize),
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 0.8,
 		ID:       GetIDFromName(name) + "00",
 	})
 }

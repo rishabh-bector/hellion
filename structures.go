@@ -26,7 +26,7 @@ package main
 type Structure struct {
 	Layout []Building
 
-	PlaceMethod string // fill, mesh, hover, pillars
+	PlaceMethod string // fill, primitive, hover, pillars
 
 	XBeginning int
 	XEnd       int
@@ -88,7 +88,7 @@ var goblinCamp = Structure{
 		goblinCampArcherTower,
 		goblinCampHall,
 	},
-	PlaceMethod: "mesh",
+	PlaceMethod: "primitive",
 	XBeginning:  300,
 	XEnd:        520,
 	Width:       60,
@@ -263,7 +263,7 @@ func generateStructures() {
 	for _, current := range structures {
 		Startx := rand.Intn(current.Width/2) + current.XBeginning
 		currentX := Startx
-		if current.PlaceMethod == "mesh" {
+		if current.PlaceMethod == "primitive" {
 			for i, building := range current.Layout {
 				if i != 0 {
 					currentX += current.Spacing[i]

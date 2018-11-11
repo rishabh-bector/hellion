@@ -25,7 +25,7 @@ func main() {
 	Config.ShowFPS = true
 	Config.FullScreen = false
 	Config.VSync = false
-	Engine = cmd.NewEngine(Config, render)
+	Engine = cmd.NewEngine(&Config, render)
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	Engine.Renderer.MainCamera.SetPosition(100, 100, 0)
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
@@ -36,8 +36,8 @@ func main() {
 	//   Textures
 	//   --------------------------------------------------
 
-	Engine.TextureControl.NewTexture("assets/player/player.png", "player")
-	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back")
+	Engine.TextureControl.NewTexture("assets/player/player.png", "player", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back", "pixel")
 
 	//   --------------------------------------------------
 	//   Materials
@@ -55,16 +55,14 @@ func main() {
 
 	Player = Engine.NewChild2D()
 	Player.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	Player.AttachPrimitive(geometry.NewRectangle(32, 64, &Config))
-	Player.AttachTextureCoordsPrimitive()
+	Player.AttachMesh(geometry.NewRectangle(32, 64, &Config))
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*BlockSize)
 	Player.Gravity = 0
 
 	SkyChild = Engine.NewChild2D()
 	SkyChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
-	SkyChild.AttachPrimitive(geometry.NewRectangle(4000, 1100, &Config))
-	SkyChild.AttachTextureCoordsPrimitive()
+	SkyChild.AttachMesh(geometry.NewRectangle(4000, 1100, &Config))
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
 	BlockSelect = Engine.NewChild2D()
@@ -74,7 +72,7 @@ func main() {
 	m.BecomeColor([]float32{0.5, 0.5, 0.5, 0.5})
 
 	BlockSelect.AttachMaterial(&m)
-	BlockSelect.AttachPrimitive(geometry.NewRectangle(32, 32, &Config))
+	BlockSelect.AttachMesh(geometry.NewRectangle(32, 32, &Config))
 
 	//   --------------------------------------------------
 	//   World Gen
@@ -138,8 +136,10 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 
 	if inputs.RightMouseButton {
-		placeBlock(snapx, snapy, "torch")
-		CreateLightingLimit(snapx, snapy, 0.75, 15)
+		if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
+			placeBlock(snapx, snapy, "torch")
+			CreateLightingLimit(snapx, snapy, 0.75, 15)
+		}
 	}
 
 	// Player Logic
@@ -182,6 +182,9 @@ func renderWorldInBounds(renderer *cmd.Renderer) {
 			}
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
 				renderer.RenderCopy(&WorldChild, *cpy)
+			}
+			if cpy := WorldMap.GetLightBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(&NoCollisionChild, *cpy)
 			}
 		}
 	}
