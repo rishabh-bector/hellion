@@ -144,7 +144,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	// Player Logic
 	movePlayer(inputs.Keys)
-	Player.VY -= 1.1
+	Player.VY -= 1.05
 
 	top, left, bottom, right := CheckPlayerCollision()
 	if bottom && Player.VY < 0 {
