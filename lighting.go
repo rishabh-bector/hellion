@@ -70,7 +70,7 @@ func GetLightBlockAmount(x, y int) float32 {
 func IsValidPosition(x, y int) bool {
 	if x > 0 && x < WorldWidth {
 		if y > 0 && y < WorldHeight {
-			if HeightMap[x]+10 < y {
+			if HeightMap[x]+100 < y {
 				return false
 			}
 			return true

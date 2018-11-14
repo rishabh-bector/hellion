@@ -195,9 +195,9 @@ func movePlayer(keys map[string]bool) {
 		Player.VY = 20
 	}
 	if keys["a"] {
-		Player.VX = 10
+		Player.VX = 100
 	} else if keys["d"] {
-		Player.VX = -10
+		Player.VX = -100
 	} else {
 		Player.VX = 0
 	}

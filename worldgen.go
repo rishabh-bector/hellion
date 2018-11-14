@@ -48,6 +48,9 @@ func generateWorldTree() {
 	// Place flowers and pebbles above grass
 	//generateNature()
 
+	// Generate structure
+	generateStructures()
+
 	// Fix the orientation of blocks in the world
 	orientBlocks("dirt", true)
 	orientBlocks("grass", true)

@@ -1,8 +1,10 @@
 package main
 
+import "math/rand"
+
 // NameMap = map[string]int{
 // 	"sky":            0,
-// 	"dirt":           3,
+// 	"dirt":           1,
 // 	"grass":          2,
 // 	"stone":          3,
 // 	"backdirt":       4,
@@ -26,7 +28,7 @@ package main
 type Structure struct {
 	Layout []Building
 
-	PlaceMethod string // fill, primitive, hover, pillars
+	PlaceMethod string // fill, mesh, hover, pillars
 
 	XBeginning int
 	XEnd       int
@@ -48,8 +50,14 @@ var goblinCampArcherTower = Building{
 		{3, 4, 0, 0, 0, 0, 4, 3},
 		{0, 3, 4, 4, 4, 4, 3, 0},
 		{0, 0, 3, 3, 3, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
+		{0, 0, 3, 0, 0, 3, 0, 0},
 	},
-	FillType: "stilts",
+	FillType: "none",
 }
 
 var goblinCampBarracks = Building{
@@ -88,7 +96,7 @@ var goblinCamp = Structure{
 		goblinCampArcherTower,
 		goblinCampHall,
 	},
-	PlaceMethod: "primitive",
+	PlaceMethod: "mesh",
 	XBeginning:  300,
 	XEnd:        520,
 	Width:       60,
@@ -109,7 +117,7 @@ var goblinFortressArcherTowerSmall = Building{
 		{0, 0, 3, 4, 4, 3, 0, 0},
 		{0, 0, 3, 4, 4, 3, 0, 0},
 	},
-	FillType: "stilts",
+	FillType: "none",
 }
 
 var goblinFortressArcherTowerMedium = Building{
@@ -129,7 +137,7 @@ var goblinFortressArcherTowerMedium = Building{
 		{0, 0, 0, 3, 4, 4, 4, 3, 0, 0, 0},
 		{0, 0, 0, 3, 4, 4, 4, 3, 0, 0, 0},
 	},
-	FillType: "stilts",
+	FillType: "none",
 }
 
 var goblinFortressArcherTowerLarge = Building{
@@ -159,7 +167,7 @@ var goblinFortressArcherTowerLarge = Building{
 		{0, 0, 0, 0, 3, 4, 4, 4, 3, 0, 0, 0, 0},
 		{0, 0, 0, 0, 3, 4, 4, 4, 3, 0, 0, 0, 0},
 	},
-	FillType: "stilts",
+	FillType: "none",
 }
 
 var goblinFortressTower = Building{
@@ -247,7 +255,7 @@ var goblinFortress = Structure{
 		goblinFortressTower,
 		goblinFortressBarracks,
 	},
-	PlaceMethod: "pillars",
+	PlaceMethod: "mesh",
 	XBeginning:  650,
 	XEnd:        840,
 	Width:       120,
@@ -258,34 +266,37 @@ var structures = []Structure{
 	goblinCamp, goblinFortress,
 }
 
-/*
 func generateStructures() {
 	for _, current := range structures {
 		Startx := rand.Intn(current.Width/2) + current.XBeginning
 		currentX := Startx
-		if current.PlaceMethod == "primitive" {
+		if current.PlaceMethod == "mesh" {
 			for i, building := range current.Layout {
 				if i != 0 {
-					currentX += current.Spacing[i]
+					currentX += current.Spacing[i-1] + 10
 				}
 				lowestY := HeightMap[currentX]
-				for x := Startx; x < Startx+len(building.Layout[0]); x++ {
+				for x := currentX; x < currentX+len(building.Layout[0]); x++ {
 					if HeightMap[x] < lowestY {
 						lowestY = HeightMap[x]
 					}
 				}
-				for x := 0; x < len(building.Layout); x++ {
-					for y := 0; y < len(building.Layout[x]); x++ {
-						if WorldMap[currentX+x][HeightMap[currentX+x]+y].ID == 0 {
-							buildingBlock := building.Layout[x][y]
-							WorldMap[currentX+x][HeightMap[currentX+x]+y] = WorldBlock{ID: buildingBlock, Orientation: "E", Darkness: 0}
+
+				height := len(building.Layout)
+
+				for y := 0; y < height; y++ {
+					for x := 0; x < len(building.Layout[y]); x++ {
+						if WorldMap.GetWorldBlockID(currentX+x, lowestY+(height-y)) == "00000" {
+							createWorldBlock(currentX+x, lowestY+(height-y), GetBlockName(building.Layout[y][x]))
 						}
 					}
 				}
+
+				currentX += len(building.Layout)
 			}
 		}
 	}
-}*/
+}
 
 func fillStructureFloor(startx int, starty int, endx int, endy int) {
 

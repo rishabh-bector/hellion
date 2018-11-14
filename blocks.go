@@ -261,6 +261,26 @@ func GetBlock(name string) *Block {
 	return BlockMap[name]
 }
 
+func GetBlockName(id int) string {
+	if id == 0 {
+		return "sky"
+	}
+	if id == 3 {
+		return "stone"
+	}
+	if id == 4 {
+		return "backdirt"
+	}
+	i := 0
+	for n, _ := range NameToID {
+		if i == id {
+			return n
+		}
+		i++
+	}
+	return "sky"
+}
+
 var NameToID = map[string]string{
 	"sky":            "000",
 	"dirt":           "001",
