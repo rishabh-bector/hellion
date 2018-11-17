@@ -9,33 +9,32 @@ type WorldBlock struct {
 	ID          int
 	Orientation string
 	Darkness    float32
-	
 }
 
 func loadWorldChildren() {
 	WorldChild = Engine.NewChild2D()
-	WorldChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	WorldChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	WorldChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	WorldChild.EnableCopying()
 	WorldChild.AttachCollider(0, 0, BlockSize, BlockSize)
 
 	NoCollisionChild = Engine.NewChild2D()
-	NoCollisionChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	NoCollisionChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	NoCollisionChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NoCollisionChild.EnableCopying()
 
 	NatureChild = Engine.NewChild2D()
-	NatureChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	NatureChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	NatureChild.AttachMesh(geometry.NewRectangle(BlockSize, BlockSize, &Config))
 	NatureChild.EnableCopying()
 
 	CloudChild = Engine.NewChild2D()
-	CloudChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	CloudChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	CloudChild.AttachMesh(geometry.NewRectangle(300, 145, &Config))
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
 	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1", "pixel")
-	cloudMaterial = material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	cloudMaterial = material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	cloudMaterial.BecomeTexture(Engine.TextureControl.GetTexture("cloud1"))
 	CloudChild.AttachMaterial(&cloudMaterial)
 }
@@ -186,7 +185,7 @@ func placeBlock(x, y int, block string) {
 }
 
 func destroyBlock(x, y int) {
-	if y > HeightMap[x] || WorldMap.GetWorldBlockID(x, y) == "00000" {
+	if WorldMap.GetWorldBlockID(x, y) == "00000" {
 		return
 	}
 

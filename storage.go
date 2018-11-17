@@ -145,8 +145,10 @@ func (tree *WorldTree) GetBackBlockOrientation(x, y int) string {
 }
 
 func (tree *WorldTree) GetDarkness(x, y int) float32 {
-	if back := tree.blockNodes[x][y].backBlock; back.ID != "00000" {
-		return back.Darkness
+	if tree.blockNodes[x][y].worldBlock.ID == "00000" {
+		if back := tree.blockNodes[x][y].backBlock; back.ID != "00000" {
+			return back.Darkness
+		}
 	}
 	return tree.blockNodes[x][y].worldBlock.Darkness
 }

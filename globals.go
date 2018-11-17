@@ -43,23 +43,34 @@ var l lighting.PointLight
 
 var Seed = int64(0)
 
-const WorldHeight = 2000
+// Size
 const WorldWidth = 3000
+const WorldHeight = 2000
 const BlockSize = 32
 
+// Height
 const Flatness = 0.25
 const GrassMinimum = 1500
 
-const CaveNoiseScalar = 30
-const CaveNoiseThreshold = 0.75
+// Cave generation
+const CaveStartingThreshold = 0.27
+const CaveEndingThreshold = 0.4
+const CaveThresholdDelta = 0.002
 
+const CaveIterations = 5
+const CaveBirthLimit = 4
+const CaveDeathLimit = 2
+
+// Stone generation
 const StoneFrequencyDelta = 0.001
-const StoneStartingFrequency = 0.3
-const StoneEndingFrequency = 0.7
+const StoneStartingFrequency = 0.32
+const StoneEndingFrequency = 0.77
 const StoneTopDeviation = 10
 
+// Data
 var WorldMap WorldTree
 var HeightMap [WorldWidth]int
+var CaveMap [][]bool
 
 //  --------------------------------------------------
 //  Data

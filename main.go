@@ -6,7 +6,6 @@ import (
 	"rapidengine/cmd"
 	"rapidengine/geometry"
 	"rapidengine/input"
-	"rapidengine/lighting"
 	"rapidengine/material"
 	"runtime"
 )
@@ -45,10 +44,10 @@ func main() {
 	//   Materials
 	//   --------------------------------------------------
 
-	playerMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	playerMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	playerMaterial.BecomeTexture(Engine.TextureControl.GetTexture("player"))
 
-	backgroundMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	backgroundMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	backgroundMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
 
 	//   --------------------------------------------------
@@ -56,14 +55,14 @@ func main() {
 	//   --------------------------------------------------
 
 	Player = Engine.NewChild2D()
-	Player.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	Player.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	Player.AttachMesh(geometry.NewRectangle(32, 64, &Config))
 	Player.AttachMaterial(&playerMaterial)
 	Player.SetPosition(3000, 1000*BlockSize)
 	Player.Gravity = 0
 
 	SkyChild = Engine.NewChild2D()
-	SkyChild.AttachShader(Engine.ShaderControl.GetShader("colorLighting"))
+	SkyChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
 	SkyChild.AttachMesh(geometry.NewRectangle(4000, 1100, &Config))
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
@@ -84,22 +83,9 @@ func main() {
 	generateWorldTree()
 	Engine.Logger.Info("World Complete")
 
-	l = lighting.NewPointLight(
-		Engine.ShaderControl.GetShader("colorLighting"),
-		[]float32{0, 0, 0},
-		[]float32{0.9, 0.9, 0.9},
-		[]float32{0, 0, 0},
-		//1.0, -300, 299.8,
-		1.0, -2, 1.9,
-		//1.0, 0.5, 0.1,
-	)
-	l.SetPosition([]float32{0, 0, 1})
-
 	//   --------------------------------------------------
 	//   Instancing
 	//   --------------------------------------------------
-
-	Engine.InstanceLight(&l)
 
 	Engine.Instance(&SkyChild)
 	Engine.Instance(&CloudChild)
@@ -107,10 +93,8 @@ func main() {
 	Engine.Instance(&NatureChild)
 	Engine.Instance(&WorldChild)
 	Engine.Instance(&Player)
-
 	Engine.Instance(&BlockSelect)
 
-	Engine.EnableLighting()
 	Engine.Initialize()
 	Engine.StartRenderer()
 	<-Engine.Done()
@@ -140,7 +124,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	if inputs.RightMouseButton {
 		if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
 			placeBlock(snapx, snapy, "torch")
-			CreateLightingLimit(snapx, snapy, 0.75, 15)
+			CreateLightingLimit(snapx, snapy, 0.65, 15)
 		}
 	}
 

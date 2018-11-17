@@ -287,7 +287,11 @@ func generateStructures() {
 				for y := 0; y < height; y++ {
 					for x := 0; x < len(building.Layout[y]); x++ {
 						if WorldMap.GetWorldBlockID(currentX+x, lowestY+(height-y)) == "00000" {
-							createWorldBlock(currentX+x, lowestY+(height-y), GetBlockName(building.Layout[y][x]))
+							if bname := GetBlockName(building.Layout[y][x]); bname == "backdirt" {
+								createBackBlock(currentX+x, lowestY+(height-y), bname)
+							} else {
+								createWorldBlock(currentX+x, lowestY+(height-y), bname)
+							}
 						}
 					}
 				}

@@ -9,6 +9,7 @@ import (
 )
 
 func generateWorldTree() {
+	Engine.Logger.Info("Loading blocks...")
 	// Make sure all blocks are loaded
 	loadBlocks()
 
@@ -21,36 +22,43 @@ func generateWorldTree() {
 	// Create a blank world tree
 	WorldMap = NewWorldTree()
 
+	Engine.Logger.Info("Placing dirt...")
 	// Generate heightmap and place grass
 	generateHeightMap()
 
 	// Fill everything underneath grass with dirt
 	generateDirt()
 
+	Engine.Logger.Info("Placing stone...")
 	// Generate stone based on height
 	generateStone()
 
 	// Clean up stone above ground
 	cleanStone()
 
+	Engine.Logger.Info("Generating caves...")
 	// Generate caves
-	//generateCaves()
+	generateCaves()
 
 	// Clean back dirt
 	cleanBackDirt()
 
+	Engine.Logger.Info("Growing grass..")
 	// Put grass and some top grass on dirt with air above it
 	growGrass()
 
+	Engine.Logger.Info("Generating nature...")
 	// Create clouds
 	generateClouds()
 
 	// Place flowers and pebbles above grass
 	generateNature()
 
+	Engine.Logger.Info("Generating structures...")
 	// Generate structure
 	generateStructures()
 
+	Engine.Logger.Info("Orienting blocks...")
 	// Fix the orientation of blocks in the world
 	orientBlocks("dirt", true)
 	orientBlocks("grass", true)
@@ -61,6 +69,7 @@ func generateWorldTree() {
 	createAllExtraBackdirt()
 	orientBlocks("backdirt", true)
 
+	Engine.Logger.Info("Creating light...")
 	// Light up all blocks
 	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
 
@@ -76,6 +85,7 @@ func generateWorldTree() {
 //  --------------------------------------------------
 
 func generateHeightMap() {
+	randomizeSeed()
 	gen := procedural.NewSimplexGenerator(0.001, 1, 0.5, 8, Seed)
 
 	for x := 0; x < WorldWidth; x++ {
@@ -98,6 +108,7 @@ func generateDirt() {
 }
 
 func generateStone() {
+	randomizeSeed()
 	gen := procedural.NewSimplexGenerator(10, 1, 0.5, 5, Seed)
 
 	for x := 0; x < WorldWidth; x++ {
@@ -132,18 +143,97 @@ func cleanStone() {
 	}
 }
 
-/*func generateCaves() {
-	Generator = perlin.NewPerlin(1.5, 2, 3, int64(rand.Int()))
+func generateCaves() {
+	randomizeSeed()
+
+	CaveMap = make([][]bool, WorldWidth)
+	for x := range CaveMap {
+		CaveMap[x] = make([]bool, WorldHeight)
+	}
+
+	// Create caves with varying simplex noise
+	gen := procedural.NewSimplexGenerator(100, 1, 0.5, 8, Seed)
 	for x := 0; x < WorldWidth; x++ {
-		for y := 0; y < WorldHeight; y++ {
-			n := noise2D(CaveNoiseScalar*float64(x)/WorldWidth*2, CaveNoiseScalar*float64(y)/WorldHeight*4)
-			if n > CaveNoiseThreshold && y <= HeightMap[x] {
-				WorldMap.RemoveWorldBlock(x, y)
-				createBackBlock(x, y, "backdirt")
+		thresh := float64(CaveStartingThreshold)
+		for y := HeightMap[x]; y >= 0; y-- {
+			n := gen.Noise2D(float64(x)/3000, float64(y)/3000)
+
+			if n < thresh {
+				CaveMap[x][y] = true
+			}
+
+			thresh += CaveThresholdDelta
+			if thresh > CaveEndingThreshold {
+				thresh = CaveEndingThreshold
 			}
 		}
 	}
-}*/
+
+	// Do cellular automata simulations
+	for i := 0; i < CaveIterations; i++ {
+		caveSimulationStep()
+	}
+
+	// Translate to worldmap
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			if CaveMap[x][y] {
+				if y <= HeightMap[x] {
+					WorldMap.RemoveWorldBlock(x, y)
+					createBackBlock(x, y, "backdirt")
+				}
+			}
+		}
+	}
+}
+
+func caveSimulationStep() {
+	newMap := make([][]bool, WorldWidth)
+	for x := range newMap {
+		newMap[x] = make([]bool, WorldHeight)
+	}
+
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			nbs := getAliveNeighbors(x, y)
+
+			if CaveMap[x][y] {
+				if nbs < CaveDeathLimit {
+					newMap[x][y] = false
+				} else {
+					newMap[x][y] = true
+				}
+			} else {
+				if nbs > CaveBirthLimit {
+					newMap[x][y] = true
+				} else {
+					newMap[x][y] = false
+				}
+			}
+		}
+	}
+
+	CaveMap = newMap
+}
+
+func getAliveNeighbors(x, y int) int {
+	count := 0
+	for i := -1; i < 2; i++ {
+		for j := -1; j < 2; j++ {
+			nx := x + i
+			ny := y + j
+
+			if i == 0 && j == 0 {
+
+			} else if nx < 0 || nx >= WorldWidth || ny < 0 || ny >= WorldHeight {
+				count++
+			} else if CaveMap[nx][ny] {
+				count++
+			}
+		}
+	}
+	return count
+}
 
 func cleanBackDirt() {
 
@@ -231,15 +321,6 @@ func isBackBlock(name string) bool {
 	}
 	return false
 }
-
-/*func blockType(name string) string {
-	for _, green := range natureBlocks {
-		if NameMap[name] == NameMap[green] {
-			return "nature"
-		}
-	}
-	return "shit spelling"
-}*/
 
 func randomizeSeed() {
 	Seed = time.Now().UTC().UnixNano()

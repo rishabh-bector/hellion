@@ -108,64 +108,64 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "1AN", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "1NA", "pixel")
 
-	skyMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	skyMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	skyMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
 
-	dirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	dirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	dirtMaterial.BecomeTexture(Engine.TextureControl.GetTexture("dirt"))
 
-	stoneMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	stoneMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	stoneMaterial.BecomeTexture(Engine.TextureControl.GetTexture("stone"))
 
-	grassMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	grassMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	grassMaterial.BecomeTexture(Engine.TextureControl.GetTexture("grass"))
 
-	backDirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	backDirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	backDirtMaterial.BecomeTexture(Engine.TextureControl.GetTexture("backdirt"))
 
-	leavesMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	leavesMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	leavesMaterial.BecomeTexture(Engine.TextureControl.GetTexture("leaves"))
 
-	treeRightRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeRightRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeRightRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeRightRoot"))
 
-	treeLeftRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeLeftRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeLeftRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeLeftRoot"))
 
-	treeTrunkMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeTrunkMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeTrunkMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeTrunk"))
 
-	treeBottomRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeBottomRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeBottomRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeBottomRoot"))
 
-	topGrass1Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	topGrass1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	topGrass1Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass1"))
 
-	topGrass2Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	topGrass2Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	topGrass2Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass2"))
 
-	topGrass3Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	topGrass3Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	topGrass3Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass3"))
 
-	treeBranchR1Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeBranchR1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeBranchR1Material.BecomeTexture(Engine.TextureControl.GetTexture("treeBranchR1"))
 
-	treeBranchL1Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	treeBranchL1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	treeBranchL1Material.BecomeTexture(Engine.TextureControl.GetTexture("treeBranchL1"))
 
-	flower1Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	flower1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	flower1Material.BecomeTexture(Engine.TextureControl.GetTexture("flower1"))
 
-	flower2Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	flower2Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	flower2Material.BecomeTexture(Engine.TextureControl.GetTexture("flower2"))
 
-	flower3Material := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	flower3Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	flower3Material.BecomeTexture(Engine.TextureControl.GetTexture("flower3"))
 
-	pebbleMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	pebbleMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	pebbleMaterial.BecomeTexture(Engine.TextureControl.GetTexture("pebble"))
 
-	torchMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("colorLighting"), &Config)
+	torchMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
 	torchMaterial.BecomeTexture(Engine.TextureControl.GetTexture("torch"))
 
 	BlockMap = make(map[string]*Block)
