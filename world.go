@@ -9,6 +9,7 @@ type WorldBlock struct {
 	ID          int
 	Orientation string
 	Darkness    float32
+	
 }
 
 func loadWorldChildren() {

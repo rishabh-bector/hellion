@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"rapidengine/child"
 	"rapidengine/procedural"
@@ -45,7 +46,7 @@ func generateWorldTree() {
 	generateClouds()
 
 	// Place flowers and pebbles above grass
-	//generateNature()
+	generateNature()
 
 	// Generate structure
 	generateStructures()
@@ -174,48 +175,49 @@ func generateClouds() {
 	}
 }
 
-/*func generateNature() {
+func generateNature() {
 	for x := 1; x < WorldWidth-1; x++ {
-		if WorldMap[x][HeightMap[x]].ID == NameMap["grass"] && (WorldMap[x][HeightMap[x]+1].ID == NameMap["sky"] || WorldMap[x][HeightMap[x]+1].ID == NameMap["backdirt"]) {
+		if WorldMap.GetWorldBlockName(x, HeightMap[x]) == "grass" && WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "sky" || WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "backdirt" {
 			natureRand := rand.Intn(16)
-			if natureRand == 15 && WorldMap[x-1][HeightMap[x]+2].ID != NameMap["treeTrunk"] {
-				hardAddCopy(x, HeightMap[x]+1, "treeTrunk", "nature", 0.9)
+			if natureRand == 15 && WorldMap.GetWorldBlockName(x-1, HeightMap[x]+2) != "treetrunk" {
+				createNatureBlock(x, HeightMap[x]+1, "treeBottomRoot")
 				height := 4 + rand.Intn(8)
 				for i := 0; i < height; i++ {
 					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						WorldMap[x-1][HeightMap[x]+i+2] = newBlock("treeBranchL1")
+						createNatureBlock(x-1, HeightMap[x]+i+2, "treeBranchL1")
 					}
 					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						WorldMap[x+1][HeightMap[x]+i+2] = newBlock("treeBranchR1")
+						createNatureBlock(x+1, HeightMap[x]+i+2, "treeBranchR1")
 					}
-					WorldMap[x][HeightMap[x]+2+i] = newBlock("treeTrunk")
+					createNatureBlock(x, HeightMap[x]+i+2, "treeTrunk")
 				}
-				WorldMap[x-1][HeightMap[x]+height+1] = newBlock("leaves") // TL
-				WorldMap[x][HeightMap[x]+height+1] = newBlock("leaves")   // TM
-				WorldMap[x+1][HeightMap[x]+height+1] = newBlock("leaves") // TR
-				WorldMap[x-1][HeightMap[x]+height] = newBlock("leaves")   // ML
-				WorldMap[x][HeightMap[x]+height] = newBlock("leaves")     // MM
-				WorldMap[x+1][HeightMap[x]+height] = newBlock("leaves")   // MR
-				WorldMap[x-1][HeightMap[x]+height-1] = newBlock("leaves") //BL
-				WorldMap[x][HeightMap[x]+height-1] = newBlock("leaves")   // BM
-				WorldMap[x+1][HeightMap[x]+height-1] = newBlock("leaves") //BL
+
+				createNatureBlock(x-1, HeightMap[x]+height+1, "leaves") // TL
+				createNatureBlock(x, HeightMap[x]+height+1, "leaves")   // TM
+				createNatureBlock(x+1, HeightMap[x]+height+1, "leaves") // TR
+				createNatureBlock(x-1, HeightMap[x]+height, "leaves")   // ML
+				createNatureBlock(x, HeightMap[x]+height, "leaves")     // MM
+				createNatureBlock(x+1, HeightMap[x]+height, "leaves")   // MR
+				createNatureBlock(x-1, HeightMap[x]+height-1, "leaves") //BL
+				createNatureBlock(x, HeightMap[x]+height-1, "leaves")   // BM
+				createNatureBlock(x+1, HeightMap[x]+height-1, "leaves") //BL
 			} else if natureRand > 13 {
 				floraRand := rand.Intn(4) + 1
 				floraType := fmt.Sprintf("flower%d", floraRand)
 				if floraRand != 4 {
-					hardAddCopy(x, HeightMap[x]+1, floraType, "nature", 1)
+					createNatureBlock(x, HeightMap[x]+1, floraType)
 				} else {
-					hardAddCopy(x, HeightMap[x]+1, "pebble", "nature", 1)
+					createNatureBlock(x, HeightMap[x]+1, "pebble")
 				}
 			} else if natureRand > 9 {
 				grassRand := rand.Intn(3) + 1
 				grassType := fmt.Sprintf("topGrass%d", grassRand)
-				hardAddCopy(x, HeightMap[x]+1, grassType, "nature", 1)
+				createNatureBlock(x, HeightMap[x]+1, grassType)
 			}
 		}
 	}
 
-}*/
+}
 
 //  --------------------------------------------------
 //  World Generation Helpers
