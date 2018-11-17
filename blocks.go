@@ -11,6 +11,8 @@ var BlockMap map[string]*Block
 type Block struct {
 	Material material.Material
 
+	SaveColor [3]int
+
 	// Block orientations (16 possible):
 	// First character - Left/Right (L/R)
 	// Second character - Top/Bottom (T/B)
@@ -171,82 +173,102 @@ func loadBlocks() {
 		"sky": &Block{
 			Material:   skyMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"dirt": &Block{
 			Material:   dirtMaterial,
 			LightBlock: 0.1,
+			SaveColor:  [3]int{112, 85, 74},
 		},
 		"grass": &Block{
 			Material:   grassMaterial,
 			LightBlock: 0.1,
+			SaveColor:  [3]int{115, 173, 87},
 		},
 		"stone": &Block{
 			Material:   stoneMaterial,
 			LightBlock: 0.15,
+			SaveColor:  [3]int{116, 116, 116},
 		},
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
 			LightBlock: 0.05,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"leaves": &Block{
 			Material:   leavesMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeRightRoot": &Block{
 			Material:   treeRightRootMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeLeftRoot": &Block{
 			Material:   treeLeftRootMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeTrunk": &Block{
 			Material:   treeTrunkMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeBottomRoot": &Block{
 			Material:   treeBottomRootMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"topGrass1": &Block{
 			Material:   topGrass1Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"topGrass2": &Block{
 			Material:   topGrass2Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"topGrass3": &Block{
 			Material:   topGrass3Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeBranchR1": &Block{
 			Material:   treeBranchR1Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"treeBranchL1": &Block{
 			Material:   treeBranchL1Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"flower1": &Block{
 			Material:   flower1Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"flower2": &Block{
 			Material:   flower2Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"flower3": &Block{
 			Material:   flower3Material,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"pebble": &Block{
 			Material:   pebbleMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 		"torch": &Block{
 			Material:   torchMaterial,
 			LightBlock: 0,
+			SaveColor:  [3]int{107, 185, 240},
 		},
 	}
 

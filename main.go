@@ -22,9 +22,11 @@ func main() {
 	}
 
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
-	Config.ShowFPS = true
-	Config.FullScreen = false
+	Config.ShowFPS = false
+	Config.FullScreen = true
+	Config.GammaCorrection = false
 	Config.VSync = false
+	Config.Profiling = false
 	Engine = cmd.NewEngine(&Config, render)
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	Engine.Renderer.MainCamera.SetPosition(100, 100, 0)
@@ -69,7 +71,7 @@ func main() {
 	BlockSelect.AttachShader(Engine.ShaderControl.GetShader("color"))
 
 	m := material.NewMaterial(Engine.ShaderControl.GetShader("color"), &Config)
-	m.BecomeColor([]float32{0.5, 0.5, 0.5, 0.5})
+	m.BecomeColor([3]float32{200, 200, 200})
 
 	BlockSelect.AttachMaterial(&m)
 	BlockSelect.AttachMesh(geometry.NewRectangle(32, 32, &Config))
@@ -78,9 +80,9 @@ func main() {
 	//   World Gen
 	//   --------------------------------------------------
 
-	Engine.Config.Logger.Info("Generating world...")
+	Engine.Logger.Info("Generating world...")
 	generateWorldTree()
-	Engine.Config.Logger.Info("World Complete")
+	Engine.Logger.Info("World Complete")
 
 	l = lighting.NewPointLight(
 		Engine.ShaderControl.GetShader("colorLighting"),
@@ -195,9 +197,9 @@ func movePlayer(keys map[string]bool) {
 		Player.VY = 20
 	}
 	if keys["a"] {
-		Player.VX = 100
+		Player.VX = 10
 	} else if keys["d"] {
-		Player.VX = -100
+		Player.VX = -10
 	} else {
 		Player.VX = 0
 	}

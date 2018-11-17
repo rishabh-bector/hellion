@@ -6,8 +6,6 @@ import (
 	"rapidengine/configuration"
 	"rapidengine/lighting"
 	"rapidengine/material"
-
-	perlin "github.com/aquilax/go-perlin"
 )
 
 //  --------------------------------------------------
@@ -39,30 +37,28 @@ var CloudChild child.Child2D
 
 var l lighting.PointLight
 
-var WorldMap WorldTree
-
 //  --------------------------------------------------
-//  World Generation Parameters
+//  World Generation
 //  --------------------------------------------------
 
-const WorldHeight = 3000
-const WorldWidth = 2000
+var Seed = int64(0)
+
+const WorldHeight = 2000
+const WorldWidth = 3000
 const BlockSize = 32
-const Flatness = 0.1
 
-const GrassMinimum = 700
+const Flatness = 0.25
+const GrassMinimum = 1500
 
 const CaveNoiseScalar = 30
 const CaveNoiseThreshold = 0.75
 
-const StoneNoiseScalar = 30.0
-const StoneTop = 600.0
-const StoneTopDeviation = 5
-const StoneStartingFrequency = -0.3
+const StoneFrequencyDelta = 0.001
+const StoneStartingFrequency = 0.3
+const StoneEndingFrequency = 0.7
+const StoneTopDeviation = 10
 
-var Generator *perlin.Perlin
-var cloudMaterial material.Material
-
+var WorldMap WorldTree
 var HeightMap [WorldWidth]int
 
 //  --------------------------------------------------
@@ -70,5 +66,6 @@ var HeightMap [WorldWidth]int
 //  --------------------------------------------------
 
 var TransparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
-
 var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
+
+var cloudMaterial material.Material

@@ -1,6 +1,10 @@
 package main
 
 import (
+	"image"
+	"image/color"
+	"image/png"
+	"os"
 	"rapidengine/child"
 )
 
@@ -219,4 +223,29 @@ func createLightBlock(x, y int, name string) {
 		Darkness: 0.8,
 		ID:       GetIDFromName(name) + "00",
 	})
+}
+
+//  --------------------------------------------------
+//  World Export
+//  --------------------------------------------------
+
+func (tree *WorldTree) writeToImage() {
+	img := image.NewRGBA(image.Rect(0, 0, len(tree.blockNodes), len(tree.blockNodes[0])))
+
+	width := len(tree.blockNodes)
+	height := len(tree.blockNodes[0])
+
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			b := GetBlock(tree.GetWorldBlockName(x, y))
+			img.Set(x, height-y, color.RGBA{
+				uint8(b.SaveColor[0]),
+				uint8(b.SaveColor[1]),
+				uint8(b.SaveColor[2]), 255})
+		}
+	}
+
+	f, _ := os.OpenFile("out.png", os.O_WRONLY|os.O_CREATE, 0600)
+	defer f.Close()
+	png.Encode(f, img)
 }

@@ -3,9 +3,8 @@ package main
 import (
 	"math/rand"
 	"rapidengine/child"
+	"rapidengine/procedural"
 	"time"
-
-	perlin "github.com/aquilax/go-perlin"
 )
 
 func generateWorldTree() {
@@ -22,19 +21,19 @@ func generateWorldTree() {
 	WorldMap = NewWorldTree()
 
 	// Generate heightmap and place grass
-	generateHeights()
+	generateHeightMap()
 
 	// Fill everything underneath grass with dirt
-	fillHeights()
+	generateDirt()
 
 	// Generate stone based on height
-	fillStone()
+	generateStone()
 
 	// Clean up stone above ground
 	cleanStone()
 
 	// Generate caves
-	generateCaves()
+	//generateCaves()
 
 	// Clean back dirt
 	cleanBackDirt()
@@ -64,6 +63,9 @@ func generateWorldTree() {
 	// Light up all blocks
 	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
 
+	// Save world to image
+	WorldMap.writeToImage()
+
 	// Set player starting position
 	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
 }
@@ -72,16 +74,18 @@ func generateWorldTree() {
 //  World Generation Functions
 //  --------------------------------------------------
 
-func generateHeights() {
+func generateHeightMap() {
+	gen := procedural.NewSimplexGenerator(0.001, 1, 0.5, 8, Seed)
+
 	for x := 0; x < WorldWidth; x++ {
-		HeightMap[x] = GrassMinimum + int(Flatness*noise1D(float64(x)/(WorldWidth/2))*WorldHeight)
+		HeightMap[x] = GrassMinimum + int(Flatness*gen.Noise1D(float64(x))*float64(WorldHeight))
 	}
 	for x := 0; x < WorldWidth; x++ {
 		createWorldBlock(x, HeightMap[x], "grass")
 	}
 }
 
-func fillHeights() {
+func generateDirt() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
 			createWorldBlock(x, y, "dirt")
@@ -92,17 +96,23 @@ func fillHeights() {
 	}
 }
 
-func fillStone() {
-	Generator = perlin.NewPerlin(1.2, 2, 2, int64(rand.Int()))
-	stoneFrequency := StoneStartingFrequency
-	for y := 0; y < WorldHeight; y++ {
-		for x := 0; x < WorldWidth; x++ {
-			n := noise2D(StoneNoiseScalar*float64(x)/WorldWidth*2, StoneNoiseScalar*float64(y)/WorldHeight*4)
-			if n > stoneFrequency {
+func generateStone() {
+	gen := procedural.NewSimplexGenerator(10, 1, 0.5, 5, Seed)
+
+	for x := 0; x < WorldWidth; x++ {
+		stoneFrequency := float64(StoneStartingFrequency)
+		for y := HeightMap[x]; y >= 0; y-- {
+			n := gen.Noise2D(float64(x)/300, float64(y)/300)
+
+			if n < stoneFrequency {
 				createWorldBlock(x, y, "stone")
 			}
+
+			stoneFrequency += StoneFrequencyDelta
+			if stoneFrequency > StoneEndingFrequency {
+				stoneFrequency = StoneEndingFrequency
+			}
 		}
-		stoneFrequency += (1 / StoneTop)
 	}
 }
 
@@ -121,7 +131,7 @@ func cleanStone() {
 	}
 }
 
-func generateCaves() {
+/*func generateCaves() {
 	Generator = perlin.NewPerlin(1.5, 2, 3, int64(rand.Int()))
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
@@ -132,7 +142,7 @@ func generateCaves() {
 			}
 		}
 	}
-}
+}*/
 
 func cleanBackDirt() {
 
@@ -229,15 +239,7 @@ func isBackBlock(name string) bool {
 	return "shit spelling"
 }*/
 
-func noise2D(x, y float64) float64 {
-	return (Generator.Noise2D(x, y) + 0.4) / 0.8
-}
-
-func noise1D(x float64) float64 {
-	return (Generator.Noise1D(x) + 0.4) / 0.8
-}
-
 func randomizeSeed() {
-	rand.Seed(time.Now().UTC().UnixNano())
-	Generator = perlin.NewPerlin(2, 2, 10, int64(rand.Int()))
+	Seed = time.Now().UTC().UnixNano()
+	rand.Seed(Seed)
 }
