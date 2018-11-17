@@ -193,32 +193,32 @@ func loadBlocks() {
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
 			LightBlock: 0.05,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{70, 48, 38},
 		},
 		"leaves": &Block{
 			Material:   leavesMaterial,
 			LightBlock: 0,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{91, 141, 68},
 		},
 		"treeRightRoot": &Block{
 			Material:   treeRightRootMaterial,
 			LightBlock: 0,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{87, 66, 59},
 		},
 		"treeLeftRoot": &Block{
 			Material:   treeLeftRootMaterial,
 			LightBlock: 0,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{87, 66, 59},
 		},
 		"treeTrunk": &Block{
 			Material:   treeTrunkMaterial,
 			LightBlock: 0,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{87, 66, 59},
 		},
 		"treeBottomRoot": &Block{
 			Material:   treeBottomRootMaterial,
 			LightBlock: 0,
-			SaveColor:  [3]int{107, 185, 240},
+			SaveColor:  [3]int{87, 66, 59},
 		},
 		"topGrass1": &Block{
 			Material:   topGrass1Material,

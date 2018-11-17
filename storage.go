@@ -237,11 +237,23 @@ func (tree *WorldTree) writeToImage() {
 
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			b := GetBlock(tree.GetWorldBlockName(x, y))
+			b := tree.GetWorldBlockName(x, y)
+
+			if b == "sky" {
+				if back := tree.GetBackBlockName(x, y); back != "sky" {
+					b = back
+				}
+				if nature := tree.GetNatureBlockName(x, y); nature != "sky" {
+					b = nature
+				}
+			}
+
+			block := GetBlock(b)
+
 			img.Set(x, height-y, color.RGBA{
-				uint8(b.SaveColor[0]),
-				uint8(b.SaveColor[1]),
-				uint8(b.SaveColor[2]), 255})
+				uint8(block.SaveColor[0]),
+				uint8(block.SaveColor[1]),
+				uint8(block.SaveColor[2]), 255})
 		}
 	}
 
