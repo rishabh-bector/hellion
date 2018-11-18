@@ -53,13 +53,19 @@ const Flatness = 0.25
 const GrassMinimum = 1500
 
 // Cave generation
+const CaveStartingProbability = 0.42
+
 const CaveStartingThreshold = 0.27
 const CaveEndingThreshold = 0.4
 const CaveThresholdDelta = 0.002
 
-const CaveIterations = 5
+const CaveIterations = 20
 const CaveBirthLimit = 4
-const CaveDeathLimit = 2
+const CaveDeathLimit = 3
+
+const SecondCaveIterations = 10
+const SecondCaveBirthLimit = 3
+const SecondCaveDeathLimit = 2
 
 // Stone generation
 const StoneFrequencyDelta = 0.001
