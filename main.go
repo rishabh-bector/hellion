@@ -63,7 +63,7 @@ func main() {
 
 	SkyChild = Engine.NewChild2D()
 	SkyChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
-	SkyChild.AttachMesh(geometry.NewRectangle(4000, 1100, &Config))
+	SkyChild.AttachMesh(geometry.NewRectangle(float32(ScreenWidth), float32(ScreenHeight), &Config))
 	SkyChild.AttachMaterial(&backgroundMaterial)
 
 	BlockSelect = Engine.NewChild2D()
@@ -148,7 +148,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	// Camera
 	renderer.MainCamera.SetPosition(Player.X, Player.Y, -10)
-	SkyChild.SetPosition(Player.X-1950/2, Player.Y-1110/2)
+	SkyChild.SetPosition(Player.X-float32(ScreenWidth/2), Player.Y-float32(ScreenHeight/2))
 
 	// Lighting
 	//x, y := child.ScaleCoordinates(Player.X, float32(HeightMap[int(Player.X/BlockSize)])*BlockSize, float32(ScreenWidth), float32(ScreenHeight))
