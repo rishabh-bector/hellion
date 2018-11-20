@@ -2,11 +2,8 @@ package main
 
 import (
 	_ "net/http/pprof"
-	"rapidengine/child"
 	"rapidengine/cmd"
-	"rapidengine/geometry"
 	"rapidengine/input"
-	"rapidengine/material"
 	"runtime"
 )
 
@@ -21,79 +18,23 @@ func main() {
 	}
 
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
+
 	Config.ShowFPS = false
-	Config.FullScreen = true
+	Config.FullScreen = false
 	Config.GammaCorrection = false
 	Config.VSync = false
 	Config.Profiling = false
+
 	Engine = cmd.NewEngine(&Config, render)
+
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
-	Engine.Renderer.MainCamera.SetPosition(100, 100, 0)
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
 
-	Engine.Renderer.AutomaticRendering = false
+	InitializeTitleScene()
+	InitializeLoadingScene()
+	InitializeWorldScene()
 
-	//   --------------------------------------------------
-	//   Textures
-	//   --------------------------------------------------
-
-	Engine.TextureControl.NewTexture("assets/player/player.png", "player", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back", "pixel")
-
-	//   --------------------------------------------------
-	//   Materials
-	//   --------------------------------------------------
-
-	playerMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	playerMaterial.BecomeTexture(Engine.TextureControl.GetTexture("player"))
-
-	backgroundMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	backgroundMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
-
-	//   --------------------------------------------------
-	//   Children
-	//   --------------------------------------------------
-
-	Player = Engine.NewChild2D()
-	Player.AttachShader(Engine.ShaderControl.GetShader("texture"))
-	Player.AttachMesh(geometry.NewRectangle(32, 64, &Config))
-	Player.AttachMaterial(&playerMaterial)
-	Player.SetPosition(3000, 1000*BlockSize)
-	Player.Gravity = 0
-
-	SkyChild = Engine.NewChild2D()
-	SkyChild.AttachShader(Engine.ShaderControl.GetShader("texture"))
-	SkyChild.AttachMesh(geometry.NewRectangle(float32(ScreenWidth), float32(ScreenHeight), &Config))
-	SkyChild.AttachMaterial(&backgroundMaterial)
-
-	BlockSelect = Engine.NewChild2D()
-	BlockSelect.AttachShader(Engine.ShaderControl.GetShader("color"))
-
-	m := material.NewMaterial(Engine.ShaderControl.GetShader("color"), &Config)
-	m.BecomeColor([3]float32{200, 200, 200})
-
-	BlockSelect.AttachMaterial(&m)
-	BlockSelect.AttachMesh(geometry.NewRectangle(32, 32, &Config))
-
-	//   --------------------------------------------------
-	//   World Gen
-	//   --------------------------------------------------
-
-	Engine.Logger.Info("Generating world...")
-	generateWorldTree()
-	Engine.Logger.Info("World Complete")
-
-	//   --------------------------------------------------
-	//   Instancing
-	//   --------------------------------------------------
-
-	Engine.Instance(&SkyChild)
-	Engine.Instance(&CloudChild)
-	Engine.Instance(&NoCollisionChild)
-	Engine.Instance(&NatureChild)
-	Engine.Instance(&WorldChild)
-	Engine.Instance(&Player)
-	Engine.Instance(&BlockSelect)
+	Engine.ChildControl.SetScene("title")
 
 	Engine.Initialize()
 	Engine.StartRenderer()
@@ -102,16 +43,25 @@ func main() {
 }
 
 func render(renderer *cmd.Renderer, inputs *input.Input) {
+	if Engine.ChildControl.GetScene() == "world" {
+		renderWorldScene(renderer, inputs)
+	}
+}
+
+func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
+	// Update player
+	Player1.Update(inputs)
+
 	// Render Children
-	renderer.RenderChild(&SkyChild)
-	renderer.RenderChildCopies(&CloudChild)
+	renderer.RenderChild(SkyChild)
+	renderer.RenderChildCopies(CloudChild)
 
 	renderWorldInBounds(renderer)
 
-	renderer.RenderChild(&Player)
+	renderer.RenderChild(Player1.PlayerChild)
 
 	// Block Selector
-	renderer.RenderChild(&BlockSelect)
+	renderer.RenderChild(BlockSelect)
 	cx, cy, _ := renderer.MainCamera.GetPosition()
 	bx, by := Engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
 	snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
@@ -128,89 +78,26 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 	}
 
-	// Player Logic
-	movePlayer(inputs.Keys)
-	Player.VY -= 1.05
-
-	top, left, bottom, right := CheckPlayerCollision()
-	if bottom && Player.VY < 0 {
-		Player.VY = 0
-	}
-	if left && Player.VX > 1 {
-		Player.VX = 0
-	}
-	if right && Player.VX < 1 {
-		Player.VX = 0
-	}
-	if top && Player.VY > 0 {
-		Player.VY = 0
-	}
-
 	// Camera
-	renderer.MainCamera.SetPosition(Player.X, Player.Y, -10)
-	SkyChild.SetPosition(Player.X-float32(ScreenWidth/2), Player.Y-float32(ScreenHeight/2))
-
-	// Lighting
-	//x, y := child.ScaleCoordinates(Player.X, float32(HeightMap[int(Player.X/BlockSize)])*BlockSize, float32(ScreenWidth), float32(ScreenHeight))
-	//l.SetPosition([]float32{x, y, 1})
-	x, y := child.ScaleCoordinates(Player.X, Player.Y, float32(ScreenWidth), float32(ScreenHeight))
-	l.SetPosition([]float32{x, y, 1})
+	renderer.MainCamera.SetPosition(Player1.PlayerChild.X, Player1.PlayerChild.Y, -10)
+	SkyChild.SetPosition(Player1.PlayerChild.X-float32(ScreenWidth/2), Player1.PlayerChild.Y-float32(ScreenHeight/2))
 }
 
 func renderWorldInBounds(renderer *cmd.Renderer) {
-	for x := int(Player.X) - 50 - ScreenWidth/2; x < int(Player.X)+50+ScreenWidth/2; x += BlockSize {
-		for y := int(Player.Y) - 50 - ScreenHeight/2; y < int(Player.Y)+50+ScreenHeight/2; y += BlockSize {
+	for x := int(Player1.PlayerChild.X) - 50 - ScreenWidth/2; x < int(Player1.PlayerChild.X)+50+ScreenWidth/2; x += BlockSize {
+		for y := int(Player1.PlayerChild.Y) - 50 - ScreenHeight/2; y < int(Player1.PlayerChild.Y)+50+ScreenHeight/2; y += BlockSize {
 			if cpy := WorldMap.GetBackBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&NoCollisionChild, *cpy)
+				renderer.RenderCopy(NoCollisionChild, *cpy)
 			}
 			if cpy := WorldMap.GetNatureBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&NatureChild, *cpy)
+				renderer.RenderCopy(NatureChild, *cpy)
 			}
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&WorldChild, *cpy)
+				renderer.RenderCopy(WorldChild, *cpy)
 			}
 			if cpy := WorldMap.GetLightBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
-				renderer.RenderCopy(&NoCollisionChild, *cpy)
+				renderer.RenderCopy(NoCollisionChild, *cpy)
 			}
 		}
 	}
-}
-
-func movePlayer(keys map[string]bool) {
-	if keys["w"] {
-		Player.VY = 20
-	}
-	if keys["a"] {
-		Player.VX = 10
-	} else if keys["d"] {
-		Player.VX = -10
-	} else {
-		Player.VX = 0
-	}
-}
-
-// top, left, bottom, right
-func CheckPlayerCollision() (bool, bool, bool, bool) {
-	top := false
-	left := false
-	bottom := false
-	right := false
-
-	px := int((Player.X + BlockSize/2) / BlockSize)
-	py := int((Player.Y)/BlockSize + 1)
-
-	if WorldMap.GetWorldBlockID(px, py+1) != "00000" {
-		top = true
-	}
-	if WorldMap.GetWorldBlockID(px, py-1) != "00000" {
-		bottom = true
-	}
-	if WorldMap.GetWorldBlockID(px-1, py) != "00000" || WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
-		left = true
-	}
-	if WorldMap.GetWorldBlockID(px+1, py) != "00000" || WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
-		right = true
-	}
-
-	return top, left, bottom, right
 }

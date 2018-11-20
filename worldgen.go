@@ -9,12 +9,14 @@ import (
 )
 
 func generateWorldTree() {
+
 	Engine.Logger.Info("Loading blocks...")
+	ProgressText.Text = "Loading blocks..."
+	ProgressBar.SetPercentage(10)
+	updateLoadingScreen()
+
 	// Make sure all blocks are loaded
 	loadBlocks()
-
-	// Make sure all children are loaded
-	loadWorldChildren()
 
 	// Randomize seed
 	randomizeSeed()
@@ -23,6 +25,10 @@ func generateWorldTree() {
 	WorldMap = NewWorldTree()
 
 	Engine.Logger.Info("Placing dirt...")
+	ProgressText.Text = "Placing dirt..."
+	ProgressBar.SetPercentage(20)
+	updateLoadingScreen()
+
 	// Generate heightmap and place grass
 	generateHeightMap()
 
@@ -30,6 +36,10 @@ func generateWorldTree() {
 	generateDirt()
 
 	Engine.Logger.Info("Placing stone...")
+	ProgressText.Text = "Placing stone..."
+	ProgressBar.SetPercentage(30)
+	updateLoadingScreen()
+
 	// Generate stone based on height
 	generateStone()
 
@@ -37,17 +47,29 @@ func generateWorldTree() {
 	cleanStone()
 
 	Engine.Logger.Info("Generating caves...")
+	ProgressText.Text = "Generating caves..."
+	ProgressBar.SetPercentage(40)
+	updateLoadingScreen()
+
 	// Generate caves
 	generateCaves()
 
 	// Clean back dirt
 	cleanBackDirt()
 
-	Engine.Logger.Info("Growing grass..")
+	Engine.Logger.Info("Growing grass...")
+	ProgressText.Text = "Growing grass..."
+	ProgressBar.SetPercentage(50)
+	updateLoadingScreen()
+
 	// Put grass and some top grass on dirt with air above it
 	growGrass()
 
 	Engine.Logger.Info("Generating nature...")
+	ProgressText.Text = "Generating nature..."
+	ProgressBar.SetPercentage(60)
+	updateLoadingScreen()
+
 	// Create clouds
 	generateClouds()
 
@@ -55,10 +77,18 @@ func generateWorldTree() {
 	generateNature()
 
 	Engine.Logger.Info("Generating structures...")
+	ProgressText.Text = "Generating structures..."
+	ProgressBar.SetPercentage(70)
+	updateLoadingScreen()
+
 	// Generate structure
 	generateStructures()
 
 	Engine.Logger.Info("Orienting blocks...")
+	ProgressText.Text = "Orienting blocks..."
+	ProgressBar.SetPercentage(80)
+	updateLoadingScreen()
+
 	// Fix the orientation of blocks in the world
 	orientBlocks("dirt", true)
 	orientBlocks("grass", true)
@@ -70,14 +100,22 @@ func generateWorldTree() {
 	orientBlocks("backdirt", true)
 
 	Engine.Logger.Info("Creating light...")
+	ProgressText.Text = "Creating light..."
+	ProgressBar.SetPercentage(90)
+	updateLoadingScreen()
+
 	// Light up all blocks
 	CreateLighting(WorldWidth/2, HeightMap[WorldWidth/2]+5, 0.9)
 
 	// Save world to image
 	WorldMap.writeToImage()
 
+	ProgressBar.SetPercentage(100)
+	updateLoadingScreen()
+
 	// Set player starting position
-	Player.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
+	Player1.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
+	Engine.ChildControl.SetScene("world")
 }
 
 //  --------------------------------------------------

@@ -25,15 +25,14 @@ var ScreenHeight = 1080
 //  Children
 //  --------------------------------------------------
 
-var Player child.Child2D
-var BlockSelect child.Child2D
+var BlockSelect *child.Child2D
 
 // World
-var WorldChild child.Child2D
-var SkyChild child.Child2D
-var NoCollisionChild child.Child2D
-var NatureChild child.Child2D
-var CloudChild child.Child2D
+var WorldChild *child.Child2D
+var SkyChild *child.Child2D
+var NoCollisionChild *child.Child2D
+var NatureChild *child.Child2D
+var CloudChild *child.Child2D
 
 var l lighting.PointLight
 
@@ -53,10 +52,8 @@ const Flatness = 0.25
 const GrassMinimum = 1500
 
 // Cave generation
-const CaveStartingProbability = 0.42
-
 const CaveStartingThreshold = 0.27
-const CaveEndingThreshold = 0.4
+const CaveEndingThreshold = 0.42
 const CaveThresholdDelta = 0.002
 
 const CaveIterations = 20

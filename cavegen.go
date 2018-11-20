@@ -14,9 +14,14 @@ func generateCaves() {
 
 	// Create caves with varying simplex noise
 	for x := 0; x < WorldWidth; x++ {
+		thresh := float32(CaveStartingThreshold)
 		for y := HeightMap[x]; y >= 0; y-- {
-			if n := rand.Float32(); n < CaveStartingProbability {
+			if n := rand.Float32(); n < thresh {
 				CaveMap[x][y] = true
+			}
+			thresh += CaveThresholdDelta
+			if thresh > CaveEndingThreshold {
+				thresh = CaveEndingThreshold
 			}
 		}
 	}
@@ -37,7 +42,7 @@ func generateCaves() {
 	}
 
 	// Kill tiny caves
-	removeSmallCaves()
+	//removeSmallCaves()
 
 	// Translate to worldmap
 	for x := 0; x < WorldWidth; x++ {
