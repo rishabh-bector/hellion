@@ -67,6 +67,11 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
 	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
+	Player1.PlayerChild.Darkness = WorldMap.GetDarkness(
+		int(Player1.PlayerChild.X/BlockSize),
+		int(Player1.PlayerChild.Y/BlockSize)+1,
+	)
+
 	if inputs.LeftMouseButton {
 		destroyBlock(snapx, snapy)
 	}
@@ -74,7 +79,7 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	if inputs.RightMouseButton {
 		if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
 			placeBlock(snapx, snapy, "torch")
-			CreateLightingLimit(snapx, snapy, 0.65, 15)
+			CreateLightingLimit(snapx, snapy, 0.68, 15)
 		}
 	}
 
