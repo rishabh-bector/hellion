@@ -284,21 +284,11 @@ func GetBlock(name string) *Block {
 }
 
 func GetBlockName(id int) string {
-	if id == 0 {
-		return "sky"
-	}
-	if id == 3 {
-		return "stone"
-	}
-	if id == 4 {
-		return "backdirt"
-	}
-	i := 0
-	for n, _ := range NameToID {
-		if i == id {
+	for n, index := range NameToID {
+		ind, _ := strconv.Atoi(index)
+		if ind == id {
 			return n
 		}
-		i++
 	}
 	return "sky"
 }
