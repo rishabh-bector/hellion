@@ -268,8 +268,9 @@ var structures = []Structure{
 
 func generateStructures() {
 	for _, current := range structures {
-		Startx := rand.Intn(current.Width/2) + current.XBeginning
-		currentX := Startx
+		RightStartx := rand.Intn(current.Width/2) + current.XBeginning + WorldWidth/2
+		LeftStartx := WorldWidth/2 - rand.Intn(current.Width/2) - current.XBeginning
+		currentX := RightStartx
 		if current.PlaceMethod == "mesh" {
 			for i, building := range current.Layout {
 				if i != 0 {
@@ -296,7 +297,33 @@ func generateStructures() {
 					}
 				}
 
-				currentX += len(building.Layout)
+				//currentX += len(building.Layout)
+			}
+			currentX = LeftStartx
+			for i := len(current.Layout)-1; i > -1; i-- {
+				building := current.Layout[i]
+				if i != 0 {
+					currentX -= current.Spacing[i-1] + 10
+				}
+				lowestY := HeightMap[currentX]
+				for x := currentX; x < currentX-len(building.Layout[0]); x++ {
+					if HeightMap[x] < lowestY {
+						lowestY = HeightMap[x]
+					}
+				}
+				height := len(building.Layout)
+				leftLayout := flipMatrix(building.Layout)
+				for y := 0; y < height; y++ {
+					for x := 0; x < len(leftLayout[y]); x++ {
+						if WorldMap.GetWorldBlockID(currentX+x, lowestY+(height-y)) == "00000" {
+							if bname := GetBlockName(leftLayout[y][x]); bname == "backdirt" {
+								createBackBlock(currentX+x, lowestY+(height-y), bname)
+							} else {
+								createWorldBlock(currentX+x, lowestY+(height-y), bname)
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -308,4 +335,14 @@ func fillStructureFloor(startx int, starty int, endx int, endy int) {
 
 func generateStilts(x int, y int) {
 
+}
+
+func flipMatrix(mat [][]int) [][]int {
+	fin := mat
+	for x := 0; x < len(mat); x++ {
+		for y := len(mat[0])-1; y > 0; y-- {
+			fin[x][len(mat[0]) - y] = mat[x][y]
+		}
+	}
+	return fin
 }
