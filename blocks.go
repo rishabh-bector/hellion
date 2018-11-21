@@ -9,7 +9,7 @@ import (
 var BlockMap map[string]*Block
 
 type Block struct {
-	Material material.Material
+	Material *material.BasicMaterial
 
 	SaveColor [3]int
 
@@ -19,28 +19,28 @@ type Block struct {
 	// Either can have A (all) or N (none)
 	OrientEnabled   bool
 	OrientVariation int32
-	Orientations    [16]material.Material
+	Orientations    [16]*material.BasicMaterial
 
 	LightBlock float32
 }
 
-func (block *Block) GetMaterial(direction string) *material.Material {
+func (block *Block) GetMaterial(direction string) *material.BasicMaterial {
 	if block.OrientEnabled {
 		i, _ := strconv.Atoi(OrientationsMap[direction])
-		return &(block.Orientations[i])
+		return block.Orientations[i]
 	}
-	return &block.Material
+	return block.Material
 }
 
 func (block *Block) CreateOrientations(orientVariation int32) {
 	block.OrientEnabled = true
 	block.OrientVariation = orientVariation
 	for dir, _ := range OrientationsMap {
-		newM := block.Material
-		newM.AttachTransparency(Engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir)))
-
+		newM := *block.Material
+		newM.AlphaMap = Engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir))
+		newM.AlphaMapLevel = 1
 		i, _ := strconv.Atoi(OrientationsMap[dir])
-		block.Orientations[i] = newM
+		block.Orientations[i] = &newM
 	}
 }
 
@@ -108,65 +108,85 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "1AN", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "1NA", "pixel")
 
-	skyMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	skyMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
+	skyMaterial := Engine.MaterialControl.NewBasicMaterial()
+	skyMaterial.DiffuseLevel = 1
+	skyMaterial.DiffuseMap = Engine.TextureControl.GetTexture("back")
 
-	dirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	dirtMaterial.BecomeTexture(Engine.TextureControl.GetTexture("dirt"))
+	dirtMaterial := Engine.MaterialControl.NewBasicMaterial()
+	dirtMaterial.DiffuseLevel = 1
+	dirtMaterial.DiffuseMap = Engine.TextureControl.GetTexture("dirt")
 
-	stoneMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	stoneMaterial.BecomeTexture(Engine.TextureControl.GetTexture("stone"))
+	stoneMaterial := Engine.MaterialControl.NewBasicMaterial()
+	stoneMaterial.DiffuseLevel = 1
+	stoneMaterial.DiffuseMap = Engine.TextureControl.GetTexture("stone")
 
-	grassMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	grassMaterial.BecomeTexture(Engine.TextureControl.GetTexture("grass"))
+	grassMaterial := Engine.MaterialControl.NewBasicMaterial()
+	grassMaterial.DiffuseLevel = 1
+	grassMaterial.DiffuseMap = Engine.TextureControl.GetTexture("grass")
 
-	backDirtMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	backDirtMaterial.BecomeTexture(Engine.TextureControl.GetTexture("backdirt"))
+	backDirtMaterial := Engine.MaterialControl.NewBasicMaterial()
+	backDirtMaterial.DiffuseLevel = 1
+	backDirtMaterial.DiffuseMap = Engine.TextureControl.GetTexture("backdirt")
 
-	leavesMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	leavesMaterial.BecomeTexture(Engine.TextureControl.GetTexture("leaves"))
+	leavesMaterial := Engine.MaterialControl.NewBasicMaterial()
+	leavesMaterial.DiffuseLevel = 1
+	leavesMaterial.DiffuseMap = Engine.TextureControl.GetTexture("leaves")
 
-	treeRightRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeRightRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeRightRoot"))
+	treeRightRootMaterial := Engine.MaterialControl.NewBasicMaterial()
+	treeRightRootMaterial.DiffuseLevel = 1
+	treeRightRootMaterial.DiffuseMap = Engine.TextureControl.GetTexture("treeRightRoot")
 
-	treeLeftRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeLeftRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeLeftRoot"))
+	treeLeftRootMaterial := Engine.MaterialControl.NewBasicMaterial()
+	treeLeftRootMaterial.DiffuseLevel = 1
+	treeLeftRootMaterial.DiffuseMap = Engine.TextureControl.GetTexture("treeLeftRoot")
 
-	treeTrunkMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeTrunkMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeTrunk"))
+	treeTrunkMaterial := Engine.MaterialControl.NewBasicMaterial()
+	treeTrunkMaterial.DiffuseLevel = 1
+	treeTrunkMaterial.DiffuseMap = Engine.TextureControl.GetTexture("treeTrunk")
 
-	treeBottomRootMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeBottomRootMaterial.BecomeTexture(Engine.TextureControl.GetTexture("treeBottomRoot"))
+	treeBottomRootMaterial := Engine.MaterialControl.NewBasicMaterial()
+	treeBottomRootMaterial.DiffuseLevel = 1
+	treeBottomRootMaterial.DiffuseMap = Engine.TextureControl.GetTexture("treeBottomRoot")
 
-	topGrass1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	topGrass1Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass1"))
+	topGrass1Material := Engine.MaterialControl.NewBasicMaterial()
+	topGrass1Material.DiffuseLevel = 1
+	topGrass1Material.DiffuseMap = Engine.TextureControl.GetTexture("topGrass1")
 
-	topGrass2Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	topGrass2Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass2"))
+	topGrass2Material := Engine.MaterialControl.NewBasicMaterial()
+	topGrass2Material.DiffuseLevel = 1
+	topGrass2Material.DiffuseMap = Engine.TextureControl.GetTexture("topGrass2")
 
-	topGrass3Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	topGrass3Material.BecomeTexture(Engine.TextureControl.GetTexture("topGrass3"))
+	topGrass3Material := Engine.MaterialControl.NewBasicMaterial()
+	topGrass3Material.DiffuseLevel = 1
+	topGrass3Material.DiffuseMap = Engine.TextureControl.GetTexture("topGrass3")
 
-	treeBranchR1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeBranchR1Material.BecomeTexture(Engine.TextureControl.GetTexture("treeBranchR1"))
+	treeBranchR1Material := Engine.MaterialControl.NewBasicMaterial()
+	treeBranchR1Material.DiffuseLevel = 1
+	treeBranchR1Material.DiffuseMap = Engine.TextureControl.GetTexture("treeBranchR1")
 
-	treeBranchL1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	treeBranchL1Material.BecomeTexture(Engine.TextureControl.GetTexture("treeBranchL1"))
+	treeBranchL1Material := Engine.MaterialControl.NewBasicMaterial()
+	treeBranchL1Material.DiffuseLevel = 1
+	treeBranchL1Material.DiffuseMap = Engine.TextureControl.GetTexture("treeBranchL1")
 
-	flower1Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	flower1Material.BecomeTexture(Engine.TextureControl.GetTexture("flower1"))
+	flower1Material := Engine.MaterialControl.NewBasicMaterial()
+	flower1Material.DiffuseLevel = 1
+	flower1Material.DiffuseMap = Engine.TextureControl.GetTexture("flower1")
 
-	flower2Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	flower2Material.BecomeTexture(Engine.TextureControl.GetTexture("flower2"))
+	flower2Material := Engine.MaterialControl.NewBasicMaterial()
+	flower2Material.DiffuseLevel = 1
+	flower2Material.DiffuseMap = Engine.TextureControl.GetTexture("flower2")
 
-	flower3Material := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	flower3Material.BecomeTexture(Engine.TextureControl.GetTexture("flower3"))
+	flower3Material := Engine.MaterialControl.NewBasicMaterial()
+	flower3Material.DiffuseLevel = 1
+	flower3Material.DiffuseMap = Engine.TextureControl.GetTexture("flower3")
 
-	pebbleMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	pebbleMaterial.BecomeTexture(Engine.TextureControl.GetTexture("pebble"))
+	pebbleMaterial := Engine.MaterialControl.NewBasicMaterial()
+	pebbleMaterial.DiffuseLevel = 1
+	pebbleMaterial.DiffuseMap = Engine.TextureControl.GetTexture("pebble")
 
-	torchMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	torchMaterial.BecomeTexture(Engine.TextureControl.GetTexture("torch"))
+	torchMaterial := Engine.MaterialControl.NewBasicMaterial()
+	torchMaterial.DiffuseLevel = 1
+	torchMaterial.DiffuseMap = Engine.TextureControl.GetTexture("torch")
 
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{

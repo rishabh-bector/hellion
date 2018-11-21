@@ -11,7 +11,7 @@ var Player1 Player
 
 type Player struct {
 	PlayerChild    *child.Child2D
-	PlayerMaterial *material.Material
+	PlayerMaterial *material.BasicMaterial
 
 	SpeedX float32
 	SpeedY float32
@@ -38,8 +38,9 @@ func InitializePlayer() {
 	Engine.TextureControl.NewTexture("assets/player/walk/f11.png", "p_w11", "pixel")
 	Engine.TextureControl.NewTexture("assets/player/walk/f12.png", "p_w12", "pixel")
 
-	playerMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	playerMaterial.BecomeTexture(Engine.TextureControl.GetTexture("p_i1"))
+	playerMaterial := Engine.MaterialControl.NewBasicMaterial()
+	playerMaterial.DiffuseLevel = 1
+	playerMaterial.DiffuseMap = Engine.TextureControl.GetTexture("p_i1")
 
 	playerMaterial.EnableAnimation()
 
@@ -64,7 +65,7 @@ func InitializePlayer() {
 	playerMaterial.PlayAnimation("idle")
 
 	PlayerChild := Engine.ChildControl.NewChild2D()
-	PlayerChild.AttachMaterial(&playerMaterial)
+	PlayerChild.AttachMaterial(playerMaterial)
 	PlayerChild.AttachMesh(geometry.NewRectangle())
 	PlayerChild.ScaleX = 32
 	PlayerChild.ScaleY = 64
@@ -72,7 +73,7 @@ func InitializePlayer() {
 
 	Player1 = Player{
 		PlayerChild:    PlayerChild,
-		PlayerMaterial: &playerMaterial,
+		PlayerMaterial: playerMaterial,
 		SpeedX:         4,
 		SpeedY:         15,
 		Gravity:        1.05,
@@ -90,9 +91,9 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		p.PlayerChild.VY = p.SpeedY
 	}
 	if inputs.Keys["a"] {
-		p.PlayerChild.VX = p.SpeedX * 25
+		p.PlayerChild.VX = p.SpeedX
 	} else if inputs.Keys["d"] {
-		p.PlayerChild.VX = -1 * p.SpeedX * 25
+		p.PlayerChild.VX = -1 * p.SpeedX
 	} else {
 		p.PlayerChild.VX = 0
 	}

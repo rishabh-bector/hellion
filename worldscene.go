@@ -2,29 +2,28 @@ package main
 
 import (
 	"rapidengine/geometry"
-	"rapidengine/material"
 )
 
 func InitializeWorldScene() {
 
 	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "back", "pixel")
-	backgroundMaterial := material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	backgroundMaterial.BecomeTexture(Engine.TextureControl.GetTexture("back"))
+	backgroundMaterial := Engine.MaterialControl.NewBasicMaterial()
+	backgroundMaterial.DiffuseLevel = 1
+	backgroundMaterial.DiffuseMap = Engine.TextureControl.GetTexture("back")
 
 	InitializePlayer()
 
 	SkyChild = Engine.ChildControl.NewChild2D()
-	SkyChild.AttachMaterial(&backgroundMaterial)
+	SkyChild.AttachMaterial(backgroundMaterial)
 	SkyChild.AttachMesh(geometry.NewRectangle())
 	SkyChild.ScaleX = float32(ScreenWidth)
 	SkyChild.ScaleY = float32(ScreenHeight)
 
-	m := material.NewMaterial(Engine.ShaderControl.GetShader("color"), &Config)
-	m.BecomeColor([3]float32{200, 200, 200})
-	m.SetTransparency(0.2)
+	m := Engine.MaterialControl.NewBasicMaterial()
+	m.Hue = [4]float32{200, 200, 200, 50}
 
 	BlockSelect = Engine.ChildControl.NewChild2D()
-	BlockSelect.AttachMaterial(&m)
+	BlockSelect.AttachMaterial(m)
 	BlockSelect.AttachMesh(geometry.NewRectangle())
 	BlockSelect.ScaleX = 32
 	BlockSelect.ScaleY = 32
@@ -49,10 +48,11 @@ func InitializeWorldScene() {
 	NatureChild.EnableCopying()
 
 	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1", "pixel")
-	cloudMaterial = material.NewMaterial(Engine.ShaderControl.GetShader("texture"), &Config)
-	cloudMaterial.BecomeTexture(Engine.TextureControl.GetTexture("cloud1"))
+	cloudMaterial = Engine.MaterialControl.NewBasicMaterial()
+	cloudMaterial.DiffuseLevel = 1
+	cloudMaterial.DiffuseMap = Engine.TextureControl.GetTexture("cloud1")
 	CloudChild = Engine.ChildControl.NewChild2D()
-	CloudChild.AttachMaterial(&cloudMaterial)
+	CloudChild.AttachMaterial(cloudMaterial)
 	CloudChild.AttachMesh(geometry.NewRectangle())
 	CloudChild.ScaleX = 300
 	CloudChild.ScaleY = 145

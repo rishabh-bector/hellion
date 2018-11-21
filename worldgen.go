@@ -202,7 +202,7 @@ func generateClouds() {
 				child.ChildCopy{
 					X:        float32(x * BlockSize),
 					Y:        float32((rand.Intn(20) + HeightMap[x] + 15) * BlockSize),
-					Material: &cloudMaterial,
+					Material: cloudMaterial,
 					Darkness: 1,
 				},
 			)

@@ -60,7 +60,7 @@ const CaveIterations = 20
 const CaveBirthLimit = 4
 const CaveDeathLimit = 3
 
-const SecondCaveIterations = 10
+const SecondCaveIterations = 5
 const SecondCaveBirthLimit = 3
 const SecondCaveDeathLimit = 2
 
@@ -82,4 +82,4 @@ var CaveMap [][]bool
 var TransparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
 var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
 
-var cloudMaterial material.Material
+var cloudMaterial *material.BasicMaterial
