@@ -301,7 +301,7 @@ func generateStructures() {
 				//currentX += len(building.Layout)
 			}
 			currentX = LeftStartx
-			for i := len(current.Layout)-1; i > -1; i-- {
+			for i := len(current.Layout) - 1; i > -1; i-- {
 				building := current.Layout[i]
 				if i != 0 {
 					currentX -= current.Spacing[i-1] + 10
@@ -342,18 +342,12 @@ func generateStilts(x int, y int) {
 func flipMatrix(mat [][]int) [][]int {
 	fin := make([][]int, len(mat))
 	for nut := range fin {
-		fin[nut] = make([]int, len(mat[nut])) 
+		fin[nut] = make([]int, len(mat[nut]))
 	}
-
-	/*for x := 0; x < len(mat); x++ {
-		for y := len(mat[0])-1; y > -1; y-- {
-			fin[x][len(mat[0]) - y] = mat[x][y]
-		}
-	}*/
 
 	for y := 0; y < len(mat); y++ {
 		for x := len(mat[y]); x > 0; x-- {
-			fin[y][x] = mat[y][len(mat[y]) - x]
+			fin[y][x-1] = mat[y][len(mat[y])-x]
 		}
 	}
 
