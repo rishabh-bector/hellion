@@ -92,6 +92,12 @@ func (tree *WorldTree) RemoveBackBlock(x, y int) {
 	}
 }
 
+func (tree *WorldTree) RemoveNatureBlock(x, y int) {
+	tree.blockNodes[x][y].natureBlock = &child.ChildCopy{
+		ID: "00000",
+	}
+}
+
 //  --------------------------------------------------
 //  Node Retrieval
 //  --------------------------------------------------

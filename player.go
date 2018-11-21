@@ -90,9 +90,9 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		p.PlayerChild.VY = p.SpeedY
 	}
 	if inputs.Keys["a"] {
-		p.PlayerChild.VX = p.SpeedX
+		p.PlayerChild.VX = p.SpeedX * 25
 	} else if inputs.Keys["d"] {
-		p.PlayerChild.VX = -1 * p.SpeedX
+		p.PlayerChild.VX = -1 * p.SpeedX * 25
 	} else {
 		p.PlayerChild.VX = 0
 	}
