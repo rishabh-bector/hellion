@@ -26,7 +26,10 @@ type Block struct {
 
 func (block *Block) GetMaterial(direction string) *material.BasicMaterial {
 	if block.OrientEnabled {
-		i, _ := strconv.Atoi(OrientationsMap[direction])
+		i, err := strconv.Atoi(OrientationsMap[direction])
+		if err != nil {
+			panic(err)
+		}
 		return block.Orientations[i]
 	}
 	return block.Material
@@ -35,7 +38,7 @@ func (block *Block) GetMaterial(direction string) *material.BasicMaterial {
 func (block *Block) CreateOrientations(orientVariation int32) {
 	block.OrientEnabled = true
 	block.OrientVariation = orientVariation
-	for dir, _ := range OrientationsMap {
+	for dir := range OrientationsMap {
 		newM := *block.Material
 		newM.AlphaMap = Engine.TextureControl.GetTexture(fmt.Sprintf("%v%s", orientVariation, dir))
 		newM.AlphaMapLevel = 1
@@ -46,10 +49,10 @@ func (block *Block) CreateOrientations(orientVariation int32) {
 
 func loadBlocks() {
 	// Main Blocks
-	Engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt.png", "dirt", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/grass2.png", "grass", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/stone/stone.png", "stone", "pixel")
-
+	Engine.TextureControl.NewTexture("./assets/blocks/dirt/dirt1.png", "dirt", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/grass_g.png", "grass", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/stone/stone1.png", "stone", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/stone/stoneBrick.png", "stoneBrick", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/torch.png", "torch", "pixel")
 
 	// Back-Blocks
@@ -59,17 +62,17 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk3.png", "treeTrunk", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeLeftRoot.png", "treeLeftRoot", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeRightRoot.png", "treeRightRoot", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeBottomRoot.png", "treeBottomRoot", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk3.png", "treeBottomRoot", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/leaves.png", "leaves", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeBranchR1.png", "treeBranchR1", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeBranchL1.png", "treeBranchL1", "pixel")
 
 	// Flora
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1.png", "topGrass1", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2.png", "topGrass2", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3.png", "topGrass3", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/nature/flower1.png", "flower1", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/nature/flower2.png", "flower2", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1_g.png", "topGrass1", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2_g.png", "topGrass2", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3_g.png", "topGrass3", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/nature/flower1_o.png", "flower1", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/nature/flower1_y.png", "flower2", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/nature/flower3.png", "flower3", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/nature/pebble.png", "pebble", "pixel")
 
@@ -119,6 +122,10 @@ func loadBlocks() {
 	stoneMaterial := Engine.MaterialControl.NewBasicMaterial()
 	stoneMaterial.DiffuseLevel = 1
 	stoneMaterial.DiffuseMap = Engine.TextureControl.GetTexture("stone")
+
+	stoneBrickMaterial := Engine.MaterialControl.NewBasicMaterial()
+	stoneBrickMaterial.DiffuseLevel = 1
+	stoneBrickMaterial.DiffuseMap = Engine.TextureControl.GetTexture("stoneBrick")
 
 	grassMaterial := Engine.MaterialControl.NewBasicMaterial()
 	grassMaterial.DiffuseLevel = 1
@@ -290,13 +297,24 @@ func loadBlocks() {
 			LightBlock: 0,
 			SaveColor:  [3]int{107, 185, 240},
 		},
+		"stoneBrick": &Block{
+			Material:   stoneBrickMaterial,
+			LightBlock: 0.15,
+			SaveColor:  [3]int{116, 116, 116},
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
 	BlockMap["grass"].CreateOrientations(1)
 	BlockMap["stone"].CreateOrientations(0)
+	BlockMap["stoneBrick"].CreateOrientations(0)
 	BlockMap["leaves"].CreateOrientations(0)
-	BlockMap["backdirt"].CreateOrientations(0)
+	BlockMap["backdirt"].CreateOrientations(1)
+
+	InverseOrientationMap = make(map[string]string)
+	for d, o := range OrientationsMap {
+		InverseOrientationMap[o] = d
+	}
 }
 
 func GetBlock(name string) *Block {
@@ -334,6 +352,7 @@ var NameToID = map[string]string{
 	"flower3":        "017",
 	"pebble":         "018",
 	"torch":          "019",
+	"stoneBrick":     "020",
 }
 
 var IDToName = map[string]string{
@@ -357,6 +376,7 @@ var IDToName = map[string]string{
 	"017": "flower3",
 	"018": "pebble",
 	"019": "torch",
+	"020": "stoneBrick",
 }
 
 func GetIDFromName(name string) string {
@@ -385,6 +405,8 @@ var OrientationsMap = map[string]string{
 	"AN": "14",
 	"NA": "15",
 }
+
+var InverseOrientationMap map[string]string
 
 func GetOrientationFromID(id string) string {
 	for orientation, bid := range OrientationsMap {

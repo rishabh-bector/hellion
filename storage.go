@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"os"
 	"rapidengine/child"
+	"strconv"
 )
 
 //  --------------------------------------------------
@@ -40,16 +43,20 @@ func NewWorldTree() WorldTree {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			w.AddWorldBlock(x, y, &child.ChildCopy{
-				ID: "00000",
+				ID:       "00000",
+				Darkness: 0,
 			})
 			w.AddBackBlock(x, y, &child.ChildCopy{
-				ID: "00000",
+				ID:       "00000",
+				Darkness: 0,
 			})
 			w.AddNatureBlock(x, y, &child.ChildCopy{
-				ID: "00000",
+				ID:       "00000",
+				Darkness: 0,
 			})
 			w.AddLightBlock(x, y, &child.ChildCopy{
-				ID: "00000",
+				ID:       "00000",
+				Darkness: 0,
 			})
 		}
 	}
@@ -135,11 +142,15 @@ func (tree *WorldTree) GetWorldBlockID(x, y int) string {
 }
 
 func (tree *WorldTree) GetBackBlockID(x, y int) string {
-	return tree.blockNodes[x][y].worldBlock.ID
+	return tree.blockNodes[x][y].backBlock.ID
 }
 
 func (tree *WorldTree) GetNatureBlockID(x, y int) string {
-	return tree.blockNodes[x][y].worldBlock.ID
+	return tree.blockNodes[x][y].natureBlock.ID
+}
+
+func (tree *WorldTree) GetLightBlockID(x, y int) string {
+	return tree.blockNodes[x][y].lightBlock.ID
 }
 
 func (tree *WorldTree) GetWorldBlockOrientation(x, y int) string {
@@ -187,6 +198,7 @@ func (tree *WorldTree) SetDarkness(x, y int, darkness float32) {
 	tree.blockNodes[x][y].worldBlock.Darkness = darkness
 	tree.blockNodes[x][y].backBlock.Darkness = darkness
 	tree.blockNodes[x][y].natureBlock.Darkness = darkness
+	tree.blockNodes[x][y].lightBlock.Darkness = darkness
 }
 
 //  --------------------------------------------------
@@ -234,8 +246,138 @@ func createLightBlock(x, y int, name string) {
 }
 
 //  --------------------------------------------------
-//  World Export
+//  World Serialization
 //  --------------------------------------------------
+
+func (tree *WorldTree) WriteToFile(path string) {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	point := float32(100) / float32(WorldHeight)
+	SaveProgressBar.SetPercentage(0)
+
+	for x := 0; x < WorldWidth; x++ {
+		f.WriteString(fmt.Sprint(HeightMap[x]))
+		f.WriteString("\n")
+	}
+
+	for x := 0; x < WorldWidth; x++ {
+		for y := 0; y < WorldHeight; y++ {
+			f.WriteString(
+				tree.GetWorldBlockID(x, y) +
+					tree.GetBackBlockID(x, y) +
+					tree.GetNatureBlockID(x, y) +
+					tree.GetLightBlockID(x, y) +
+					fmt.Sprint(tree.GetDarkness(x, y)) + "\n",
+			)
+		}
+		SaveProgressBar.IncrementPercentage(point)
+		updateSaveScreen()
+	}
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (tree *WorldTree) LoadFromFile(path string) {
+	f, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	cx := 0
+	cy := 0
+
+	point := 100.0 / float32(WorldHeight)
+	ProgressBar.SetPercentage(0)
+
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		ht, err := strconv.ParseInt(scanner.Text(), 10, 32)
+		if err != nil {
+			panic(err)
+		}
+
+		HeightMap[cx] = int(ht)
+
+		cx++
+		if cx >= WorldWidth {
+			break
+		}
+	}
+
+	cx = 0
+	cy = 0
+
+	for scanner.Scan() {
+		block := scanner.Text()
+
+		if block[3:5] == "" {
+			return
+		}
+
+		if block[:5] != "00000" {
+			WorldMap.AddWorldBlock(cx, cy, &child.ChildCopy{
+				ID:       block[:5],
+				X:        float32(cx * BlockSize),
+				Y:        float32(cy * BlockSize),
+				Material: GetBlock(GetNameFromID(block[:3])).GetMaterial(InverseOrientationMap[block[3:5]]),
+			})
+		}
+
+		if block[5:10] != "00000" {
+			WorldMap.AddBackBlock(cx, cy, &child.ChildCopy{
+				ID:       block[5:10],
+				X:        float32(cx * BlockSize),
+				Y:        float32(cy * BlockSize),
+				Material: GetBlock(GetNameFromID(block[5:8])).GetMaterial(InverseOrientationMap[block[8:10]]),
+			})
+		}
+
+		if block[10:15] != "00000" {
+			WorldMap.AddNatureBlock(cx, cy, &child.ChildCopy{
+				ID:       block[10:15],
+				X:        float32(cx * BlockSize),
+				Y:        float32(cy * BlockSize),
+				Material: GetBlock(GetNameFromID(block[10:13])).GetMaterial(InverseOrientationMap[block[13:15]]),
+			})
+		}
+
+		if block[15:20] != "00000" {
+			WorldMap.AddLightBlock(cx, cy, &child.ChildCopy{
+				ID:       block[15:20],
+				X:        float32(cx * BlockSize),
+				Y:        float32(cy * BlockSize),
+				Material: GetBlock(GetNameFromID(block[15:18])).GetMaterial(InverseOrientationMap[block[18:20]]),
+			})
+		}
+
+		darkness, err := strconv.ParseFloat(block[20:], 32)
+		if err != nil {
+			panic(err)
+		}
+		WorldMap.SetDarkness(cx, cy, float32(darkness))
+
+		cy++
+		if cy >= WorldHeight {
+			cy = 0
+			cx++
+
+			ProgressBar.IncrementPercentage(point)
+			updateLoadingScreen()
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+}
 
 func (tree *WorldTree) writeToImage() {
 	img := image.NewRGBA(image.Rect(0, 0, len(tree.blockNodes), len(tree.blockNodes[0])))

@@ -31,10 +31,23 @@ func main() {
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
 
 	InitializeTitleScene()
+	InitializeChooseScene()
 	InitializeLoadingScene()
 	InitializeWorldScene()
+	InitializeMenuScene()
+	InitializeSaveScene()
 
-	Engine.ChildControl.SetScene("title")
+	Engine.SceneControl.InstanceScene(TitleScene)
+	Engine.SceneControl.InstanceScene(ChooseScene)
+	Engine.SceneControl.InstanceScene(LoadingScene)
+	Engine.SceneControl.InstanceScene(WorldScene)
+	Engine.SceneControl.InstanceScene(SaveScene)
+
+	WorldScene.InstanceSubscene(MenuScene)
+
+	Engine.SceneControl.SetCurrentScene(TitleScene)
+
+	GamePaused = false
 
 	Engine.Initialize()
 	Engine.StartRenderer()
@@ -43,49 +56,68 @@ func main() {
 }
 
 func render(renderer *cmd.Renderer, inputs *input.Input) {
-	if Engine.ChildControl.GetScene() == "world" {
+	if Engine.SceneControl.GetCurrentScene().ID == "world" {
 		renderWorldScene(renderer, inputs)
+	}
+	if MenuScene.IsActive() {
+		renderer.RenderChild(MenuBackChild)
 	}
 }
 
 func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
-	// Update player
-	Player1.Update(inputs)
-
 	// Render Children
 	renderer.RenderChild(SkyChild)
 	renderer.RenderChildCopies(CloudChild)
 
+	renderer.RenderChild(Back3Child)
+	renderer.RenderChild(Back2Child)
+	renderer.RenderChild(Back1Child)
+
 	renderWorldInBounds(renderer)
 
 	renderer.RenderChild(Player1.PlayerChild)
-
-	// Block Selector
 	renderer.RenderChild(BlockSelect)
-	cx, cy, _ := renderer.MainCamera.GetPosition()
-	bx, by := Engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
-	snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
-	BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
-	Player1.PlayerChild.Darkness = WorldMap.GetDarkness(
-		int(Player1.PlayerChild.X/BlockSize),
-		int(Player1.PlayerChild.Y/BlockSize)+1,
-	)
-
-	if inputs.LeftMouseButton {
-		destroyBlock(snapx, snapy)
+	if inputs.Keys["escape"] && !GamePaused {
+		GamePaused = true
+		MenuScene.Activate()
 	}
 
-	if inputs.RightMouseButton {
-		if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
-			placeBlock(snapx, snapy, "torch")
-			CreateLightingLimit(snapx, snapy, 0.68, 15)
+	if !GamePaused {
+		// Update player
+		Player1.Update(inputs)
+
+		cx, cy, _ := renderer.MainCamera.GetPosition()
+		bx, by := Engine.CollisionControl.ScaleMouseCoords(inputs.MouseX, inputs.MouseY, cx, cy)
+		snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
+		BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
+
+		Player1.PlayerChild.Darkness = WorldMap.GetDarkness(
+			int(Player1.PlayerChild.X/BlockSize),
+			int(Player1.PlayerChild.Y/BlockSize)+1,
+		)
+
+		if inputs.LeftMouseButton {
+			destroyBlock(snapx, snapy)
 		}
-	}
 
-	// Camera
-	renderer.MainCamera.SetPosition(Player1.PlayerChild.X, Player1.PlayerChild.Y, -10)
-	SkyChild.SetPosition(Player1.PlayerChild.X-float32(ScreenWidth/2), Player1.PlayerChild.Y-float32(ScreenHeight/2))
+		if inputs.RightMouseButton {
+			if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
+				placeBlock(snapx, snapy, "torch")
+				CreateLightingLimit(snapx, snapy, 0.72, 18)
+			}
+		}
+
+		// Camera
+		renderer.MainCamera.SetPosition(Player1.PlayerChild.X, Player1.PlayerChild.Y, -10)
+		SkyChild.SetPosition(Player1.PlayerChild.X-float32(ScreenWidth/2), Player1.PlayerChild.Y-float32(ScreenHeight/2))
+
+		Back1Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
+		Back2Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
+		Back3Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
+
+		Back1Child.X = (Player1.PlayerChild.X - float32(ScreenWidth/2)) / 0.001
+	}
 }
 
 func renderWorldInBounds(renderer *cmd.Renderer) {

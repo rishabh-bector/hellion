@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+func initializeWorldTree() {
+	loadBlocks()
+	WorldMap = NewWorldTree()
+}
+
 func generateWorldTree() {
 
 	Engine.Logger.Info("Loading blocks...")
@@ -15,14 +20,11 @@ func generateWorldTree() {
 	ProgressBar.SetPercentage(10)
 	updateLoadingScreen()
 
-	// Make sure all blocks are loaded
-	loadBlocks()
+	// Make sure all blocks are loaded & WorldMap is empty
+	initializeWorldTree()
 
 	// Randomize seed
 	randomizeSeed()
-
-	// Create a blank world tree
-	WorldMap = NewWorldTree()
 
 	Engine.Logger.Info("Placing dirt...")
 	ProgressText.Text = "Placing dirt..."
@@ -74,7 +76,7 @@ func generateWorldTree() {
 	generateClouds()
 
 	// Place flowers and pebbles above grass
-	generateNature()
+	//generateNature()
 
 	Engine.Logger.Info("Generating structures...")
 	ProgressText.Text = "Generating structures..."
@@ -115,7 +117,8 @@ func generateWorldTree() {
 
 	// Set player starting position
 	Player1.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
-	Engine.ChildControl.SetScene("world")
+
+	Engine.SceneControl.SetCurrentScene(WorldScene)
 }
 
 //  --------------------------------------------------

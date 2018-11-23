@@ -34,7 +34,19 @@ var NoCollisionChild *child.Child2D
 var NatureChild *child.Child2D
 var CloudChild *child.Child2D
 
+var Back1Child *child.Child2D
+var Back2Child *child.Child2D
+var Back3Child *child.Child2D
+
 var l lighting.PointLight
+
+//  --------------------------------------------------
+//  General
+//  --------------------------------------------------
+
+var GamePaused bool
+
+var CurrentWorld int
 
 //  --------------------------------------------------
 //  World Generation
@@ -76,10 +88,26 @@ var HeightMap [WorldWidth]int
 var CaveMap [][]bool
 
 //  --------------------------------------------------
+//  Scenes
+//  --------------------------------------------------
+
+var TitleScene *cmd.Scene
+var ChooseScene *cmd.Scene
+var LoadingScene *cmd.Scene
+var WorldScene *cmd.Scene
+var MenuScene *cmd.Scene
+var SaveScene *cmd.Scene
+
+//  --------------------------------------------------
+//  Theme Materials
+//  --------------------------------------------------
+
+var ButtonMaterial *material.BasicMaterial
+
+//  --------------------------------------------------
 //  Data
 //  --------------------------------------------------
 
 var TransparentBlocks = []string{"backdirt", "torch"} //"topGrass1", "topGrass2", "topGrass3", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "flower1", "flower2", "flower3", "pebble"}
 var natureBlocks = []string{"leaves", "treeRightRoot", "treeLeftRoot", "treeTrunk", "treeBottomRoot", "treeBranchR1", "treeBranchL1", "topGrass1", "topGrass2", "topGrass3", "flower1", "flower2", "flower3", "pebble"}
-
 var cloudMaterial *material.BasicMaterial
