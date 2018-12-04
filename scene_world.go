@@ -11,6 +11,7 @@ func InitializeWorldScene() {
 	Engine.TextureControl.NewTexture("assets/backgrounds/parallax1.png", "parallax1", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/parallax2.png", "parallax2", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/parallax3.png", "parallax3", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/parallax4.png", "parallax4", "pixel")
 
 	backgroundMaterial := Engine.MaterialControl.NewBasicMaterial()
 	backgroundMaterial.DiffuseLevel = 1
@@ -32,11 +33,16 @@ func InitializeWorldScene() {
 	backMat3.DiffuseMap = Engine.TextureControl.GetTexture("parallax3")
 	backMat3.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
+	backMat4 := Engine.MaterialControl.NewBasicMaterial()
+	backMat4.DiffuseLevel = 1
+	backMat4.DiffuseMap = Engine.TextureControl.GetTexture("parallax4")
+	backMat4.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
+
 	Back1Child = Engine.ChildControl.NewChild2D()
 	Back1Child.AttachMaterial(backMat1)
 	Back1Child.AttachMesh(geometry.NewRectangle())
 	Back1Child.ScaleX = float32(WorldWidth * BlockSize)
-	Back1Child.ScaleY = float32(Config.ScreenHeight) + 100
+	Back1Child.ScaleY = float32(Config.ScreenHeight)
 
 	Back2Child = Engine.ChildControl.NewChild2D()
 	Back2Child.AttachMaterial(backMat2)
@@ -49,6 +55,12 @@ func InitializeWorldScene() {
 	Back3Child.AttachMesh(geometry.NewRectangle())
 	Back3Child.ScaleX = float32(WorldWidth * BlockSize)
 	Back3Child.ScaleY = float32(Config.ScreenHeight)
+
+	Back4Child = Engine.ChildControl.NewChild2D()
+	Back4Child.AttachMaterial(backMat4)
+	Back4Child.AttachMesh(geometry.NewRectangle())
+	Back4Child.ScaleX = float32(WorldWidth * BlockSize)
+	Back4Child.ScaleY = float32(Config.ScreenHeight)
 
 	SkyChild = Engine.ChildControl.NewChild2D()
 	SkyChild.AttachMaterial(backgroundMaterial)
@@ -107,6 +119,7 @@ func InitializeWorldScene() {
 
 	WorldScene.InstanceChild(SkyChild)
 
+	WorldScene.InstanceChild(Back4Child)
 	WorldScene.InstanceChild(Back3Child)
 	WorldScene.InstanceChild(Back2Child)
 	WorldScene.InstanceChild(Back1Child)

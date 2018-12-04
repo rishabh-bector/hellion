@@ -37,6 +37,7 @@ var CloudChild *child.Child2D
 var Back1Child *child.Child2D
 var Back2Child *child.Child2D
 var Back3Child *child.Child2D
+var Back4Child *child.Child2D
 
 var l lighting.PointLight
 

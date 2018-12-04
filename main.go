@@ -17,6 +17,9 @@ func main() {
 		ScreenHeight = 900
 	}
 
+	//ScreenWidth = 3840
+	//ScreenHeight = 2160
+
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = false
@@ -67,8 +70,9 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	// Render Children
 	renderer.RenderChild(SkyChild)
-	renderer.RenderChildCopies(CloudChild)
+	//renderer.RenderChildCopies(CloudChild)
 
+	renderer.RenderChild(Back4Child)
 	renderer.RenderChild(Back3Child)
 	renderer.RenderChild(Back2Child)
 	renderer.RenderChild(Back1Child)
@@ -115,8 +119,13 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		Back1Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
 		Back2Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
 		Back3Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
+		Back4Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
 
-		Back1Child.X = (Player1.PlayerChild.X - float32(ScreenWidth/2)) / 0.001
+		// Parallax: Higher divisor = faster movement = appears closer
+		Back1Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.8
+		Back2Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.6
+		Back3Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.3
+		Back4Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.2
 	}
 }
 

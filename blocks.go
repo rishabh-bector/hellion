@@ -219,7 +219,7 @@ func loadBlocks() {
 		},
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
-			LightBlock: 0.05,
+			LightBlock: 0.035,
 			SaveColor:  [3]int{70, 48, 38},
 		},
 		"leaves": &Block{

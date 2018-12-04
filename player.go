@@ -93,7 +93,7 @@ func InitializePlayer() {
 		God:            false,
 		PlayerChild:    PlayerChild,
 		PlayerMaterial: playerMaterial,
-		SpeedX:         4,
+		SpeedX:         5,
 		SpeedY:         20,
 		Gravity:        1.05,
 		NumJumps:       1,
