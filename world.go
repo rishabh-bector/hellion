@@ -157,6 +157,9 @@ func destroyBlock(x, y int) {
 	}
 
 	WorldMap.RemoveWorldBlock(x, y)
+	WorldMap.RemoveGrassBlock(x, y)
+	WorldMap.RemoveNatureBlock(x, y)
+
 	createBackBlock(x, y, "backdirt")
 	orientSingleBlock("backdirt", true, x, y)
 

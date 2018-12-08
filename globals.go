@@ -32,6 +32,7 @@ var WorldChild *child.Child2D
 var SkyChild *child.Child2D
 var NoCollisionChild *child.Child2D
 var NatureChild *child.Child2D
+var GrassChild *child.Child2D
 var CloudChild *child.Child2D
 
 var Back1Child *child.Child2D

@@ -82,6 +82,8 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	renderer.RenderChild(Player1.PlayerChild)
 	renderer.RenderChild(BlockSelect)
 
+	renderFrontWorldInBounds(renderer)
+
 	if inputs.Keys["escape"] && !GamePaused {
 		GamePaused = true
 		MenuScene.Activate()
@@ -141,8 +143,21 @@ func renderWorldInBounds(renderer *cmd.Renderer) {
 			if cpy := WorldMap.GetWorldBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
 				renderer.RenderCopy(WorldChild, *cpy)
 			}
+			if cpy := WorldMap.GetGrassBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(GrassChild, *cpy)
+			}
 			if cpy := WorldMap.GetLightBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
 				renderer.RenderCopy(NoCollisionChild, *cpy)
+			}
+		}
+	}
+}
+
+func renderFrontWorldInBounds(renderer *cmd.Renderer) {
+	for x := int(Player1.PlayerChild.X) - 50 - ScreenWidth/2; x < int(Player1.PlayerChild.X)+50+ScreenWidth/2; x += BlockSize {
+		for y := int(Player1.PlayerChild.Y) - 50 - ScreenHeight/2; y < int(Player1.PlayerChild.Y)+50+ScreenHeight/2; y += BlockSize {
+			if cpy := WorldMap.GetGrassBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
+				renderer.RenderCopy(GrassChild, *cpy)
 			}
 		}
 	}

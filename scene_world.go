@@ -98,6 +98,12 @@ func InitializeWorldScene() {
 	NatureChild.ScaleY = BlockSize
 	NatureChild.EnableCopying()
 
+	GrassChild = Engine.ChildControl.NewChild2D()
+	GrassChild.AttachMesh(geometry.NewRectangle())
+	GrassChild.ScaleX = BlockSize
+	GrassChild.ScaleY = BlockSize / 1.5
+	GrassChild.EnableCopying()
+
 	Engine.TextureControl.NewTexture("./assets/cloud1.png", "cloud1", "pixel")
 	cloudMaterial = Engine.MaterialControl.NewBasicMaterial()
 	cloudMaterial.DiffuseLevel = 1
@@ -128,6 +134,7 @@ func InitializeWorldScene() {
 	WorldScene.InstanceChild(NoCollisionChild)
 	WorldScene.InstanceChild(NatureChild)
 	WorldScene.InstanceChild(WorldChild)
+	WorldScene.InstanceChild(GrassChild)
 	WorldScene.InstanceChild(Player1.PlayerChild)
 	WorldScene.InstanceChild(BlockSelect)
 }

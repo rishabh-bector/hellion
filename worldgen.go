@@ -133,7 +133,7 @@ func generateHeightMap() {
 		HeightMap[x] = GrassMinimum + int(Flatness*gen.Noise1D(float64(x))*float64(WorldHeight))
 	}
 	for x := 0; x < WorldWidth; x++ {
-		createWorldBlock(x, HeightMap[x], "grass")
+		createWorldBlock(x, HeightMap[x], "dirt")
 	}
 }
 
@@ -141,7 +141,7 @@ func generateDirt() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight-1; y++ {
 			createWorldBlock(x, y, "dirt")
-			if WorldMap.GetWorldBlockName(x, y+1) == "grass" {
+			if WorldMap.GetWorldBlockName(x, y+1) == "dirt" {
 				break
 			}
 		}
@@ -192,7 +192,7 @@ func growGrass() {
 	for x := 0; x < WorldWidth; x++ {
 		for y := 0; y < WorldHeight; y++ {
 			if WorldMap.GetWorldBlockName(x, y) == "dirt" && (WorldMap.GetWorldBlockName(x, y+1) == "sky" || WorldMap.GetBackBlockName(x, y+1) == "backdirt") {
-				createWorldBlock(x, y, "grass")
+				createGrassBlock(x, y, "grasstop")
 			}
 		}
 	}

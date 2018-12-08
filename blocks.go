@@ -56,7 +56,7 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/torch.png", "torch", "pixel")
 
 	// Back-Blocks
-	Engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt.png", "backdirt", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/backblocks/backdirt8.png", "backdirt", "pixel")
 
 	// Tree
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeTrunk3.png", "treeTrunk", "pixel")
@@ -68,6 +68,7 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/tree/treeBranchL1.png", "treeBranchL1", "pixel")
 
 	// Flora
+	Engine.TextureControl.NewTexture("./assets/blocks/grass/grasstop.png", "grasstop", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass1_g.png", "topGrass1", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass2_g.png", "topGrass2", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/grass/topGrass3_g.png", "topGrass3", "pixel")
@@ -96,7 +97,7 @@ func loadBlocks() {
 
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/LN.png", "1LN", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/RN.png", "1RN", "pixel")
-	Engine.TextureControl.NewTexture("./assets/blocks/grass/transparency/NT.png", "1NT", "pixel")
+	Engine.TextureControl.NewTexture("./assets/blocks/transparency/NT.png", "1NT", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/NB.png", "1NB", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/LA.png", "1LA", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/RA.png", "1RA", "pixel")
@@ -194,6 +195,10 @@ func loadBlocks() {
 	torchMaterial := Engine.MaterialControl.NewBasicMaterial()
 	torchMaterial.DiffuseLevel = 1
 	torchMaterial.DiffuseMap = Engine.TextureControl.GetTexture("torch")
+
+	grasstopMaterial := Engine.MaterialControl.NewBasicMaterial()
+	grasstopMaterial.DiffuseLevel = 1
+	grasstopMaterial.DiffuseMap = Engine.TextureControl.GetTexture("grasstop")
 
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
@@ -302,6 +307,11 @@ func loadBlocks() {
 			LightBlock: 0.15,
 			SaveColor:  [3]int{116, 116, 116},
 		},
+		"grasstop": &Block{
+			Material:   grasstopMaterial,
+			LightBlock: 0.15,
+			SaveColor:  [3]int{116, 116, 116},
+		},
 	}
 
 	BlockMap["dirt"].CreateOrientations(0)
@@ -353,6 +363,7 @@ var NameToID = map[string]string{
 	"pebble":         "018",
 	"torch":          "019",
 	"stoneBrick":     "020",
+	"grasstop":       "021",
 }
 
 var IDToName = map[string]string{
@@ -377,6 +388,7 @@ var IDToName = map[string]string{
 	"018": "pebble",
 	"019": "torch",
 	"020": "stoneBrick",
+	"021": "grasstop",
 }
 
 func GetIDFromName(name string) string {

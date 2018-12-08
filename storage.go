@@ -34,6 +34,7 @@ type BlockNode struct {
 	worldBlock  *child.ChildCopy
 	backBlock   *child.ChildCopy
 	natureBlock *child.ChildCopy
+	grassBlock  *child.ChildCopy
 	lightBlock  *child.ChildCopy
 }
 
@@ -51,6 +52,10 @@ func NewWorldTree() WorldTree {
 				Darkness: 0,
 			})
 			w.AddNatureBlock(x, y, &child.ChildCopy{
+				ID:       "00000",
+				Darkness: 0,
+			})
+			w.AddGrassBlock(x, y, &child.ChildCopy{
 				ID:       "00000",
 				Darkness: 0,
 			})
@@ -83,6 +88,10 @@ func (tree *WorldTree) AddNatureBlock(x, y int, cpy *child.ChildCopy) {
 	tree.blockNodes[x][y].natureBlock = cpy
 }
 
+func (tree *WorldTree) AddGrassBlock(x, y int, cpy *child.ChildCopy) {
+	tree.blockNodes[x][y].grassBlock = cpy
+}
+
 func (tree *WorldTree) AddLightBlock(x, y int, cpy *child.ChildCopy) {
 	tree.blockNodes[x][y].lightBlock = cpy
 }
@@ -105,6 +114,12 @@ func (tree *WorldTree) RemoveNatureBlock(x, y int) {
 	}
 }
 
+func (tree *WorldTree) RemoveGrassBlock(x, y int) {
+	tree.blockNodes[x][y].grassBlock = &child.ChildCopy{
+		ID: "00000",
+	}
+}
+
 //  --------------------------------------------------
 //  Node Retrieval
 //  --------------------------------------------------
@@ -121,6 +136,10 @@ func (tree *WorldTree) GetNatureBlock(x, y int) *child.ChildCopy {
 	return tree.blockNodes[x][y].natureBlock
 }
 
+func (tree *WorldTree) GetGrassBlock(x, y int) *child.ChildCopy {
+	return tree.blockNodes[x][y].grassBlock
+}
+
 func (tree *WorldTree) GetLightBlock(x, y int) *child.ChildCopy {
 	return tree.blockNodes[x][y].lightBlock
 }
@@ -135,6 +154,10 @@ func (tree *WorldTree) GetBackBlockName(x, y int) string {
 
 func (tree *WorldTree) GetNatureBlockName(x, y int) string {
 	return GetNameFromID(tree.blockNodes[x][y].natureBlock.ID[:3])
+}
+
+func (tree *WorldTree) GetGrassBlockName(x, y int) string {
+	return GetNameFromID(tree.blockNodes[x][y].grassBlock.ID[:3])
 }
 
 func (tree *WorldTree) GetWorldBlockID(x, y int) string {
@@ -187,6 +210,10 @@ func (tree *WorldTree) UpdateNatureBlockMaterial(x, y int) {
 	tree.blockNodes[x][y].natureBlock.Material = GetBlock(tree.GetNatureBlockName(x, y)).GetMaterial(tree.GetWorldBlockOrientation(x, y))
 }
 
+func (tree *WorldTree) UpdateGrassBlockMaterial(x, y int) {
+	tree.blockNodes[x][y].grassBlock.Material = GetBlock(tree.GetGrassBlockName(x, y)).GetMaterial(tree.GetWorldBlockOrientation(x, y))
+}
+
 func (tree *WorldTree) SetWorldBlockOrientation(x, y int, orient string) {
 	tree.blockNodes[x][y].worldBlock.ID = tree.blockNodes[x][y].worldBlock.ID[:3] + OrientationsMap[orient]
 }
@@ -198,6 +225,7 @@ func (tree *WorldTree) SetDarkness(x, y int, darkness float32) {
 	tree.blockNodes[x][y].worldBlock.Darkness = darkness
 	tree.blockNodes[x][y].backBlock.Darkness = darkness
 	tree.blockNodes[x][y].natureBlock.Darkness = darkness
+	tree.blockNodes[x][y].grassBlock.Darkness = darkness
 	tree.blockNodes[x][y].lightBlock.Darkness = darkness
 }
 
@@ -229,6 +257,16 @@ func createNatureBlock(x, y int, name string) {
 	WorldMap.AddNatureBlock(x, y, &child.ChildCopy{
 		X:        float32(x * BlockSize),
 		Y:        float32(y*BlockSize) - 5,
+		Material: GetBlock(name).GetMaterial("NN"),
+		Darkness: 0,
+		ID:       GetIDFromName(name) + "00",
+	})
+}
+
+func createGrassBlock(x, y int, name string) {
+	WorldMap.AddGrassBlock(x, y, &child.ChildCopy{
+		X:        float32(x * BlockSize),
+		Y:        float32(y*BlockSize) + 20,
 		Material: GetBlock(name).GetMaterial("NN"),
 		Darkness: 0,
 		ID:       GetIDFromName(name) + "00",
