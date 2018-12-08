@@ -1,81 +1,70 @@
 package main
 
-// import (
-// 	//"rapidengine/child"
-// 	//"math"
-// )
+import (
+	//"rapidengine/child"
+	//"math"
+)
 
-// // type Monster interface {
+type Monster interface {
 
-// // 	Move func(direction string)
+	Move(direction string)
 
-// // 	Jump func()
+    Jump()
 
-// // 	Attack func(direction string)
+	Attack(direction string)
 
-// // 	X int
+}
 
-// // 	Y int
+type Goblin struct {
+	Health int
+	X int
+	Y int
+	VelocityX int
+	VelocityY int
+	Texture string
+	Width int
+	Height int
+	ContactDamage int
 
-// // 	VelocityX int
+}
 
-// // 	VelocityY int
+func (g *Goblin) Move(direction string) {
+		if direction == "left" && g.VelocityX > 0 {
+			g.VelocityX *= -1
+		}
+		if direction == "right" && g.VelocityX < 0 {
+			g.VelocityX *= -1
+		}
+	}
 
-// // 	Health int
+func (g *Goblin) Jump() {
+	g.VelocityY = 10
+}
 
-// // 	Texture string
+func (g* Goblin) Attack(direction string) {
+	if direction == "left" {
+		//play attack animation
+	}
+	if direction == "right" {
+		//play attack animation
+	}
+}
 
-// // 	DropMap map[string]int
 
-// // 	Width int
+var g = Goblin{
 
-// // 	Height int
+	Health: 100,
 
-// // 	ContactDamage int
-// // }
+	Texture: "/assets/player/OrcBoss.png",
 
-// type Goblin struct {
-// 	Health int
-// 	X int
-// 	Y int
-// 	VelocityX int
-// 	VelocityY int
-// 	Texture string
-// 	Move func(direction string)
-// 	Jump func()
-// 	Width int
-// 	Height int
-// 	ContactDamage int
+	Width: 1,
 
-// }
+	Height: 2,
 
-// var g = Goblin{
+	ContactDamage: 50,
 
-// 	Move: func(direction string) {
-// 		if direction == "left"  && g.VelocityX > 0 {
-// 			g.VelocityX *= -1
-// 		}
-// 		if direction == "right" && g.VelocityX < 0 {
-// 			g.VelocityX *= -1
-// 		}
-// 	},
+	VelocityX: 0,
 
-// 	Jump: func() {
-// 		g.VelocityY = 10
-// 	},
+	VelocityY: 0,
 
-// 	Health: 100,
-
-// 	Texture: "/assets/player/OrcBoss.png",
-
-// 	Width: 1,
-
-// 	Height: 2,
-
-// 	ContactDamage: 50,
-
-// 	VelocityX: 0,
-
-// 	VelocityY: 0,
-
-// }
+}

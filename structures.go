@@ -6,7 +6,7 @@ import "math/rand"
 // 	"sky":            0,
 // 	"dirt":           1,
 // 	"grass":          2,
-// 	"stone":          20,
+// 	"stone":          3,
 // 	"backdirt":       4,
 // 	"leaves":         5,
 // 	"treeRightRoot":  6,
@@ -15,12 +15,12 @@ import "math/rand"
 // 	"treeBottomRoot": 9,
 // 	"topGrass1":      10,
 // 	"topGrass2":      11,
-// 	"topGrass20":      12,
-// 	"treeBranchR1":   120,
+// 	"topGrass3":      12,
+// 	"treeBranchR1":   13,
 // 	"treeBranchL1":   14,
 // 	"flower1":        15,
 // 	"flower2":        16,
-// 	"flower20":        17,
+// 	"flower3":        17,
 // 	"pebble":         18,
 // 	"torch":          19,
 // }
@@ -307,7 +307,7 @@ func generateStructures() {
 					currentX -= current.Spacing[i-1] + 10
 				}
 				lowestY := HeightMap[currentX]
-				for x := currentX; x < currentX-len(building.Layout[0]); x++ {
+				for x := currentX; x > currentX-len(building.Layout[0]); x-- {
 					if HeightMap[x] < lowestY {
 						lowestY = HeightMap[x]
 					}
@@ -345,9 +345,9 @@ func flipMatrix(mat [][]int) [][]int {
 		fin[nut] = make([]int, len(mat[nut]))
 	}
 
-	for y := 0; y < len(mat); y++ {
-		for x := len(mat[y]); x > 0; x-- {
-			fin[y][x-1] = mat[y][len(mat[y])-x]
+	for x := 0; x < len(mat); x++ {
+		for y := 0; y < len(mat[x]); y++ {
+			fin[x][y] = mat[x][len(mat[x])-y-1]
 		}
 	}
 
