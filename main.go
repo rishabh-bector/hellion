@@ -50,6 +50,11 @@ func main() {
 
 	Engine.SceneControl.SetCurrentScene(TitleScene)
 
+	Engine.PostControl.EnablePostProcessing()
+	Engine.PostControl.EnableBloom(50, 4)
+	Engine.PostControl.BloomOffsetX = -12
+	Engine.PostControl.BloomOffsetY = -12
+
 	GamePaused = false
 
 	Engine.Initialize()
@@ -64,6 +69,33 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 	if MenuScene.IsActive() {
 		renderer.RenderChild(MenuBackChild)
+	}
+
+	if inputs.Keys["b"] {
+		Engine.PostControl.BloomIntensity += 0.01
+	}
+	if inputs.Keys["v"] {
+		Engine.PostControl.BloomIntensity -= 0.01
+	}
+
+	if inputs.Keys["c"] {
+		Engine.PostControl.BloomThreshold += 0.01
+	}
+	if inputs.Keys["x"] {
+		Engine.PostControl.BloomThreshold -= 0.01
+	}
+
+	if inputs.Keys["up"] {
+		Engine.PostControl.BloomOffsetY += 1
+	}
+	if inputs.Keys["down"] {
+		Engine.PostControl.BloomOffsetY -= 1
+	}
+	if inputs.Keys["left"] {
+		Engine.PostControl.BloomOffsetX -= 1
+	}
+	if inputs.Keys["right"] {
+		Engine.PostControl.BloomOffsetX += 1
 	}
 }
 

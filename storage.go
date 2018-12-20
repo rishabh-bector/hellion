@@ -256,7 +256,7 @@ func createBackBlock(x, y int, name string) {
 func createNatureBlock(x, y int, name string) {
 	WorldMap.AddNatureBlock(x, y, &child.ChildCopy{
 		X:        float32(x * BlockSize),
-		Y:        float32(y*BlockSize) - 5,
+		Y:        float32(y*BlockSize) - 2,
 		Material: GetBlock(name).GetMaterial("NN"),
 		Darkness: 0,
 		ID:       GetIDFromName(name) + "00",

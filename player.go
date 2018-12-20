@@ -90,7 +90,7 @@ func InitializePlayer() {
 	PlayerChild.Gravity = 0
 
 	Player1 = Player{
-		God:            true,
+		God:            false,
 		PlayerChild:    PlayerChild,
 		PlayerMaterial: playerMaterial,
 		SpeedX:         5,
@@ -201,7 +201,7 @@ func (p *Player) CheckWorldCollision() (bool, bool, bool, bool) {
 	}
 
 	// auto jump
-	if right && WorldMap.GetWorldBlockID(px + 1, py + 2) == "00000" && WorldMap.GetWorldBlockID(px + 1, py + 3) == "00000" && WorldMap.GetWorldBlockID(px + 1, py + 4) == "00000" {
+	if right && WorldMap.GetWorldBlockID(px+1, py+2) == "00000" && WorldMap.GetWorldBlockID(px+1, py+3) == "00000" && WorldMap.GetWorldBlockID(px+1, py+4) == "00000" {
 		p.PlayerChild.VY = p.SpeedY
 	}
 

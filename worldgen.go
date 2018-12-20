@@ -76,7 +76,7 @@ func generateWorldTree() {
 	generateClouds()
 
 	// Place flowers and pebbles above grass
-	//generateNature()
+	generateNature()
 
 	Engine.Logger.Info("Generating structures...")
 	ProgressText.Text = "Generating structures..."
@@ -216,30 +216,10 @@ func generateClouds() {
 
 func generateNature() {
 	for x := 1; x < WorldWidth-1; x++ {
-		if WorldMap.GetWorldBlockName(x, HeightMap[x]) == "grass" && WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "sky" || WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "backdirt" {
+		if WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "sky" || WorldMap.GetWorldBlockName(x, HeightMap[x]+1) == "backdirt" {
 			natureRand := rand.Intn(16)
 			if natureRand == 15 && WorldMap.GetWorldBlockName(x-1, HeightMap[x]+2) != "treetrunk" {
-				createNatureBlock(x, HeightMap[x]+1, "treeBottomRoot")
-				height := 4 + rand.Intn(8)
-				for i := 0; i < height; i++ {
-					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						createNatureBlock(x-1, HeightMap[x]+i+2, "treeBranchL1")
-					}
-					if rand.Intn(4) == 0 && i < height-2 && i > 0 {
-						createNatureBlock(x+1, HeightMap[x]+i+2, "treeBranchR1")
-					}
-					createNatureBlock(x, HeightMap[x]+i+2, "treeTrunk")
-				}
 
-				createNatureBlock(x-1, HeightMap[x]+height+1, "leaves") // TL
-				createNatureBlock(x, HeightMap[x]+height+1, "leaves")   // TM
-				createNatureBlock(x+1, HeightMap[x]+height+1, "leaves") // TR
-				createNatureBlock(x-1, HeightMap[x]+height, "leaves")   // ML
-				createNatureBlock(x, HeightMap[x]+height, "leaves")     // MM
-				createNatureBlock(x+1, HeightMap[x]+height, "leaves")   // MR
-				createNatureBlock(x-1, HeightMap[x]+height-1, "leaves") //BL
-				createNatureBlock(x, HeightMap[x]+height-1, "leaves")   // BM
-				createNatureBlock(x+1, HeightMap[x]+height-1, "leaves") //BL
 			} else if natureRand > 13 {
 				floraRand := rand.Intn(4) + 1
 				floraType := fmt.Sprintf("flower%d", floraRand)
