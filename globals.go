@@ -99,6 +99,8 @@ var LoadingScene *cmd.Scene
 var WorldScene *cmd.Scene
 var MenuScene *cmd.Scene
 var SaveScene *cmd.Scene
+var HotbarScene *cmd.Scene
+var InventoryScene *cmd.Scene
 
 //  --------------------------------------------------
 //  Theme Materials

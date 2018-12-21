@@ -149,6 +149,15 @@ func placeBlock(x, y int, block string) {
 	} else {
 		createWorldBlock(x, y, block)
 	}
+
+	orientSingleBlock(block, true, x, y)
+
+	FixLightingAt(x, y)
+
+	fixBlock(x+1, y)
+	fixBlock(x, y+1)
+	fixBlock(x-1, y)
+	fixBlock(x, y-1)
 }
 
 func destroyBlock(x, y int) {
@@ -159,9 +168,12 @@ func destroyBlock(x, y int) {
 	WorldMap.RemoveWorldBlock(x, y)
 	WorldMap.RemoveGrassBlock(x, y)
 	WorldMap.RemoveNatureBlock(x, y)
+	WorldMap.RemoveBackBlock(x, y)
 
-	createBackBlock(x, y, "backdirt")
-	orientSingleBlock("backdirt", true, x, y)
+	if y <= HeightMap[x] {
+		createBackBlock(x, y, "backdirt")
+		orientSingleBlock("backdirt", true, x, y)
+	}
 
 	FixLightingAt(x, y)
 

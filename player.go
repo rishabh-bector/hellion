@@ -111,9 +111,11 @@ func (p *Player) Update(inputs *input.Input) {
 	p.UpdateAnimation()
 }
 
+var TCSpeed = float32(11.2)
+
 func (p *Player) UpdateMovement(inputs *input.Input) {
 
-	top, left, bottom, right := p.CheckWorldCollision()
+	top, left, bottom, right, topleft, topright := p.CheckWorldCollision()
 	if bottom {
 		if p.God {
 			p.NumJumps = 10000
@@ -142,10 +144,18 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	}
 
 	if left && p.PlayerChild.VX > 1 {
-		p.PlayerChild.VX = 0
+		if topleft {
+			p.PlayerChild.VX = 0
+		} else {
+			p.PlayerChild.VY = TCSpeed
+		}
 	}
 	if right && p.PlayerChild.VX < 1 {
-		p.PlayerChild.VX = 0
+		if topright {
+			p.PlayerChild.VX = 0
+		} else {
+			p.PlayerChild.VY = TCSpeed
+		}
 	}
 	if top && p.PlayerChild.VY > 0 {
 		p.PlayerChild.VY = 0
@@ -178,11 +188,14 @@ func (p *Player) UpdateAnimation() {
 }
 
 // top, left, bottom, right
-func (p *Player) CheckWorldCollision() (bool, bool, bool, bool) {
+func (p *Player) CheckWorldCollision() (bool, bool, bool, bool, bool, bool) {
 	top := false
 	left := false
 	bottom := false
 	right := false
+
+	topleft := false
+	topright := false
 
 	px := int((p.PlayerChild.X + BlockSize/2) / BlockSize)
 	py := int((p.PlayerChild.Y)/BlockSize + 1)
@@ -193,6 +206,7 @@ func (p *Player) CheckWorldCollision() (bool, bool, bool, bool) {
 	if WorldMap.GetWorldBlockID(px, py-1) != "00000" {
 		bottom = true
 	}
+
 	if WorldMap.GetWorldBlockID(px-1, py) != "00000" || WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
 		left = true
 	}
@@ -200,10 +214,12 @@ func (p *Player) CheckWorldCollision() (bool, bool, bool, bool) {
 		right = true
 	}
 
-	// auto jump
-	if right && WorldMap.GetWorldBlockID(px+1, py+2) == "00000" && WorldMap.GetWorldBlockID(px+1, py+3) == "00000" && WorldMap.GetWorldBlockID(px+1, py+4) == "00000" {
-		p.PlayerChild.VY = p.SpeedY
+	if WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
+		topleft = true
+	}
+	if WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
+		topright = true
 	}
 
-	return top, left, bottom, right
+	return top, left, bottom, right, topleft, topright
 }

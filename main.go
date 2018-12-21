@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	_ "net/http/pprof"
 	"rapidengine/cmd"
 	"rapidengine/input"
@@ -22,7 +23,7 @@ func main() {
 
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
-	Config.ShowFPS = false
+	Config.ShowFPS = true
 	Config.FullScreen = false
 	Config.GammaCorrection = false
 	Config.VSync = false
@@ -39,6 +40,7 @@ func main() {
 	InitializeWorldScene()
 	InitializeMenuScene()
 	InitializeSaveScene()
+	InitializeHotbarScene()
 
 	Engine.SceneControl.InstanceScene(TitleScene)
 	Engine.SceneControl.InstanceScene(ChooseScene)
@@ -52,6 +54,8 @@ func main() {
 
 	Engine.PostControl.EnablePostProcessing()
 	Engine.PostControl.EnableBloom(50, 4)
+	Engine.PostControl.BloomIntensity = 1.68
+	Engine.PostControl.BloomThreshold = 0.55
 	Engine.PostControl.BloomOffsetX = -12
 	Engine.PostControl.BloomOffsetY = -12
 
@@ -73,29 +77,29 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	if inputs.Keys["b"] {
 		Engine.PostControl.BloomIntensity += 0.01
+		println(Engine.PostControl.BloomIntensity)
 	}
 	if inputs.Keys["v"] {
 		Engine.PostControl.BloomIntensity -= 0.01
+		println(Engine.PostControl.BloomIntensity)
 	}
 
 	if inputs.Keys["c"] {
 		Engine.PostControl.BloomThreshold += 0.01
+		println(Engine.PostControl.BloomThreshold)
 	}
 	if inputs.Keys["x"] {
 		Engine.PostControl.BloomThreshold -= 0.01
+		println(Engine.PostControl.BloomThreshold)
 	}
 
 	if inputs.Keys["up"] {
-		Engine.PostControl.BloomOffsetY += 1
+		TCSpeed += 0.1
+		println(TCSpeed)
 	}
 	if inputs.Keys["down"] {
-		Engine.PostControl.BloomOffsetY -= 1
-	}
-	if inputs.Keys["left"] {
-		Engine.PostControl.BloomOffsetX -= 1
-	}
-	if inputs.Keys["right"] {
-		Engine.PostControl.BloomOffsetX += 1
+		TCSpeed -= 0.1
+		println(TCSpeed)
 	}
 }
 
@@ -112,7 +116,6 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	renderWorldInBounds(renderer)
 
 	renderer.RenderChild(Player1.PlayerChild)
-	renderer.RenderChild(BlockSelect)
 
 	renderFrontWorldInBounds(renderer)
 
@@ -120,7 +123,6 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		GamePaused = true
 		MenuScene.Activate()
 	}
-
 	if !GamePaused {
 		// Update player
 		Player1.Update(inputs)
@@ -130,19 +132,27 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
 		BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
+		blockDist := BlockDistance(float32(snapx*BlockSize), float32(snapy*BlockSize), Player1.PlayerChild.X, Player1.PlayerChild.Y)
+		if blockDist < 5 {
+			renderer.RenderChild(BlockSelect)
+		}
+
 		Player1.PlayerChild.Darkness = WorldMap.GetDarkness(
 			int(Player1.PlayerChild.X/BlockSize),
 			int(Player1.PlayerChild.Y/BlockSize)+1,
 		)
 
-		if inputs.LeftMouseButton {
+		if inputs.LeftMouseButton && blockDist < 5 {
 			destroyBlock(snapx, snapy)
 		}
 
 		if inputs.RightMouseButton {
 			if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {
-				placeBlock(snapx, snapy, "torch")
-				CreateLightingLimit(snapx, snapy, 0.72, 18)
+				placeBlock(snapx, snapy, HotBarItems[ActiveItem])
+
+				if HotBarItems[ActiveItem] == "torch" {
+					CreateLightingLimit(snapx, snapy, 0.72, 18)
+				}
 			}
 		}
 
@@ -160,6 +170,11 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		Back2Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.6
 		Back3Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.3
 		Back4Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.2
+
+		Back1Child.Y = Back1Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.8
+		Back2Child.Y = Back2Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.6
+		Back3Child.Y = Back3Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.3
+		Back4Child.Y = Back4Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.2
 	}
 }
 
@@ -193,4 +208,10 @@ func renderFrontWorldInBounds(renderer *cmd.Renderer) {
 			}
 		}
 	}
+}
+
+func BlockDistance(x1, y1, x2, y2 float32) int {
+	dx := ((x1) - (x2)) * ((x1) - (x2))
+	dy := ((y1) - (y2)) * ((y1) - (y2))
+	return int(math.Sqrt(float64(dx+dy))) / BlockSize
 }
