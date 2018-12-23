@@ -116,6 +116,8 @@ func InitializeWorldScene() {
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
 
+	initializeWorldTree()
+
 	//   --------------------------------------------------
 	//   Instancing
 	//   --------------------------------------------------

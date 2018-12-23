@@ -20,9 +20,6 @@ func generateWorldTree() {
 	ProgressBar.SetPercentage(10)
 	updateLoadingScreen()
 
-	// Make sure all blocks are loaded & WorldMap is empty
-	initializeWorldTree()
-
 	// Randomize seed
 	randomizeSeed()
 

@@ -93,16 +93,16 @@ func InitializePlayer() {
 		God:            false,
 		PlayerChild:    PlayerChild,
 		PlayerMaterial: playerMaterial,
-		SpeedX:         5,
-		SpeedY:         20,
-		Gravity:        1.05,
+		SpeedX:         150,
+		SpeedY:         600,
+		Gravity:        1710,
 		NumJumps:       1,
 		CurrentAnim:    "idle",
 	}
 
 	if Player1.God {
 		Player1.NumJumps = 10000
-		Player1.SpeedX = 20
+		Player1.SpeedX = 600
 	}
 }
 
@@ -111,7 +111,7 @@ func (p *Player) Update(inputs *input.Input) {
 	p.UpdateAnimation()
 }
 
-var TCSpeed = float32(11.2)
+var TCSpeed = float32(11.2 * 30)
 
 func (p *Player) UpdateMovement(inputs *input.Input) {
 
@@ -124,7 +124,7 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		}
 		p.PlayerChild.VY = 0
 	} else {
-		p.PlayerChild.VY -= p.Gravity
+		p.PlayerChild.VY -= p.Gravity * float32(Engine.Renderer.DeltaFrameTime)
 	}
 
 	if inputs.Keys["w"] && p.NumJumps > 0 {
@@ -179,8 +179,7 @@ func (p *Player) UpdateAnimation() {
 		p.CurrentAnim = "idle"
 		return
 	}
-
-	if p.PlayerChild.VY < -24 && p.CurrentAnim != "fall" {
+	if p.PlayerChild.VY < -300 && p.CurrentAnim != "fall" {
 		p.PlayerMaterial.PlayAnimationOnce("fall")
 		p.CurrentAnim = "fall"
 		return

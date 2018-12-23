@@ -12,6 +12,8 @@ func init() {
 	runtime.LockOSThread()
 }
 
+var QUALITY = "LOW" // "MEDIUM" // "LOW"
+
 func main() {
 	if runtime.GOOS == "darwin" {
 		ScreenWidth = 1440
@@ -49,14 +51,27 @@ func main() {
 	Engine.SceneControl.InstanceScene(SaveScene)
 
 	WorldScene.InstanceSubscene(MenuScene)
+	WorldScene.InstanceSubscene(HotbarScene)
+
+	TitleScene.InstanceSubscene(HotbarScene)
 
 	Engine.SceneControl.SetCurrentScene(TitleScene)
+	HotbarScene.Activate()
 
-	Engine.PostControl.EnablePostProcessing()
-	Engine.PostControl.EnableBloom(50, 4)
+	if QUALITY == "HIGH" || QUALITY == "MEDIUM" {
+		Engine.PostControl.EnablePostProcessing()
+		if QUALITY == "HIGH" {
+			Engine.PostControl.EnableBloom(5, 2)
+		} else {
+			Engine.PostControl.EnableBloom(25, 4)
+		}
+	}
+
 	Engine.PostControl.BloomIntensity = 1.68
 	Engine.PostControl.BloomThreshold = 0.55
-	Engine.PostControl.BloomOffsetX = -12
+
+	//Engine.PostControl.BloomOffsetX = -12
+	Engine.PostControl.BloomOffsetX = -10
 	Engine.PostControl.BloomOffsetY = -12
 
 	GamePaused = false
@@ -71,9 +86,20 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	if Engine.SceneControl.GetCurrentScene().ID == "world" {
 		renderWorldScene(renderer, inputs)
 	}
+
 	if MenuScene.IsActive() {
 		renderer.RenderChild(MenuBackChild)
 	}
+
+	if WorldScene.IsActive() {
+		renderer.RenderChild(ActiveChild)
+		for i := 0; i < NumSlots; i++ {
+			renderer.RenderChild(BarChildren[i])
+		}
+	}
+
+	ActiveItem = int(math.Abs(inputs.Scroll*10)) % NumSlots
+	UpdateActiveItem()
 
 	if inputs.Keys["b"] {
 		Engine.PostControl.BloomIntensity += 0.01
@@ -94,13 +120,20 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 
 	if inputs.Keys["up"] {
-		TCSpeed += 0.1
-		println(TCSpeed)
+		Engine.PostControl.BloomOffsetY++
+		Player1.Gravity++
 	}
 	if inputs.Keys["down"] {
-		TCSpeed -= 0.1
-		println(TCSpeed)
+		Engine.PostControl.BloomOffsetY--
+		Player1.Gravity--
 	}
+	if inputs.Keys["left"] {
+		Engine.PostControl.BloomOffsetX++
+	}
+	if inputs.Keys["right"] {
+		Engine.PostControl.BloomOffsetX--
+	}
+	//println(Engine.PostControl.BloomOffsetX, Engine.PostControl.BloomOffsetY)
 }
 
 func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {

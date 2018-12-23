@@ -317,7 +317,7 @@ func loadBlocks() {
 	BlockMap["dirt"].CreateOrientations(0)
 	BlockMap["grass"].CreateOrientations(1)
 	BlockMap["stone"].CreateOrientations(0)
-	BlockMap["stoneBrick"].CreateOrientations(0)
+	//BlockMap["stoneBrick"].CreateOrientations(0)
 	BlockMap["leaves"].CreateOrientations(0)
 	BlockMap["backdirt"].CreateOrientations(1)
 
