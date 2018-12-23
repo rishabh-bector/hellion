@@ -149,6 +149,9 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	renderWorldInBounds(renderer)
 
 	renderer.RenderChild(Player1.PlayerChild)
+	for _, enemy := range EnemyChildList {
+		renderer.RenderChild(enemy.MonsterChild)
+	}
 
 	renderFrontWorldInBounds(renderer)
 
