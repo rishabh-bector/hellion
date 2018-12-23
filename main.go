@@ -53,7 +53,7 @@ func main() {
 	Engine.SceneControl.SetCurrentScene(TitleScene)
 
 	Engine.PostControl.EnablePostProcessing()
-	Engine.PostControl.EnableBloom(50, 4)
+	//Engine.PostControl.EnableBloom(50, 4)
 	Engine.PostControl.BloomIntensity = 1.68
 	Engine.PostControl.BloomThreshold = 0.55
 	Engine.PostControl.BloomOffsetX = -12
@@ -116,6 +116,9 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	renderWorldInBounds(renderer)
 
 	renderer.RenderChild(Player1.PlayerChild)
+	for _, enemy := range EnemyChildList {
+		renderer.RenderChild(enemy.MonsterChild)
+	}
 
 	renderFrontWorldInBounds(renderer)
 

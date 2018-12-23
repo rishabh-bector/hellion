@@ -23,6 +23,7 @@ type Player struct {
 	CurrentAnim string
 
 	Gravity float32
+	Health int
 }
 
 func InitializePlayer() {
@@ -98,6 +99,7 @@ func InitializePlayer() {
 		Gravity:        1.05,
 		NumJumps:       1,
 		CurrentAnim:    "idle",
+		Health: 	    100,
 	}
 
 	if Player1.God {

@@ -40,6 +40,8 @@ var Back2Child *child.Child2D
 var Back3Child *child.Child2D
 var Back4Child *child.Child2D
 
+var EnemyChildList = make([]Goblin, 0)
+
 var l lighting.PointLight
 
 //  --------------------------------------------------
