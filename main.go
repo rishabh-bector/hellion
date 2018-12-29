@@ -12,7 +12,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "MEDIUM" // "MEDIUM" // "LOW"
+var QUALITY = "LOW" // "MEDIUM" // "LOW"
 
 func main() {
 	if runtime.GOOS == "darwin" {

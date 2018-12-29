@@ -1,6 +1,6 @@
 package main
 
-/*import (
+import (
 	"math/rand"
 )
 
@@ -27,15 +27,15 @@ type Corridor struct {
 
 func generateAllDungeons() {
 	// Number of dungeons to be generated
-	numDungeons := 20
+	numDungeons := 5
 
 	// Dimensions of total dungeon
-	dungeonWidth := 80
-	dungeonHeigh := 50
+	dungeonWidth := 100
+	dungeonHeigh := 60
 
 	// Max dimensions of a single room
-	maxRoomHeight := 10
 	maxRoomWidth := 20
+	maxRoomHeight := 10 
 
 	// Maximum number of rooms per dungeon
 	maxNumRooms := 5
@@ -68,7 +68,7 @@ func generateAllDungeons() {
 					if !roomIntersects(tempRoom, currentRoom) {
 						intersecting = false
 					} else {
-						tempRoom := generateRoom(dungeonWidth, dungeonHeigh, maxRoomWidth, maxRoomHeight, startx, starty)
+						tempRoom = generateRoom(dungeonWidth, dungeonHeigh, maxRoomWidth, maxRoomHeight, startx, starty)
 					}
 				}
 			}
@@ -179,4 +179,4 @@ func generateCorridor(r1, r2 Room) Corridor {
 	points[1] = Point{center2x, center1y}
 	points[2] = Point{center2x, center2y}
 	return Corridor{points}
-}*/
+}

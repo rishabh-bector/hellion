@@ -82,6 +82,7 @@ func generateWorldTree() {
 
 	// Generate structure
 	generateStructures()
+	generateAllDungeons()
 
 	Engine.Logger.Info("Orienting blocks...")
 	ProgressText.Text = "Orienting blocks..."
