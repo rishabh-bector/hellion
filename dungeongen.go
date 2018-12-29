@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	// "fmt"
 )
 
 type Dungeon struct {
@@ -17,8 +18,8 @@ type Point struct {
 type Room struct {
 	x int
 	y int
-	h int
 	w int
+	h int
 }
 
 type Corridor struct {
@@ -27,52 +28,50 @@ type Corridor struct {
 
 func generateAllDungeons() {
 	// Number of dungeons to be generated
-	numDungeons := 5
+	numDungeons := 50
 
 	// Dimensions of total dungeon
-	dungeonWidth := 100
-	dungeonHeigh := 60
+	dungeonWidth := 200
+	dungeonHeight := 60
 
 	// Max dimensions of a single room
-	maxRoomWidth := 20
-	maxRoomHeight := 10 
+	maxRoomWidth := 50
+	maxRoomHeight := 20 
 
 	// Maximum number of rooms per dungeon
-	maxNumRooms := 5
+	maxNumRooms := 10
 
-	// Slice of Rooms
-	rooms := make([]Room, 0)
-
-	//Slice of Corridors
-	corridors := make([]Corridor, 0)
 
 	for currentDungeon := 0; currentDungeon < numDungeons; currentDungeon++ {
-		startx := rand.Intn(WorldWidth)
-		starty := rand.Intn(WorldHeight)
+		// Slice of Rooms
+		//Engine.Logger.Info("Making a Dungeon")
+		rooms := make([]Room, 0)
 
-		// Finds a y below the height map
-		for starty > HeightMap[startx] {
-			starty = rand.Intn(WorldHeight)
-		}
+		//Slice of Corridors
+		corridors := make([]Corridor, 0)
+
+		startx := rand.Intn(WorldWidth - dungeonWidth - maxRoomWidth)
+		starty := HeightMap[startx] - rand.Intn(HeightMap[startx] - dungeonHeight - maxRoomHeight)
 
 		numRooms := 1 + rand.Intn(maxNumRooms)
 
 		// Generates Rooms
 		for r := 0; r < numRooms; r++ {
-			tempRoom := generateRoom(dungeonWidth, dungeonHeigh, maxRoomWidth, maxRoomHeight, startx, starty)
-
+			tempRoom := generateRoom(dungeonWidth, dungeonHeight, maxRoomWidth, maxRoomHeight, startx, starty)
+			//Engine.Logger.Info("Starting to make a room")
 			//checks if intersecting with all rooms
-			intersecting := true
-			for intersecting {
-				for _, currentRoom := range rooms {
-					if !roomIntersects(tempRoom, currentRoom) {
-						intersecting = false
-					} else {
-						tempRoom = generateRoom(dungeonWidth, dungeonHeigh, maxRoomWidth, maxRoomHeight, startx, starty)
-					}
+			//intersecting := true
+			for _, currentRoom := range rooms {
+				if !roomIntersects(tempRoom, currentRoom)  || len(rooms) == 0{
+					break
+				} else {
+					tempRoom = generateRoom(dungeonWidth, dungeonHeight, maxRoomWidth, maxRoomHeight, startx, starty)
+					continue
 				}
 			}
 			rooms = append(rooms, tempRoom)
+			//Engine.Logger.Info("Made A Room")
+			//Engine.Logger.Info(fmt.Sprintf("X: %d", tempRoom.x) + fmt.Sprintf(" Y: %d", tempRoom.y))
 		}
 
 		// Generates Corridors
@@ -86,6 +85,7 @@ func generateAllDungeons() {
 }
 
 func generateDungeon(dungeon Dungeon) {
+
 	// Places rooms
 	for _, room := range dungeon.rooms {
 		for x := room.x; x < room.x + room.w; x++ {
@@ -154,18 +154,21 @@ func generateDungeon(dungeon Dungeon) {
 	}
 }
 
-func generateRoom(dungeonWidth, dungeonHeigh, maxRoomWidth, maxRoomHeight, startx, starty int) Room{
+func generateRoom(dungeonWidth, dungeonHeight, maxRoomWidth, maxRoomHeight, startx, starty int) Room{
 	roomX := startx + rand.Intn(dungeonWidth)
-	roomY := starty + rand.Intn(dungeonHeigh)
+	roomY := starty + rand.Intn(dungeonHeight)
 	roomW := 5 + rand.Intn(maxRoomWidth - 4)
 	roomH := 4 + rand.Intn(maxRoomHeight - 3)
 	return Room{roomX, roomY, roomW, roomH}
 }
 
 func roomIntersects(r1, r2 Room) bool {
-	if r1.x <= r2.x + r2.w && r1.x + r1.w >= r2.x && r1.y <= r2.y + r2.h && r1.y + r1.h >= r2.y {
+	if (r1.x < r2.x + r2.w &&
+		r1.x + r1.w > r2.x &&
+		r1.y < r2.y + r2.h &&
+		r1.y + r1.h > r2.y) {
 		return true
-	}
+	 }
 	return false
 }
 
