@@ -21,6 +21,9 @@ var Config configuration.EngineConfig
 var ScreenWidth = 1920
 var ScreenHeight = 1080
 
+// Mouse Settings
+var MouseSensitivity = 9.0
+
 //  --------------------------------------------------
 //  Children
 //  --------------------------------------------------

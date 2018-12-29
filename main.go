@@ -26,7 +26,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = true
+	Config.FullScreen = false
 	Config.GammaCorrection = false
 	Config.VSync = false
 	Config.Profiling = false
@@ -60,21 +60,21 @@ func main() {
 
 	if QUALITY == "HIGH" || QUALITY == "MEDIUM" {
 		Engine.PostControl.EnablePostProcessing()
+		Engine.PostControl.EnableLightScattering(SunChild)
+
 		if QUALITY == "HIGH" {
 			Engine.PostControl.EnableBloom(25, 4)
 		} else {
 			Engine.PostControl.EnableBloom(10, 4)
 		}
+
+		Engine.PostControl.BloomIntensity = 1.68
+		Engine.PostControl.BloomThreshold = 0.55
+
+		//Engine.PostControl.BloomOffsetX = -12
+		Engine.PostControl.BloomOffsetX = -10
+		Engine.PostControl.BloomOffsetY = -12
 	}
-
-	Engine.PostControl.EnableLightScattering(SunChild)
-
-	Engine.PostControl.BloomIntensity = 1.68
-	Engine.PostControl.BloomThreshold = 0.55
-
-	//Engine.PostControl.BloomOffsetX = -12
-	Engine.PostControl.BloomOffsetX = -10
-	Engine.PostControl.BloomOffsetY = -12
 
 	GamePaused = false
 
@@ -100,7 +100,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 	}
 
-	ActiveItem = int(math.Abs(inputs.Scroll*10)) % NumSlots
+	ActiveItem = int(math.Abs(inputs.Scroll*MouseSensitivity)) % NumSlots
 	UpdateActiveItem()
 
 	if inputs.Keys["b"] {
@@ -141,7 +141,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	// Render Children
 	renderer.RenderChild(SkyChild)
-	//renderer.RenderChildCopies(CloudChild)
+	renderer.RenderChildCopies(CloudChild)
 
 	renderer.RenderChild(SunChild)
 

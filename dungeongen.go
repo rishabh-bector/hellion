@@ -1,6 +1,6 @@
 package main
 
-import (
+/*import (
 	"math/rand"
 )
 
@@ -17,7 +17,7 @@ type Point struct {
 type Room struct {
 	x int
 	y int
-	h int 
+	h int
 	w int
 }
 
@@ -179,4 +179,4 @@ func generateCorridor(r1, r2 Room) Corridor {
 	points[1] = Point{center2x, center1y}
 	points[2] = Point{center2x, center2y}
 	return Corridor{points}
-}
+}*/
