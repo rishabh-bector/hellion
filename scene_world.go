@@ -1,6 +1,7 @@
 package main
 
 import (
+	"rapidengine/cmd"
 	"rapidengine/geometry"
 )
 
@@ -115,6 +116,23 @@ func InitializeWorldScene() {
 	CloudChild.ScaleY = 145
 	CloudChild.EnableCopying()
 	CloudChild.SetSpecificRenderDistance(float32(ScreenWidth/2) + 300)
+
+	Engine.TextureControl.NewTexture("./assets/sun.png", "sun", "pixel")
+	sunMat := Engine.MaterialControl.NewBasicMaterial()
+	sunMat.Shader = Engine.ShaderControl.GetShader("sun")
+	sunMat.DiffuseLevel = 1
+	sunMat.DiffuseMap = Engine.TextureControl.GetTexture("sun")
+	sunMat.ScatterLevel = 1
+	SunChild = Engine.ChildControl.NewChild2D()
+	SunChild.AttachMesh(geometry.NewRectangle())
+	SunChild.AttachMaterial(sunMat)
+	SunChild.ScaleX = 200
+	SunChild.ScaleY = 200
+	SunChild.Static = true
+	SunChild.SetPosition(1500, 900)
+	cmd.SunX = (1500.0 + 100) / 1920.0
+	cmd.SunY = (900.0 + 100) / 1080.0
+
 	NewGoblin()
 	NewGoblin()
 	NewGoblin()
@@ -131,6 +149,8 @@ func InitializeWorldScene() {
 	WorldScene.DisableAutomaticRendering()
 
 	WorldScene.InstanceChild(SkyChild)
+
+	WorldScene.InstanceChild(SunChild)
 
 	WorldScene.InstanceChild(Back4Child)
 	WorldScene.InstanceChild(Back3Child)

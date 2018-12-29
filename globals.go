@@ -34,6 +34,7 @@ var NoCollisionChild *child.Child2D
 var NatureChild *child.Child2D
 var GrassChild *child.Child2D
 var CloudChild *child.Child2D
+var SunChild *child.Child2D
 
 var Back1Child *child.Child2D
 var Back2Child *child.Child2D

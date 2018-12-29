@@ -12,7 +12,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "LOW" // "MEDIUM" // "LOW"
+var QUALITY = "MEDIUM" // "MEDIUM" // "LOW"
 
 func main() {
 	if runtime.GOOS == "darwin" {
@@ -26,7 +26,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = false
+	Config.FullScreen = true
 	Config.GammaCorrection = false
 	Config.VSync = false
 	Config.Profiling = false
@@ -61,11 +61,13 @@ func main() {
 	if QUALITY == "HIGH" || QUALITY == "MEDIUM" {
 		Engine.PostControl.EnablePostProcessing()
 		if QUALITY == "HIGH" {
-			Engine.PostControl.EnableBloom(5, 2)
-		} else {
 			Engine.PostControl.EnableBloom(25, 4)
+		} else {
+			Engine.PostControl.EnableBloom(10, 4)
 		}
 	}
+
+	Engine.PostControl.EnableLightScattering(SunChild)
 
 	Engine.PostControl.BloomIntensity = 1.68
 	Engine.PostControl.BloomThreshold = 0.55
@@ -140,6 +142,8 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	// Render Children
 	renderer.RenderChild(SkyChild)
 	//renderer.RenderChildCopies(CloudChild)
+
+	renderer.RenderChild(SunChild)
 
 	renderer.RenderChild(Back4Child)
 	renderer.RenderChild(Back3Child)

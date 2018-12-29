@@ -113,7 +113,7 @@ func generateWorldTree() {
 	updateLoadingScreen()
 
 	// Set player starting position
-	Player1.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+25)*BlockSize))
+	Player1.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 
 	Engine.SceneControl.SetCurrentScene(WorldScene)
 }

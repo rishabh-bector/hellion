@@ -23,7 +23,7 @@ type Player struct {
 	CurrentAnim string
 
 	Gravity float32
-	Health int
+	Health  int
 }
 
 func InitializePlayer() {
@@ -99,7 +99,7 @@ func InitializePlayer() {
 		Gravity:        1710,
 		NumJumps:       1,
 		CurrentAnim:    "idle",
-		Health: 	    100,
+		Health:         100,
 	}
 
 	if Player1.God {
@@ -115,6 +115,8 @@ func (p *Player) Update(inputs *input.Input) {
 
 var TCSpeed = float32(11.2 * 30)
 
+var Started = 100
+
 func (p *Player) UpdateMovement(inputs *input.Input) {
 
 	top, left, bottom, right, topleft, topright := p.CheckWorldCollision()
@@ -125,8 +127,11 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 			p.NumJumps = 1
 		}
 		p.PlayerChild.VY = 0
-	} else {
+	} else if Started < 0 {
 		p.PlayerChild.VY -= p.Gravity * float32(Engine.Renderer.DeltaFrameTime)
+		p.NumJumps--
+	} else {
+		Started--
 	}
 
 	if inputs.Keys["w"] && p.NumJumps > 0 {
@@ -145,18 +150,20 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		p.PlayerChild.VX = 0
 	}
 
-	if left && p.PlayerChild.VX > 1 {
+	if left && p.PlayerChild.VX > 100 {
 		if topleft {
 			p.PlayerChild.VX = 0
 		} else {
 			p.PlayerChild.VY = TCSpeed
+			p.NumJumps--
 		}
 	}
-	if right && p.PlayerChild.VX < 1 {
+	if right && p.PlayerChild.VX < -100 {
 		if topright {
 			p.PlayerChild.VX = 0
 		} else {
 			p.PlayerChild.VY = TCSpeed
+			p.NumJumps--
 		}
 	}
 	if top && p.PlayerChild.VY > 0 {
@@ -181,7 +188,7 @@ func (p *Player) UpdateAnimation() {
 		p.CurrentAnim = "idle"
 		return
 	}
-	if p.PlayerChild.VY < -300 && p.CurrentAnim != "fall" {
+	if p.PlayerChild.VY < -400 && p.CurrentAnim != "fall" {
 		p.PlayerMaterial.PlayAnimationOnce("fall")
 		p.CurrentAnim = "fall"
 		return
