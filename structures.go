@@ -341,8 +341,8 @@ func generateStilts(x int, y int) {
 
 func flipMatrix(mat [][]int) [][]int {
 	fin := make([][]int, len(mat))
-	for nut := range fin {
-		fin[nut] = make([]int, len(mat[nut]))
+	for item := range fin {
+		fin[item] = make([]int, len(mat[item]))
 	}
 
 	for x := 0; x < len(mat); x++ {
