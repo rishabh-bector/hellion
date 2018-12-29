@@ -47,7 +47,7 @@ func InitializeHotbarScene() {
 		BarChildren[i].ScaleX = SlotSize
 		BarChildren[i].ScaleY = SlotSize
 		BarChildren[i].Static = true
-		BarChildren[i].SetPosition(1800, 500-float32(i*(SlotSize+SlotSpacing)))
+		BarChildren[i].SetPosition(float32(ScreenWidth)-120, 500-float32(i*(SlotSize+SlotSpacing)))
 
 		HotbarScene.InstanceChild(BarChildren[i])
 	}
