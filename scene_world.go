@@ -133,12 +133,6 @@ func InitializeWorldScene() {
 	cmd.SunX = (1500.0 + 100) / 1920.0
 	cmd.SunY = (900.0 + 100) / 1080.0
 
-	NewGoblin()
-	NewGoblin()
-	NewGoblin()
-	NewGoblin()
-	NewGoblin()
-
 	initializeWorldTree()
 
 	//   --------------------------------------------------

@@ -28,6 +28,10 @@ var MouseSensitivity = 9.0
 //  Children
 //  --------------------------------------------------
 
+var BaseGravity = float32(1710.0)
+var BaseSpeedX = float32(150.0)
+var BaseSpeedY = float32(600.0)
+
 var BlockSelect *child.Child2D
 
 // World
@@ -43,8 +47,6 @@ var Back1Child *child.Child2D
 var Back2Child *child.Child2D
 var Back3Child *child.Child2D
 var Back4Child *child.Child2D
-
-var EnemyChildList = make([]Goblin, 0)
 
 var l lighting.PointLight
 
@@ -107,6 +109,8 @@ var MenuScene *cmd.Scene
 var SaveScene *cmd.Scene
 var HotbarScene *cmd.Scene
 var InventoryScene *cmd.Scene
+
+var EM *EnemyManager
 
 //  --------------------------------------------------
 //  Theme Materials

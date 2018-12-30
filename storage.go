@@ -161,6 +161,9 @@ func (tree *WorldTree) GetGrassBlockName(x, y int) string {
 }
 
 func (tree *WorldTree) GetWorldBlockID(x, y int) string {
+	if x > WorldWidth || x < 0 || y > WorldHeight || y < 0 {
+		return "00000"
+	}
 	return tree.blockNodes[x][y].worldBlock.ID
 }
 

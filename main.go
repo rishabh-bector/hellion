@@ -44,6 +44,9 @@ func main() {
 	InitializeSaveScene()
 	InitializeHotbarScene()
 
+	EM = InitializeEnemyManager()
+	EM.NewGoblin()
+
 	Engine.SceneControl.InstanceScene(TitleScene)
 	Engine.SceneControl.InstanceScene(ChooseScene)
 	Engine.SceneControl.InstanceScene(LoadingScene)
@@ -84,7 +87,28 @@ func main() {
 	return
 }
 
+var JustEnemy = false
+var JustKnock = false
+
 func render(renderer *cmd.Renderer, inputs *input.Input) {
+	if inputs.Keys["e"] {
+		if !JustEnemy {
+			EM.NewGoblin()
+			JustEnemy = true
+		}
+	} else {
+		JustEnemy = false
+	}
+
+	if inputs.Keys["q"] {
+		if !JustKnock {
+			EM.AllEnemies[0].Damage(2)
+			JustKnock = true
+		}
+	} else {
+		JustKnock = false
+	}
+
 	if Engine.SceneControl.GetCurrentScene().ID == "world" {
 		renderWorldScene(renderer, inputs)
 	}
@@ -153,9 +177,9 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	renderWorldInBounds(renderer)
 
 	renderer.RenderChild(Player1.PlayerChild)
-	for _, enemy := range EnemyChildList {
-		renderer.RenderChild(enemy.MonsterChild)
-	}
+
+	// Update and render enemies
+	EM.Update()
 
 	renderFrontWorldInBounds(renderer)
 
