@@ -24,6 +24,9 @@ type Player struct {
 
 	Gravity float32
 	Health  int
+
+	// Attacks
+	JustPunched bool
 }
 
 func InitializePlayer() {
@@ -48,6 +51,14 @@ func InitializePlayer() {
 
 	Engine.TextureControl.NewTexture("assets/player/fall/f1.png", "p_f1", "pixel")
 	Engine.TextureControl.NewTexture("assets/player/fall/f2.png", "p_f2", "pixel")
+
+	Engine.TextureControl.NewTexture("assets/player/punch/1.png", "p_p1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/2.png", "p_p2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/3.png", "p_p3", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/4.png", "p_p4", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/5.png", "p_p5", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/6.png", "p_p6", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/punch/7.png", "p_p7", "pixel")
 
 	playerMaterial := Engine.MaterialControl.NewBasicMaterial()
 	playerMaterial.DiffuseLevel = 1
@@ -77,10 +88,20 @@ func InitializePlayer() {
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_f1"), "fall")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_f2"), "fall")
 
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p1"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p2"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p3"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p4"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p5"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p6"), "punch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p7"), "punch")
+
 	playerMaterial.SetAnimationFPS("walk", 30)
 	playerMaterial.SetAnimationFPS("idle", 5)
 	playerMaterial.SetAnimationFPS("jump", 10)
 	playerMaterial.SetAnimationFPS("fall", 10)
+	playerMaterial.SetAnimationFPS("punch", 10)
+
 	playerMaterial.PlayAnimation("idle")
 
 	PlayerChild := Engine.ChildControl.NewChild2D()
@@ -118,7 +139,6 @@ var TCSpeed = float32(11.2 * 30)
 var Started = 100
 
 func (p *Player) UpdateMovement(inputs *input.Input) {
-
 	top, left, bottom, right, topleft, topright := p.CheckWorldCollision()
 	if bottom {
 		if p.God {
@@ -133,6 +153,8 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	} else {
 		Started--
 	}
+
+	// Basic Movement
 
 	if inputs.Keys["w"] && p.NumJumps > 0 {
 		p.PlayerChild.VY = p.SpeedY
@@ -170,6 +192,17 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		p.PlayerChild.VY = 0
 	}
 
+	// Attacks
+
+	if inputs.Keys["p"] {
+		if !p.JustPunched {
+			p.PlayerMaterial.PlayAnimationOnce("punch")
+			p.JustPunched = true
+			p.PlayerChild.VX = 0
+		}
+	} else {
+		p.JustPunched = false
+	}
 }
 
 func (p *Player) UpdateAnimation() {

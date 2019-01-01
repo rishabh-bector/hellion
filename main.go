@@ -45,7 +45,6 @@ func main() {
 	InitializeHotbarScene()
 
 	EM = InitializeEnemyManager()
-	EM.NewGoblin()
 
 	Engine.SceneControl.InstanceScene(TitleScene)
 	Engine.SceneControl.InstanceScene(ChooseScene)
@@ -93,7 +92,7 @@ var JustKnock = false
 func render(renderer *cmd.Renderer, inputs *input.Input) {
 	if inputs.Keys["e"] {
 		if !JustEnemy {
-			EM.NewGoblin()
+			EM.NewGoblin(50)
 			JustEnemy = true
 		}
 	} else {
@@ -102,7 +101,9 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	if inputs.Keys["q"] {
 		if !JustKnock {
-			EM.AllEnemies[0].Damage(2)
+			for _, e := range EM.AllEnemies {
+				e.Damage(2)
+			}
 			JustKnock = true
 		}
 	} else {

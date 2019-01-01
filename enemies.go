@@ -2,16 +2,19 @@ package main
 
 import (
 	"math"
+	"math/rand"
 	"rapidengine/child"
 	"rapidengine/material"
 )
 
 type EnemyManager struct {
-	AllEnemies []Enemy
+	AllEnemies map[int]Enemy
 }
 
 func InitializeEnemyManager() *EnemyManager {
-	em := EnemyManager{}
+	em := EnemyManager{
+		AllEnemies: make(map[int]Enemy),
+	}
 
 	LoadGoblinTextures()
 
@@ -26,15 +29,18 @@ func (em *EnemyManager) Update() {
 	}
 }
 
-func (em *EnemyManager) NewGoblin() {
+func (em *EnemyManager) NewGoblin(radius float32) {
 	mat := NewGoblinMaterial()
 
 	goblinChild := Engine.ChildControl.NewChild2D()
 	goblinChild.AttachMaterial(mat)
 	goblinChild.ScaleX = 250
 	goblinChild.ScaleY = 250
-	goblinChild.X = Player1.PlayerChild.X
-	goblinChild.Y = Player1.PlayerChild.Y
+
+	screenSide := (rand.Intn(2) * 2) - 1
+
+	goblinChild.X = Player1.PlayerChild.X + float32(screenSide)*((float32(ScreenWidth/2)+100)+radius)
+	goblinChild.Y = float32(HeightMap[int(goblinChild.X)/BlockSize]*BlockSize) + 50
 
 	var g = Goblin{
 		Health: 100,
@@ -47,8 +53,8 @@ func (em *EnemyManager) NewGoblin() {
 			VYMult:   1,
 			GravMult: 1,
 
-			KnockXMult: 5,
-			KnockYMult: 5,
+			KnockXMult: 1,
+			KnockYMult: 0.8,
 
 			NumJumps: 1,
 		},
@@ -58,7 +64,7 @@ func (em *EnemyManager) NewGoblin() {
 
 	g.Activator().Activate()
 
-	em.AllEnemies = append(em.AllEnemies, &g)
+	em.AllEnemies[len(em.AllEnemies)-1] = &g
 }
 
 type Enemy interface {
@@ -129,22 +135,24 @@ type Common struct {
 func (c *Common) Update(player Player) {
 	_, left, bottom, right, topleft, topright := CheckWorldCollision(c.MonsterChild.X, c.MonsterChild.Y)
 
+	dx := c.MonsterChild.X - player.PlayerChild.X
+
+	if c.Knocking {
+		c.MonsterChild.VX = -1 * (BaseSpeedX * c.KnockXMult) * (dx / float32(math.Abs(float64(dx))))
+		c.MonsterChild.VY = (BaseSpeedY * c.KnockYMult)
+		c.NumJumps = 0
+		c.MonsterMaterial.PlayAnimationOnce("hit")
+		c.CurrentAnim = "hit"
+		c.Knocking = false
+		return
+	}
+
 	// Ground
 	if bottom {
 		c.NumJumps = 1
 		c.MonsterChild.VY = 0
-		c.Knocking = false
 	} else {
 		c.MonsterChild.VY -= BaseGravity * float32(Engine.Renderer.DeltaFrameTime)
-	}
-
-	dx := c.MonsterChild.X - player.PlayerChild.X
-
-	if c.Knocking {
-		println("yeeting")
-		c.MonsterChild.VX = 1000   //-1 * (BaseSpeedX * c.KnockXMult) * (dx / float32(math.Abs(float64(dx))))
-		c.MonsterChild.VY = 100000 //(BaseSpeedY * c.KnockYMult)
-		return
 	}
 
 	if bottom {
@@ -155,7 +163,7 @@ func (c *Common) Update(player Player) {
 		if topright {
 			c.MonsterChild.VX = 0
 		} else {
-			c.MonsterChild.VY = BaseSpeedY * c.VYMult
+			c.Jump()
 		}
 	}
 
@@ -163,15 +171,38 @@ func (c *Common) Update(player Player) {
 		if topleft {
 			c.MonsterChild.VX = 0
 		} else {
-			c.MonsterChild.VY = BaseSpeedY * c.VYMult
+			c.Jump()
 		}
 	}
 
+	c.UpdateAnimations()
+}
+
+func (c *Common) UpdateAnimations() {
 	if c.MonsterChild.VX > 0 {
 		c.MonsterMaterial.Flipped = 1
 	} else {
 		c.MonsterMaterial.Flipped = 0
 	}
+
+	if c.MonsterChild.VX > 0 && c.NumJumps > 0 && c.CurrentAnim != "walk" {
+		c.MonsterMaterial.PlayAnimation("walk")
+		c.CurrentAnim = "walk"
+	}
+	if c.MonsterChild.VX < 0 && c.NumJumps > 0 && c.CurrentAnim != "walk" {
+		c.MonsterMaterial.PlayAnimation("walk")
+		c.CurrentAnim = "walk"
+	}
+	if c.MonsterChild.VX == 0 && c.NumJumps > 0 && c.CurrentAnim != "idle" {
+		c.MonsterMaterial.PlayAnimation("idle")
+		c.CurrentAnim = "idle"
+	}
+}
+
+func (c *Common) Jump() {
+	c.MonsterChild.VY = BaseSpeedY * c.VYMult
+	c.MonsterMaterial.PlayAnimationOnce("jump")
+	c.CurrentAnim = "jump"
 }
 
 func (c *Common) Knockback(mult float32) {
