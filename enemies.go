@@ -34,8 +34,8 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 
 	goblinChild := Engine.ChildControl.NewChild2D()
 	goblinChild.AttachMaterial(mat)
-	goblinChild.ScaleX = 250
-	goblinChild.ScaleY = 250
+	goblinChild.ScaleX = 50
+	goblinChild.ScaleY = 80
 
 	screenSide := (rand.Intn(2) * 2) - 1
 

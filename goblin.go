@@ -74,8 +74,8 @@ func NewGoblinMaterial() *material.BasicMaterial {
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w8"), "walk")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w9"), "walk")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w10"), "walk")
-	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w11"), "walk")
-	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w12"), "walk")
+	//goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w11"), "walk")
+	//goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_w12"), "walk")
 
 	goblinMaterial.SetAnimationFPS("walk", 20)
 	goblinMaterial.SetAnimationFPS("idle", 5)
