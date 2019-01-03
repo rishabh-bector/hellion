@@ -1,9 +1,6 @@
 package main
 
-import (
-	"math/rand"
-	// "fmt"
-)
+import "math/rand"
 
 type Dungeon struct {
 	rooms     []Room
@@ -26,6 +23,106 @@ type Corridor struct {
 	points []Point
 }
 
+func generateAllDungeons() {
+
+	// Screen 120x60
+
+	// corr?x5
+
+	// room 30-100x15-40
+
+	// Number of dungeons to be generated
+	numDungeons := 50
+
+	// Dimensions of total dungeon
+	dungeonWidth := 100
+	dungeonHeight := 60
+
+	// Max and min dimensions of a single room
+	maxRoomWidth := 100
+	maxRoomHeight := 40
+	minRoomWidth := 30
+	minRoomHeight := 15
+
+	minCorridorWidth := 15
+	maxCorridorWidth := 25
+	minCorridorHeight := 10
+	maxCorridorHeight := 20
+
+	// Maximum number of rooms per dungeon
+	maxNumRooms := 10
+
+	for currentDungeon := 0; currentDungeon < numDungeons; currentDungeon++ {
+		centerx := rand.Intn(WorldWidth-maxNumRooms) + maxRoomHeight
+		centery := HeightMap[centerx] - rand.Intn(HeightMap[centerx]+maxRoomHeight) + maxRoomHeight
+		centerRoom := Room{centerx, centery, 120, 60}
+		placeRoom(centerRoom)
+		for x := centerx; x < centerx+ScreenHeight; x++ {
+			for y := centery; y < centery+ScreenHeight; y++ {
+				if x == centerx && y == centery {
+					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x, y, x2, y2)
+				}
+				if x == centerx+ScreenWidth/2-1 && y == centery {
+					x2 := x
+					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x+ScreenWidth/2-1, y, x2, y2)
+				}
+				if x == centerx+ScreenWidth-1 && y == centery {
+					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x+ScreenWidth-1, y, x2, y2)
+				}
+				if x == centerx+ScreenWidth-1 && y == centery+ScreenHeight/2-1 {
+					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y
+					generateCorridor(x+ScreenWidth-1, y+ScreenHeight/2-1, x2, y2)
+				}
+				if x == centerx+ScreenHeight-1 && y == centery+ScreenHeight-1 {
+					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x+ScreenHeight-1, y+ScreenHeight-1, x2, y2)
+				}
+				if x == centerx+ScreenWidth/2-1 && y == centery+ScreenHeight-1 {
+					x2 := x
+					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x+ScreenWidth/2-1, y+ScreenHeight-1, x2, y2)
+				}
+				if x == centerx && y == centery+ScreenHeight-1 {
+					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
+					generateCorridor(x, y+ScreenHeight-1, x2, y2)
+				}
+				if x == centerx && y == centery+ScreenHeight/2-1 {
+					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					y2 := y
+					generateCorridor(x, y+ScreenHeight/2-1, x2, y2)
+				}
+			}
+		}
+	}
+}
+
+func generateRoom(startx, starty, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight int) Room {
+	return Room{startx, starty, minRoomWidth, minRoomHeight}
+}
+
+func placeRoom(room Room) {
+	for x := room.x; x < room.x+room.w; x++ {
+		for y := room.y; y < room.y+room.h; y++ {
+			if x == room.x || x == room.x+room.w-1 || y == room.y || y == room.y+room.h-1 {
+				WorldMap.RemoveWorldBlock(x, y)
+				createWorldBlock(x, y, "stoneBrick")
+			} else {
+				WorldMap.RemoveWorldBlock(x, y)
+				createBackBlock(x, y, "backdirt")
+			}
+		}
+	}
+}
+
+/*
 func generateAllDungeons() {
 	// Number of dungeons to be generated
 	numDungeons := 20
@@ -202,3 +299,4 @@ func generateCorridor(r1, r2 Room) Corridor {
 	points[2] = Point{center2x, center2y}
 	return Corridor{points}
 }
+*/
