@@ -26,7 +26,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = true
+	Config.FullScreen = false //true
 	Config.GammaCorrection = false
 	Config.VSync = false
 	Config.Profiling = false

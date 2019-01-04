@@ -1,6 +1,9 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type Dungeon struct {
 	rooms     []Room
@@ -20,14 +23,18 @@ type Room struct {
 }
 
 type Corridor struct {
-	points []Point
+	x1   int
+	x2   int
+	y1   int
+	y2   int
+	mode string
 }
 
 func generateAllDungeons() {
 
 	// Screen 120x60
 
-	// corr?x5
+	// corr 15-25x10-20
 
 	// room 30-100x15-40
 
@@ -35,8 +42,8 @@ func generateAllDungeons() {
 	numDungeons := 50
 
 	// Dimensions of total dungeon
-	dungeonWidth := 100
-	dungeonHeight := 60
+	//dungeonWidth := 100
+	//dungeonHeight := 60
 
 	// Max and min dimensions of a single room
 	maxRoomWidth := 100
@@ -49,66 +56,108 @@ func generateAllDungeons() {
 	minCorridorHeight := 10
 	maxCorridorHeight := 20
 
-	// Maximum number of rooms per dungeon
-	maxNumRooms := 10
-
 	for currentDungeon := 0; currentDungeon < numDungeons; currentDungeon++ {
-		centerx := rand.Intn(WorldWidth-maxNumRooms) + maxRoomHeight
-		centery := HeightMap[centerx] - rand.Intn(HeightMap[centerx]+maxRoomHeight) + maxRoomHeight
-		centerRoom := Room{centerx, centery, 120, 60}
+		centerx := rand.Intn(WorldWidth-maxRoomWidth*2) + maxRoomWidth
+		centery := HeightMap[centerx] - rand.Intn(HeightMap[centerx]-maxRoomHeight*2) + maxRoomHeight
+		centerRoom := Room{centerx, centery, ScreenWidth, ScreenHeight}
 		placeRoom(centerRoom)
-		for x := centerx; x < centerx+ScreenHeight; x++ {
+		for x := centerx; x < centerx+ScreenWidth; x++ {
 			for y := centery; y < centery+ScreenHeight; y++ {
 				if x == centerx && y == centery {
-					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
-					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x, y, x2, y2)
+					x2 := x - minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
+					y2 := y + minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x, y, x2, y2, "stair"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "BR"))
 				}
 				if x == centerx+ScreenWidth/2-1 && y == centery {
 					x2 := x
-					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x+ScreenWidth/2-1, y, x2, y2)
+					y2 := y + minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x + ScreenWidth/2 - 1, y, x2, y2, "vertical"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "BM"))
 				}
 				if x == centerx+ScreenWidth-1 && y == centery {
-					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
-					y2 := y + minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x+ScreenWidth-1, y, x2, y2)
+					x2 := x + minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
+					y2 := y + minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x + ScreenWidth - 1, y, x2, y2, "stair"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "BL"))
 				}
 				if x == centerx+ScreenWidth-1 && y == centery+ScreenHeight/2-1 {
-					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					x2 := x + minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
 					y2 := y
-					generateCorridor(x+ScreenWidth-1, y+ScreenHeight/2-1, x2, y2)
+					placeCorridor(Corridor{x + ScreenWidth - 1, y + ScreenHeight/2 - 1, x2, y2, "horizontal"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "ML"))
 				}
-				if x == centerx+ScreenHeight-1 && y == centery+ScreenHeight-1 {
-					x2 := x + minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
-					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x+ScreenHeight-1, y+ScreenHeight-1, x2, y2)
+				if x == centerx+ScreenWidth-1 && y == centery+ScreenHeight-1 {
+					x2 := x + minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
+					y2 := y - minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x + ScreenWidth - 1, y + ScreenHeight - 1, x2, y2, "stair"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "TL"))
 				}
 				if x == centerx+ScreenWidth/2-1 && y == centery+ScreenHeight-1 {
 					x2 := x
-					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x+ScreenWidth/2-1, y+ScreenHeight-1, x2, y2)
+					y2 := y - minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x + ScreenWidth/2 - 1, y + ScreenHeight - 1, x2, y2, "vertical"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "TM"))
 				}
 				if x == centerx && y == centery+ScreenHeight-1 {
-					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
-					y2 := y - minCorridorHeight + rand.Intn(minCorridorHeight-minCorridorHeight)
-					generateCorridor(x, y+ScreenHeight-1, x2, y2)
+					x2 := x - minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
+					y2 := y - minCorridorHeight + rand.Intn(maxCorridorHeight-minCorridorHeight)
+					placeCorridor(Corridor{x, y + ScreenHeight - 1, x2, y2, "stair"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "TR"))
 				}
 				if x == centerx && y == centery+ScreenHeight/2-1 {
-					x2 := x - minCorridorWidth + rand.Intn(minCorridorWidth-minCorridorWidth)
+					x2 := x - minCorridorWidth + rand.Intn(maxCorridorWidth-minCorridorWidth)
 					y2 := y
-					generateCorridor(x, y+ScreenHeight/2-1, x2, y2)
+					placeCorridor(Corridor{x, y + ScreenHeight/2 - 1, x2, y2, "horizontal"})
+					placeRoom(generateRoom(x, y, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight, "MR"))
 				}
 			}
 		}
 	}
 }
 
-func generateRoom(startx, starty, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight int) Room {
-	return Room{startx, starty, minRoomWidth, minRoomHeight}
+func generateRoom(contactx, contacty, minRoomWidth, minRoomHeight, maxRoomWidth, maxRoomHeight int, side string) Room {
+	w := minRoomWidth + rand.Intn(maxRoomWidth-minRoomWidth)
+	h := minRoomHeight + rand.Intn(maxRoomHeight-minRoomHeight)
+	var x int
+	var y int
+	if side == "BR" {
+		x = contactx - w
+		y = contacty + h
+	}
+	if side == "BM" {
+		x = contactx - w/2
+		y = contacty + h
+	}
+	if side == "BL" {
+		x = contactx
+		y = contacty + h
+	}
+	if side == "ML" {
+		x = contactx
+		y = contacty + h/2
+	}
+	if side == "TL" {
+		x = contactx
+		y = contacty
+	}
+	if side == "TM" {
+		x = contactx + w/2
+		y = contacty
+	}
+	if side == "TR" {
+		x = contactx + w
+		y = contacty
+	}
+	if side == "MR" {
+		x = contactx - w
+		y = contacty + h/2
+	}
+	return Room{x, y, w, h}
 }
 
 func placeRoom(room Room) {
+	Engine.Logger.Info(fmt.Sprintf("X: %d", room.x) + fmt.Sprintf(" Y: %d", room.y))
 	for x := room.x; x < room.x+room.w; x++ {
 		for y := room.y; y < room.y+room.h; y++ {
 			if x == room.x || x == room.x+room.w-1 || y == room.y || y == room.y+room.h-1 {
@@ -118,6 +167,72 @@ func placeRoom(room Room) {
 				WorldMap.RemoveWorldBlock(x, y)
 				createBackBlock(x, y, "backdirt")
 			}
+		}
+	}
+}
+
+func placeCorridor(corr Corridor) {
+	if corr.mode == "stair" {
+		len := corr.y1 - corr.y2
+		ychange := 1
+		if corr.y2 < corr.y1 {
+			ychange = -1
+			len = corr.y2 - corr.y1
+		}
+		xchange := 1
+		if corr.x1 < corr.x2 {
+			xchange = -1
+		}
+		x := corr.x1
+		y := corr.x2
+		for i := 0; i < len; i++ {
+			x += i * xchange
+			y += i * ychange
+			WorldMap.RemoveWorldBlock(x, y-3)
+			createWorldBlock(x, y-3, "stoneBrick")
+			WorldMap.RemoveWorldBlock(x, y-2)
+			createBackBlock(x, y-2, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y-1)
+			createBackBlock(x, y-1, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y)
+			createBackBlock(x, y, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+1)
+			createBackBlock(x, y+1, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+2)
+			createBackBlock(x, y+2, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+3)
+			createWorldBlock(x, y+3, "stoneBrick")
+		}
+	}
+	if corr.mode == "horizontal" {
+		y := corr.y1
+		for x := corr.x1; x < corr.x2; x++ {
+			WorldMap.RemoveWorldBlock(x, y-3)
+			createWorldBlock(x, y-3, "stoneBrick")
+			WorldMap.RemoveWorldBlock(x, y-2)
+			createBackBlock(x, y-2, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y-1)
+			createBackBlock(x, y-1, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y)
+			createBackBlock(x, y, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+1)
+			createBackBlock(x, y+1, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+2)
+			createBackBlock(x, y+2, "backdirt")
+			WorldMap.RemoveWorldBlock(x, y+3)
+			createWorldBlock(x, y+3, "stoneBrick")
+		}
+	}
+	if corr.mode == "vertical" {
+		x := corr.x1
+		for y := corr.y1; y < corr.y2; y++ {
+			createWorldBlock(x-1, y, "stoneBrick")
+			WorldMap.RemoveWorldBlock(x, y)
+			createBackBlock(x, y, "backdirt")
+			WorldMap.RemoveWorldBlock(x+1, y)
+			createBackBlock(x+1, y, "backdirt")
+			createWorldBlock(x+2, y, "stoneBrick")
+
 		}
 	}
 }
