@@ -170,13 +170,6 @@ func placeRoom(room Room) {
 			}
 		}
 	}
-	// 	for x := 0; x < room.w; x++ {
-	// 		for y := 0; y < room.h; y++ {
-	// 			Engine.Logger.Info(fmt.Sprintf("X: %d", room.x+x) + fmt.Sprintf(" Y: %d", room.y+y))
-	// 			WorldMap.RemoveWorldBlock(room.x+x, room.y+y)
-	// 			createBackBlock(room.x+x, room.y+y, "backdirt")
-	// 		}
-	// 	}
 }
 
 func placeCorridor(corr Corridor) {
