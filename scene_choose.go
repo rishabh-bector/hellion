@@ -14,48 +14,49 @@ var b3Text *ui.TextBox
 func InitializeChooseScene() {
 	ChooseScene = Engine.SceneControl.NewScene("choose")
 
-	chooseText := Engine.TextControl.NewTextBox("Choose World", "pixel", 720, 600, 1, [3]float32{255, 255, 255})
+	chooseText := Engine.TextControl.NewTextBox("Choose World", "pixel", (1920 / 2), 600, 3, [3]float32{255, 255, 255})
+	chooseText.X -= float32(chooseText.GetLength() / 2)
 	ChooseScene.InstanceText(chooseText)
 
 	rect1 := Engine.ChildControl.NewChild2D()
 	rect1.AttachMesh(geometry.NewRectangle())
 	rect1.ScaleX = 800
 	rect1.ScaleY = 75
-	rect1.SetPosition(320, 400)
+	rect1.SetPosition((1920/2)-400, 400)
 
 	rect2 := Engine.ChildControl.NewChild2D()
 	rect2.AttachMesh(geometry.NewRectangle())
 	rect2.ScaleX = 800
 	rect2.ScaleY = 75
-	rect2.SetPosition(320, 300)
+	rect2.SetPosition((1920/2)-400, 300)
 
 	rect3 := Engine.ChildControl.NewChild2D()
 	rect3.AttachMesh(geometry.NewRectangle())
 	rect3.ScaleX = 800
 	rect3.ScaleY = 75
-	rect3.SetPosition(320, 200)
+	rect3.SetPosition((1920/2)-400, 200)
 
-	b1Text = Engine.TextControl.NewTextBox("Play", "pixel", 720, 600, 1, [3]float32{255, 255, 255})
-	b2Text = Engine.TextControl.NewTextBox("Play", "pixel", 720, 600, 1, [3]float32{255, 255, 255})
-	b3Text = Engine.TextControl.NewTextBox("Play", "pixel", 720, 600, 1, [3]float32{255, 255, 255})
+	b1Text = Engine.TextControl.NewTextBox("Play", "pixel", (1920/2)+300, 600, 1, [3]float32{255, 255, 255})
+	b2Text = Engine.TextControl.NewTextBox("Play", "pixel", (1920/2)+300, 600, 1, [3]float32{255, 255, 255})
+	b3Text = Engine.TextControl.NewTextBox("Play", "pixel", (1920/2)+300, 600, 1, [3]float32{255, 255, 255})
 
-	c1Text := Engine.TextControl.NewTextBox("Save 1", "pixel", 200, 425, 1, [3]float32{255, 255, 255})
-	c2Text := Engine.TextControl.NewTextBox("Save 2", "pixel", 200, 325, 1, [3]float32{255, 255, 255})
-	c3Text := Engine.TextControl.NewTextBox("Save 3", "pixel", 200, 225, 1, [3]float32{255, 255, 255})
+	c1Text := Engine.TextControl.NewTextBox("Save 1", "pixel", (1920/2)-300, 425+12.5, 1, [3]float32{255, 255, 255})
+	c2Text := Engine.TextControl.NewTextBox("Save 2", "pixel", (1920/2)-300, 325+12.5, 1, [3]float32{255, 255, 255})
+	c3Text := Engine.TextControl.NewTextBox("Save 3", "pixel", (1920/2)-300, 225+12.5, 1, [3]float32{255, 255, 255})
 
 	ChooseScene.InstanceText(c1Text)
 	ChooseScene.InstanceText(c2Text)
 	ChooseScene.InstanceText(c3Text)
 
-	b1 := Engine.UIControl.NewUIButton(1000, 425, 75, 25)
+	b1 := Engine.UIControl.NewUIButton((1920/2)+300, 425, 75, 25)
 	b1.SetClickCallback(choose1)
 	b1.AttachText(b1Text)
 
-	b2 := Engine.UIControl.NewUIButton(1000, 325, 75, 25)
+	b2 := Engine.UIControl.NewUIButton((1920/2)+300, 325, 75, 25)
 	b2.SetClickCallback(choose2)
 	b2.AttachText(b2Text)
 
-	b3 := Engine.UIControl.NewUIButton(1000, 225, 75, 25)
+	b3 := Engine.UIControl.NewUIButton((1920/2)+300, 225, 75, 25)
 	b3.SetClickCallback(choose3)
 	b3.AttachText(b3Text)
 

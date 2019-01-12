@@ -15,7 +15,8 @@ func InitializeLoadingScene() {
 	ProgressBar.SetPosition(0, 500)
 	Engine.UIControl.AlignCenter(ProgressBar)
 
-	ProgressText = Engine.TextControl.NewTextBox("Generating world...", "pixel", 720, 600, 1, [3]float32{255, 255, 255})
+	ProgressText = Engine.TextControl.NewTextBox("Generating world...", "pixel", (1920 / 2), 600, 1, [3]float32{255, 255, 255})
+	ProgressText.X -= float32(ProgressText.GetLength() / 2)
 	LoadingScene.InstanceText(ProgressText)
 
 	Engine.UIControl.InstanceElement(ProgressBar, LoadingScene)

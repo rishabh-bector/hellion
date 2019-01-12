@@ -9,10 +9,15 @@ func InitializeWorldScene() {
 
 	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "sky", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/backgrounds/parallax1.png", "parallax1", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/parallax2.png", "parallax2", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/parallax3.png", "parallax3", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/parallax4.png", "parallax4", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax1.png", "parallax1", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax2.png", "parallax2", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax3.png", "parallax3", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax4", "pixel")
+
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees1.png", "parallax1", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees2.png", "parallax2", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees3.png", "parallax3", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax4", "pixel")
 
 	backgroundMaterial := Engine.MaterialControl.NewBasicMaterial()
 	backgroundMaterial.DiffuseLevel = 1

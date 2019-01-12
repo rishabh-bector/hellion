@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "MEDIUM" // "MEDIUM" // "LOW"
+var QUALITY = "HIGH" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -180,7 +180,7 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	// Render Children
 	renderer.RenderChild(SkyChild)
-	renderer.RenderChildCopies(CloudChild)
+	//renderer.RenderChildCopies(CloudChild)
 
 	renderer.RenderChild(SunChild)
 
