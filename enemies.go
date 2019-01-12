@@ -34,8 +34,8 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 
 	goblinChild := Engine.ChildControl.NewChild2D()
 	goblinChild.AttachMaterial(mat)
-	goblinChild.ScaleX = 50
-	goblinChild.ScaleY = 80
+	goblinChild.ScaleX = 300
+	goblinChild.ScaleY = 300
 
 	screenSide := (rand.Intn(2) * 2) - 1
 
@@ -57,6 +57,13 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 			KnockYMult: 0.8,
 
 			NumJumps: 1,
+
+			Hitbox1: AABB{
+				X:      0,
+				Y:      0,
+				Width:  75,
+				Height: 120,
+			},
 		},
 
 		activator: Activator{},
@@ -75,42 +82,6 @@ type Enemy interface {
 	Activator() *Activator
 }
 
-func CheckWorldCollision(x, y float32) (bool, bool, bool, bool, bool, bool) {
-	top := false
-	left := false
-	bottom := false
-	right := false
-
-	topleft := false
-	topright := false
-
-	px := int((x + BlockSize/2) / BlockSize)
-	py := int((y)/BlockSize + 1)
-
-	if WorldMap.GetWorldBlockID(px, py+1) != "00000" {
-		top = true
-	}
-	if WorldMap.GetWorldBlockID(px, py-1) != "00000" {
-		bottom = true
-	}
-
-	if WorldMap.GetWorldBlockID(px-1, py) != "00000" || WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
-		left = true
-	}
-	if WorldMap.GetWorldBlockID(px+1, py) != "00000" || WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
-		right = true
-	}
-
-	if WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
-		topleft = true
-	}
-	if WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
-		topright = true
-	}
-
-	return top, left, bottom, right, topleft, topright
-}
-
 // --------------------------------------------------
 // ENEMY COMPONENTS
 // --------------------------------------------------
@@ -120,6 +91,8 @@ type Common struct {
 
 	MonsterMaterial *material.BasicMaterial
 	CurrentAnim     string
+
+	Hitbox1 AABB
 
 	VXMult   float32
 	VYMult   float32
@@ -133,7 +106,15 @@ type Common struct {
 }
 
 func (c *Common) Update(player Player) {
-	_, left, bottom, right, topleft, topright := CheckWorldCollision(c.MonsterChild.X, c.MonsterChild.Y)
+	c.Hitbox1.X = c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.Width / 2)
+	c.Hitbox1.Y = c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.Height / 2)
+
+	/*colChild.ScaleX = c.Hitbox1.Width
+	colChild.ScaleY = c.Hitbox1.Height
+	colChild.X = c.Hitbox1.X
+	colChild.Y = c.Hitbox1.Y*/
+
+	_, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY)
 
 	dx := c.MonsterChild.X - player.PlayerChild.X
 

@@ -12,45 +12,58 @@ var Player1 Player
 type Player struct {
 	God bool
 
+	// Components
 	PlayerChild    *child.Child2D
 	PlayerMaterial *material.BasicMaterial
 
-	SpeedX float32
-	SpeedY float32
-
+	// Movement
+	SpeedX   float32
+	SpeedY   float32
+	Gravity  float32
 	NumJumps int
 
-	CurrentAnim string
+	// Temp state
+	Crouching bool
+	Attacking bool
 
-	Gravity float32
-	Health  int
+	// Data
+	Health      int
+	CurrentAnim string
 
 	// Attacks
 	JustPunched bool
+
+	// Collision
+	Hitbox1 AABB
 }
 
 func InitializePlayer() {
-	Engine.TextureControl.NewTexture("assets/player/idle/f1.png", "p_i1", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/idle/f2.png", "p_i2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/idle/1.png", "p_i1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/idle/2.png", "p_i2", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/player/walk/f1.png", "p_w1", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f2.png", "p_w2", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f3.png", "p_w3", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f4.png", "p_w4", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f5.png", "p_w5", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f6.png", "p_w6", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f7.png", "p_w7", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f8.png", "p_w8", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f9.png", "p_w9", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f10.png", "p_w10", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f11.png", "p_w11", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/walk/f12.png", "p_w12", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/1.png", "p_w1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/2.png", "p_w2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/3.png", "p_w3", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/4.png", "p_w4", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/5.png", "p_w5", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/6.png", "p_w6", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/7.png", "p_w7", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/8.png", "p_w8", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/9.png", "p_w9", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/10.png", "p_w10", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/11.png", "p_w11", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/walk/12.png", "p_w12", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/player/jump/f1.png", "p_j1", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/jump/f2.png", "p_j2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/jump/1.png", "p_j1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/jump/2.png", "p_j2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/jump/3.png", "p_j3", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/player/fall/f1.png", "p_f1", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/fall/f2.png", "p_f2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/fall/1.png", "p_f1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/fall/2.png", "p_f2", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/fall/3.png", "p_f3", "pixel")
+
+	Engine.TextureControl.NewTexture("assets/player/crouch/1.png", "p_c1", "pixel")
+	Engine.TextureControl.NewTexture("assets/player/crouch/2.png", "p_c2", "pixel")
 
 	Engine.TextureControl.NewTexture("assets/player/punch/1.png", "p_p1", "pixel")
 	Engine.TextureControl.NewTexture("assets/player/punch/2.png", "p_p2", "pixel")
@@ -58,7 +71,6 @@ func InitializePlayer() {
 	Engine.TextureControl.NewTexture("assets/player/punch/4.png", "p_p4", "pixel")
 	Engine.TextureControl.NewTexture("assets/player/punch/5.png", "p_p5", "pixel")
 	Engine.TextureControl.NewTexture("assets/player/punch/6.png", "p_p6", "pixel")
-	Engine.TextureControl.NewTexture("assets/player/punch/7.png", "p_p7", "pixel")
 
 	playerMaterial := Engine.MaterialControl.NewBasicMaterial()
 	playerMaterial.DiffuseLevel = 1
@@ -84,9 +96,14 @@ func InitializePlayer() {
 
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_j1"), "jump")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_j2"), "jump")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_j3"), "jump")
 
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_f1"), "fall")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_f2"), "fall")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_f3"), "fall")
+
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_c1"), "crouch")
+	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_c2"), "crouch")
 
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p1"), "punch")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p2"), "punch")
@@ -94,21 +111,21 @@ func InitializePlayer() {
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p4"), "punch")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p5"), "punch")
 	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p6"), "punch")
-	playerMaterial.AddFrame(Engine.TextureControl.GetTexture("p_p7"), "punch")
 
-	playerMaterial.SetAnimationFPS("walk", 30)
+	playerMaterial.SetAnimationFPS("walk", 25)
 	playerMaterial.SetAnimationFPS("idle", 5)
-	playerMaterial.SetAnimationFPS("jump", 10)
+	playerMaterial.SetAnimationFPS("jump", 20)
 	playerMaterial.SetAnimationFPS("fall", 10)
-	playerMaterial.SetAnimationFPS("punch", 10)
+	playerMaterial.SetAnimationFPS("crouch", 15)
+	playerMaterial.SetAnimationFPS("punch", 15)
 
 	playerMaterial.PlayAnimation("idle")
 
 	PlayerChild := Engine.ChildControl.NewChild2D()
 	PlayerChild.AttachMaterial(playerMaterial)
 	PlayerChild.AttachMesh(geometry.NewRectangle())
-	PlayerChild.ScaleX = 60
-	PlayerChild.ScaleY = 120
+	PlayerChild.ScaleX = 240
+	PlayerChild.ScaleY = 240
 	PlayerChild.Gravity = 0
 
 	Player1 = Player{
@@ -127,6 +144,17 @@ func InitializePlayer() {
 		Player1.NumJumps = 10000
 		Player1.SpeedX = 600
 	}
+
+	Player1.Hitbox1 = AABB{
+		X:      0,
+		Y:      0,
+		Width:  50,
+		Height: 120,
+
+		DirectionOffset: 1,
+		MinimumXDist:    47,
+		MinimumYDist:    20,
+	}
 }
 
 func (p *Player) Update(inputs *input.Input) {
@@ -139,7 +167,15 @@ var TCSpeed = float32(11.2 * 30)
 var Started = 100
 
 func (p *Player) UpdateMovement(inputs *input.Input) {
-	top, left, bottom, right, topleft, topright := p.CheckWorldCollision()
+	colChild.ScaleX = Player1.Hitbox1.Width
+	colChild.ScaleY = Player1.Hitbox1.Height
+	colChild.X = Player1.Hitbox1.X
+	colChild.Y = Player1.Hitbox1.Y
+
+	p.Hitbox1.X = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.Width / 2) + (p.PlayerChild.VX * float32(Engine.Renderer.DeltaFrameTime))
+	p.Hitbox1.Y = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.Height / 2) + (p.PlayerChild.VY * float32(Engine.Renderer.DeltaFrameTime))
+
+	top, left, bottom, right, topleft, topright := CheckWorldCollision(p.Hitbox1, p.PlayerChild.VX, p.PlayerChild.VY)
 	if bottom {
 		if p.God {
 			p.NumJumps = 10000
@@ -154,49 +190,67 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 		Started--
 	}
 
-	// Basic Movement
+	// Basic movement
 
-	if inputs.Keys["w"] && p.NumJumps > 0 {
-		p.PlayerChild.VY = p.SpeedY
-		p.PlayerMaterial.PlayAnimationOnce("jump")
-		p.CurrentAnim = "jump"
-		p.NumJumps--
-	}
-	if inputs.Keys["a"] {
-		p.PlayerChild.VX = p.SpeedX
-		p.PlayerMaterial.Flipped = 1
-	} else if inputs.Keys["d"] {
-		p.PlayerChild.VX = -1 * p.SpeedX
-		p.PlayerMaterial.Flipped = 0
-	} else {
-		p.PlayerChild.VX = 0
-	}
-
-	if left && p.PlayerChild.VX > 100 {
-		if topleft {
-			p.PlayerChild.VX = 0
-		} else {
-			p.PlayerChild.VY = TCSpeed
+	if !p.Crouching && !p.Attacking {
+		if inputs.Keys["w"] && p.NumJumps > 0 {
+			p.PlayerChild.VY = p.SpeedY
+			p.PlayerMaterial.PlayAnimationOnce("jump")
+			p.CurrentAnim = "jump"
 			p.NumJumps--
 		}
-	}
-	if right && p.PlayerChild.VX < -100 {
-		if topright {
-			p.PlayerChild.VX = 0
+
+		if inputs.Keys["a"] {
+			p.PlayerChild.VX = p.SpeedX
+			p.PlayerMaterial.Flipped = 1
+		} else if inputs.Keys["d"] {
+			p.PlayerChild.VX = -1 * p.SpeedX
+			p.PlayerMaterial.Flipped = 0
 		} else {
+			p.PlayerChild.VX = 0
+		}
+	}
+
+	if inputs.Keys["s"] {
+		if !p.Crouching {
+			p.PlayerMaterial.PlayAnimationOnce("crouch")
+			p.Crouching = true
+			p.CurrentAnim = "crouch"
+			p.PlayerChild.VX = 0
+		}
+	} else {
+		p.Crouching = false
+	}
+
+	// Movement collision
+
+	if (left || topleft) && p.PlayerChild.VX > 100 {
+		if !topleft {
 			p.PlayerChild.VY = TCSpeed
 			p.NumJumps--
+		} else {
+			p.PlayerChild.VX = 0
+		}
+	}
+	if (right || topright) && p.PlayerChild.VX < -100 {
+		if !topright {
+			p.PlayerChild.VY = TCSpeed
+			p.NumJumps--
+		} else {
+			p.PlayerChild.VX = 0
 		}
 	}
 	if top && p.PlayerChild.VY > 0 {
 		p.PlayerChild.VY = 0
 	}
 
-	// Attacks
+	// Attacking
 
 	if inputs.Keys["p"] {
 		if !p.JustPunched {
-			p.PlayerMaterial.PlayAnimationOnce("punch")
+			p.PlayerMaterial.PlayAnimationOnceCallback("punch", p.DoneAttack)
+			p.CurrentAnim = "punch"
+			p.Attacking = true
 			p.JustPunched = true
 			p.PlayerChild.VX = 0
 		}
@@ -205,18 +259,22 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	}
 }
 
+func (p *Player) DoneAttack() {
+	p.Attacking = false
+}
+
 func (p *Player) UpdateAnimation() {
-	if p.PlayerChild.VX > 0 && p.NumJumps > 0 && p.CurrentAnim != "walk" {
+	if p.PlayerChild.VX > 0 && p.NumJumps > 0 && p.CurrentAnim != "walk" && !p.Crouching && !p.Attacking {
 		p.PlayerMaterial.PlayAnimation("walk")
 		p.CurrentAnim = "walk"
 		return
 	}
-	if p.PlayerChild.VX < 0 && p.NumJumps > 0 && p.CurrentAnim != "walk" {
+	if p.PlayerChild.VX < 0 && p.NumJumps > 0 && p.CurrentAnim != "walk" && !p.Crouching && !p.Attacking {
 		p.PlayerMaterial.PlayAnimation("walk")
 		p.CurrentAnim = "walk"
 		return
 	}
-	if p.PlayerChild.VX == 0 && p.NumJumps > 0 && p.CurrentAnim != "idle" {
+	if p.PlayerChild.VX == 0 && p.NumJumps > 0 && p.CurrentAnim != "idle" && !p.Crouching && !p.Attacking {
 		p.PlayerMaterial.PlayAnimation("idle")
 		p.CurrentAnim = "idle"
 		return
@@ -226,41 +284,4 @@ func (p *Player) UpdateAnimation() {
 		p.CurrentAnim = "fall"
 		return
 	}
-}
-
-// top, left, bottom, right
-func (p *Player) CheckWorldCollision() (bool, bool, bool, bool, bool, bool) {
-	top := false
-	left := false
-	bottom := false
-	right := false
-
-	topleft := false
-	topright := false
-
-	px := int((p.PlayerChild.X + BlockSize/2) / BlockSize)
-	py := int((p.PlayerChild.Y)/BlockSize + 1)
-
-	if WorldMap.GetWorldBlockID(px, py+1) != "00000" {
-		top = true
-	}
-	if WorldMap.GetWorldBlockID(px, py-1) != "00000" {
-		bottom = true
-	}
-
-	if WorldMap.GetWorldBlockID(px-1, py) != "00000" || WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
-		left = true
-	}
-	if WorldMap.GetWorldBlockID(px+1, py) != "00000" || WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
-		right = true
-	}
-
-	if WorldMap.GetWorldBlockID(px-1, py+1) != "00000" {
-		topleft = true
-	}
-	if WorldMap.GetWorldBlockID(px+1, py+1) != "00000" {
-		topright = true
-	}
-
-	return top, left, bottom, right, topleft, topright
 }

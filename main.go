@@ -3,7 +3,9 @@ package main
 import (
 	"math"
 	_ "net/http/pprof"
+	"rapidengine/child"
 	"rapidengine/cmd"
+	"rapidengine/geometry"
 	"rapidengine/input"
 	"runtime"
 )
@@ -13,6 +15,8 @@ func init() {
 }
 
 var QUALITY = "LOW" // "MEDIUM" // "LOW"
+
+var colChild *child.Child2D
 
 func main() {
 	if runtime.GOOS == "darwin" {
@@ -26,7 +30,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = true
+	Config.FullScreen = false
 	Config.GammaCorrection = false
 	Config.VSync = false
 	Config.Profiling = false
@@ -79,6 +83,10 @@ func main() {
 	}
 
 	GamePaused = false
+
+	colChild = Engine.ChildControl.NewChild2D()
+	colChild.AttachMesh(geometry.NewRectangle())
+	colChild.AttachMaterial(Engine.MaterialControl.NewBasicMaterial())
 
 	Engine.Initialize()
 	Engine.StartRenderer()
@@ -177,6 +185,7 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 
 	renderWorldInBounds(renderer)
 
+	renderer.RenderChild(colChild)
 	renderer.RenderChild(Player1.PlayerChild)
 
 	// Update and render enemies
@@ -197,14 +206,14 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		snapx, snapy := int(bx/BlockSize), int(-by/BlockSize)
 		BlockSelect.SetPosition(float32(snapx*BlockSize), float32(snapy*BlockSize))
 
-		blockDist := BlockDistance(float32(snapx*BlockSize), float32(snapy*BlockSize), Player1.PlayerChild.X, Player1.PlayerChild.Y)
+		blockDist := BlockDistance(float32(snapx*BlockSize), float32(snapy*BlockSize), Player1.Hitbox1.X, Player1.Hitbox1.Y)
 		if blockDist < 5 {
 			renderer.RenderChild(BlockSelect)
 		}
 
 		Player1.PlayerChild.Darkness = WorldMap.GetDarkness(
-			int(Player1.PlayerChild.X/BlockSize),
-			int(Player1.PlayerChild.Y/BlockSize)+1,
+			int(Player1.Hitbox1.X/BlockSize),
+			int(Player1.Hitbox1.Y/BlockSize)+1,
 		)
 
 		if inputs.LeftMouseButton && blockDist < 5 {
@@ -222,30 +231,30 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 
 		// Camera
-		renderer.MainCamera.SetPosition(Player1.PlayerChild.X, Player1.PlayerChild.Y, -10)
-		SkyChild.SetPosition(Player1.PlayerChild.X-float32(ScreenWidth/2), Player1.PlayerChild.Y-float32(ScreenHeight/2))
+		renderer.MainCamera.SetPosition(Player1.Hitbox1.X, Player1.Hitbox1.Y, -10)
+		SkyChild.SetPosition(Player1.Hitbox1.X-float32(ScreenWidth/2), Player1.Hitbox1.Y-float32(ScreenHeight/2))
 
-		Back1Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
-		Back2Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
-		Back3Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
-		Back4Child.Y = Player1.PlayerChild.Y - float32(ScreenHeight/2)
+		Back1Child.Y = Player1.Hitbox1.Y - float32(ScreenHeight/2)
+		Back2Child.Y = Player1.Hitbox1.Y - float32(ScreenHeight/2)
+		Back3Child.Y = Player1.Hitbox1.Y - float32(ScreenHeight/2)
+		Back4Child.Y = Player1.Hitbox1.Y - float32(ScreenHeight/2)
 
 		// Parallax: Higher divisor = faster movement = appears closer
-		Back1Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.8
-		Back2Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.6
-		Back3Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.3
-		Back4Child.X = (Player1.PlayerChild.X / (WorldWidth * BlockSize / 10000)) / 0.2
+		Back1Child.X = (Player1.Hitbox1.X / (WorldWidth * BlockSize / 10000)) / 0.8
+		Back2Child.X = (Player1.Hitbox1.X / (WorldWidth * BlockSize / 10000)) / 0.6
+		Back3Child.X = (Player1.Hitbox1.X / (WorldWidth * BlockSize / 10000)) / 0.3
+		Back4Child.X = (Player1.Hitbox1.X / (WorldWidth * BlockSize / 10000)) / 0.2
 
-		Back1Child.Y = Back1Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.8
-		Back2Child.Y = Back2Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.6
-		Back3Child.Y = Back3Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.3
-		Back4Child.Y = Back4Child.Y + (Player1.PlayerChild.Y/(WorldHeight*BlockSize/10))/0.2
+		Back1Child.Y = Back1Child.Y + (Player1.Hitbox1.Y/(WorldHeight*BlockSize/10))/0.8
+		Back2Child.Y = Back2Child.Y + (Player1.Hitbox1.Y/(WorldHeight*BlockSize/10))/0.6
+		Back3Child.Y = Back3Child.Y + (Player1.Hitbox1.Y/(WorldHeight*BlockSize/10))/0.3
+		Back4Child.Y = Back4Child.Y + (Player1.Hitbox1.Y/(WorldHeight*BlockSize/10))/0.2
 	}
 }
 
 func renderWorldInBounds(renderer *cmd.Renderer) {
-	for x := int(Player1.PlayerChild.X) - 50 - ScreenWidth/2; x < int(Player1.PlayerChild.X)+50+ScreenWidth/2; x += BlockSize {
-		for y := int(Player1.PlayerChild.Y) - 50 - ScreenHeight/2; y < int(Player1.PlayerChild.Y)+50+ScreenHeight/2; y += BlockSize {
+	for x := int(Player1.Hitbox1.X) - 50 - ScreenWidth/2; x < int(Player1.Hitbox1.X)+50+ScreenWidth/2; x += BlockSize {
+		for y := int(Player1.Hitbox1.Y) - 50 - ScreenHeight/2; y < int(Player1.Hitbox1.Y)+50+ScreenHeight/2; y += BlockSize {
 			if cpy := WorldMap.GetBackBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
 				renderer.RenderCopy(NoCollisionChild, *cpy)
 			}
@@ -266,8 +275,8 @@ func renderWorldInBounds(renderer *cmd.Renderer) {
 }
 
 func renderFrontWorldInBounds(renderer *cmd.Renderer) {
-	for x := int(Player1.PlayerChild.X) - 50 - ScreenWidth/2; x < int(Player1.PlayerChild.X)+50+ScreenWidth/2; x += BlockSize {
-		for y := int(Player1.PlayerChild.Y) - 50 - ScreenHeight/2; y < int(Player1.PlayerChild.Y)+50+ScreenHeight/2; y += BlockSize {
+	for x := int(Player1.Hitbox1.X) - 50 - ScreenWidth/2; x < int(Player1.Hitbox1.X)+50+ScreenWidth/2; x += BlockSize {
+		for y := int(Player1.Hitbox1.Y) - 50 - ScreenHeight/2; y < int(Player1.Hitbox1.Y)+50+ScreenHeight/2; y += BlockSize {
 			if cpy := WorldMap.GetGrassBlock(int(x/BlockSize), int(y/BlockSize)); cpy.ID != "00000" {
 				renderer.RenderCopy(GrassChild, *cpy)
 			}
