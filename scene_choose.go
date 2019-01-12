@@ -63,6 +63,13 @@ func InitializeChooseScene() {
 	Engine.UIControl.InstanceElement(b2, ChooseScene)
 	Engine.UIControl.InstanceElement(b3, ChooseScene)
 
+	ChooseScene.InstanceChild(SkyChild)
+	ChooseScene.InstanceChild(SunChild)
+	ChooseScene.InstanceChild(Back4Child)
+	ChooseScene.InstanceChild(Back3Child)
+	ChooseScene.InstanceChild(Back2Child)
+	ChooseScene.InstanceChild(Back1Child)
+
 	ChooseScene.InstanceChild(rect1)
 	ChooseScene.InstanceChild(rect2)
 	ChooseScene.InstanceChild(rect3)

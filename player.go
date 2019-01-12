@@ -162,7 +162,7 @@ func (p *Player) Update(inputs *input.Input) {
 	p.UpdateAnimation()
 }
 
-var TCSpeed = float32(11.2 * 30)
+var TCSpeed = float32(11.5 * 30)
 
 var Started = 100
 

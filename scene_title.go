@@ -7,12 +7,14 @@ import (
 
 var exitButton *ui.Button
 
+var TitleParallax = float32(4000)
+
 func InitializeTitleScene() {
 	TitleScene = Engine.SceneControl.NewScene("title")
 
-	Engine.TextControl.LoadFont("./assets/vermin.ttf", "pixel", 32, 15)
+	title := Engine.TextControl.NewTextBox("H E L L I O N", "pixel", (1920 / 2), 700, 3, [3]float32{217, 30, 24})
+	title.X -= float32(title.GetLength() / 2)
 
-	title := Engine.TextControl.NewTextBox("H E L L I O N", "pixel", 720, 700, 3, [3]float32{217, 30, 24})
 	TitleScene.InstanceText(title)
 
 	ButtonMaterial = Engine.MaterialControl.NewBasicMaterial()
@@ -37,6 +39,9 @@ func InitializeTitleScene() {
 	exitButton.AttachText(exitText)
 	exitButton.ButtonChild.AttachMaterial(ButtonMaterial)
 
+	Engine.AudioControl.Load("./assets/music/Theme.wav", "title")
+	Engine.AudioControl.Play("title")
+
 	Engine.UIControl.AlignCenter(playButton)
 	Engine.UIControl.AlignCenter(settingsButton)
 	Engine.UIControl.AlignCenter(exitButton)
@@ -44,6 +49,22 @@ func InitializeTitleScene() {
 	Engine.UIControl.InstanceElement(playButton, TitleScene)
 	Engine.UIControl.InstanceElement(settingsButton, TitleScene)
 	Engine.UIControl.InstanceElement(exitButton, TitleScene)
+
+	TitleScene.InstanceChild(SkyChild)
+	TitleScene.InstanceChild(SunChild)
+	TitleScene.InstanceChild(Back4Child)
+	TitleScene.InstanceChild(Back3Child)
+	TitleScene.InstanceChild(Back2Child)
+	TitleScene.InstanceChild(Back1Child)
+}
+
+func updateTitleScreen() {
+	Back4Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.8
+	Back3Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.6
+	Back2Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.3
+	Back1Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.2
+
+	TitleParallax -= 5
 }
 
 func play() {

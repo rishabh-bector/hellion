@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "LOW" // "MEDIUM" // "LOW"
+var QUALITY = "MEDIUM" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -40,13 +40,15 @@ func main() {
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
 
-	InitializeTitleScene()
-	InitializeChooseScene()
+	Engine.TextControl.LoadFont("./assets/vermin.ttf", "pixel", 32, 15)
+
 	InitializeLoadingScene()
 	InitializeWorldScene()
 	InitializeMenuScene()
 	InitializeSaveScene()
 	InitializeHotbarScene()
+	InitializeChooseScene()
+	InitializeTitleScene()
 
 	EM = InitializeEnemyManager()
 
@@ -58,8 +60,6 @@ func main() {
 
 	WorldScene.InstanceSubscene(MenuScene)
 	WorldScene.InstanceSubscene(HotbarScene)
-
-	TitleScene.InstanceSubscene(HotbarScene)
 
 	Engine.SceneControl.SetCurrentScene(TitleScene)
 	HotbarScene.Activate()
@@ -74,12 +74,12 @@ func main() {
 			Engine.PostControl.EnableBloom(10, 4)
 		}
 
-		Engine.PostControl.BloomIntensity = 1.68
-		Engine.PostControl.BloomThreshold = 0.55
+		Engine.PostControl.BloomIntensity = 1.5
+		Engine.PostControl.BloomThreshold = -2.6
 
 		//Engine.PostControl.BloomOffsetX = -12
-		Engine.PostControl.BloomOffsetX = -10
-		Engine.PostControl.BloomOffsetY = -12
+		Engine.PostControl.BloomOffsetX = -7
+		Engine.PostControl.BloomOffsetY = -7
 	}
 
 	GamePaused = false
@@ -107,6 +107,8 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		JustEnemy = false
 	}
 
+	//println(Engine.PostControl.BloomOffsetX, Engine.PostControl.BloomOffsetY)
+
 	if inputs.Keys["q"] {
 		if !JustKnock {
 			for _, e := range EM.AllEnemies {
@@ -120,6 +122,10 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	if Engine.SceneControl.GetCurrentScene().ID == "world" {
 		renderWorldScene(renderer, inputs)
+	}
+
+	if Engine.SceneControl.GetCurrentScene().ID == "title" || Engine.SceneControl.GetCurrentScene().ID == "choose" {
+		updateTitleScreen()
 	}
 
 	if MenuScene.IsActive() {
@@ -185,7 +191,7 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 
 	renderWorldInBounds(renderer)
 
-	renderer.RenderChild(colChild)
+	//renderer.RenderChild(colChild)
 	renderer.RenderChild(Player1.PlayerChild)
 
 	// Update and render enemies

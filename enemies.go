@@ -63,6 +63,10 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 				Y:      0,
 				Width:  75,
 				Height: 120,
+
+				DirectionOffset: 1,
+				MinimumXDist:    47,
+				MinimumYDist:    20,
 			},
 		},
 
@@ -106,13 +110,8 @@ type Common struct {
 }
 
 func (c *Common) Update(player Player) {
-	c.Hitbox1.X = c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.Width / 2)
-	c.Hitbox1.Y = c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.Height / 2)
-
-	/*colChild.ScaleX = c.Hitbox1.Width
-	colChild.ScaleY = c.Hitbox1.Height
-	colChild.X = c.Hitbox1.X
-	colChild.Y = c.Hitbox1.Y*/
+	c.Hitbox1.X = c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.Width / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
+	c.Hitbox1.Y = c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.Height / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
 
 	_, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY)
 
@@ -144,7 +143,8 @@ func (c *Common) Update(player Player) {
 		if topright {
 			c.MonsterChild.VX = 0
 		} else {
-			c.Jump()
+			c.MonsterChild.VY = TCSpeed
+			c.NumJumps--
 		}
 	}
 
@@ -152,7 +152,8 @@ func (c *Common) Update(player Player) {
 		if topleft {
 			c.MonsterChild.VX = 0
 		} else {
-			c.Jump()
+			c.MonsterChild.VY = TCSpeed
+			c.NumJumps--
 		}
 	}
 
@@ -162,7 +163,7 @@ func (c *Common) Update(player Player) {
 func (c *Common) UpdateAnimations() {
 	if c.MonsterChild.VX > 0 {
 		c.MonsterMaterial.Flipped = 1
-	} else {
+	} else if c.MonsterChild.VX < 0 {
 		c.MonsterMaterial.Flipped = 0
 	}
 
