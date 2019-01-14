@@ -112,10 +112,6 @@ func loadBlocks() {
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/AN.png", "1AN", "pixel")
 	Engine.TextureControl.NewTexture("./assets/blocks/transparency/NA.png", "1NA", "pixel")
 
-	skyMaterial := Engine.MaterialControl.NewBasicMaterial()
-	skyMaterial.DiffuseLevel = 1
-	skyMaterial.DiffuseMap = Engine.TextureControl.GetTexture("back")
-
 	dirtMaterial := Engine.MaterialControl.NewBasicMaterial()
 	dirtMaterial.DiffuseLevel = 1
 	dirtMaterial.DiffuseMap = Engine.TextureControl.GetTexture("dirt")
@@ -203,7 +199,7 @@ func loadBlocks() {
 	BlockMap = make(map[string]*Block)
 	BlockMap = map[string]*Block{
 		"sky": &Block{
-			Material:   skyMaterial,
+			Material:   dirtMaterial,
 			LightBlock: 0,
 			SaveColor:  [3]int{107, 185, 240},
 		},

@@ -113,7 +113,12 @@ func (c *Common) Update(player Player) {
 	c.Hitbox1.X = c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.Width / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
 	c.Hitbox1.Y = c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.Height / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
 
-	_, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY)
+	/*colChild.X = c.Hitbox1.X
+	colChild.Y = c.Hitbox1.Y
+	colChild.ScaleX = c.Hitbox1.Width
+	colChild.ScaleY = c.Hitbox1.Height*/
+
+	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY)
 
 	dx := c.MonsterChild.X - player.PlayerChild.X
 
@@ -135,27 +140,26 @@ func (c *Common) Update(player Player) {
 		c.MonsterChild.VY -= BaseGravity * float32(Engine.Renderer.DeltaFrameTime)
 	}
 
-	if bottom {
-		c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx))))
+	c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx))))
+
+	if (right || topright) && c.MonsterChild.VX < -50 {
+		c.MonsterChild.VX = 0
+		c.Jump()
 	}
 
-	if right && c.MonsterChild.VX > 0 {
-		if topright {
-			c.MonsterChild.VX = 0
-		} else {
-			c.MonsterChild.VY = TCSpeed
-			c.NumJumps--
-		}
+	if (left || topleft) && c.MonsterChild.VX > 50 {
+		c.MonsterChild.VX = 0
+		c.Jump()
 	}
 
-	if left && c.MonsterChild.VX < 0 {
-		if topleft {
-			c.MonsterChild.VX = 0
-		} else {
-			c.MonsterChild.VY = TCSpeed
-			c.NumJumps--
-		}
+	if top && c.MonsterChild.VY > 10 {
+		c.MonsterChild.VY = 0
 	}
+
+	/*c.MonsterChild.X = Player1.PlayerChild.X
+	c.MonsterChild.Y = Player1.PlayerChild.Y
+	c.MonsterChild.VX = 0
+	c.MonsterChild.VY = 0*/
 
 	c.UpdateAnimations()
 }
@@ -182,9 +186,12 @@ func (c *Common) UpdateAnimations() {
 }
 
 func (c *Common) Jump() {
-	c.MonsterChild.VY = BaseSpeedY * c.VYMult
-	c.MonsterMaterial.PlayAnimationOnce("jump")
-	c.CurrentAnim = "jump"
+	if c.NumJumps > 0 {
+		c.NumJumps--
+		c.MonsterChild.VY = BaseSpeedY * c.VYMult
+		c.MonsterMaterial.PlayAnimationOnce("jump")
+		c.CurrentAnim = "jump"
+	}
 }
 
 func (c *Common) Knockback(mult float32) {

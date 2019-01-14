@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "HIGH" // "HIGH" // "MEDIUM" // "LOW"
+var QUALITY = "HIGH" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -22,6 +22,10 @@ func main() {
 	if runtime.GOOS == "darwin" {
 		ScreenWidth = 1440
 		ScreenHeight = 900
+	}
+	if QUALITY == "EPIC" {
+		ScreenWidth = 3840
+		ScreenHeight = 2160
 	}
 
 	//ScreenWidth = 3840
@@ -64,11 +68,11 @@ func main() {
 	Engine.SceneControl.SetCurrentScene(TitleScene)
 	HotbarScene.Activate()
 
-	if QUALITY == "HIGH" || QUALITY == "MEDIUM" {
+	if QUALITY == "HIGH" || QUALITY == "MEDIUM" || QUALITY == "EPIC" {
 		Engine.PostControl.EnablePostProcessing()
 		Engine.PostControl.EnableLightScattering(SunChild)
 
-		if QUALITY == "HIGH" {
+		if QUALITY == "HIGH" || QUALITY == "EPIC" {
 			Engine.PostControl.EnableBloom(25, 4)
 		} else {
 			Engine.PostControl.EnableBloom(10, 4)
@@ -108,6 +112,12 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 
 	//println(Engine.PostControl.BloomOffsetX, Engine.PostControl.BloomOffsetY)
+
+	if inputs.Keys["h"] {
+		ChangeParallax()
+	} else {
+		JustParallax = false
+	}
 
 	if inputs.Keys["q"] {
 		if !JustKnock {

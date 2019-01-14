@@ -12,7 +12,7 @@ var TitleParallax = float32(0)
 func InitializeTitleScene() {
 	TitleScene = Engine.SceneControl.NewScene("title")
 
-	title := Engine.TextControl.NewTextBox("H E L L I O N", "pixel", (1920 / 2), 700, 5, [3]float32{217, 30, 24})
+	title := Engine.TextControl.NewTextBox("H E L L I O N", "pixel", (float32(ScreenWidth) / 2), 700, 5, [3]float32{217, 30, 24})
 	title.X -= float32(title.GetLength() / 2)
 
 	TitleScene.InstanceText(title)

@@ -167,10 +167,10 @@ var TCSpeed = float32(11.5 * 30)
 var Started = 100
 
 func (p *Player) UpdateMovement(inputs *input.Input) {
-	colChild.ScaleX = Player1.Hitbox1.Width
+	/*colChild.ScaleX = Player1.Hitbox1.Width
 	colChild.ScaleY = Player1.Hitbox1.Height
 	colChild.X = Player1.Hitbox1.X
-	colChild.Y = Player1.Hitbox1.Y
+	colChild.Y = Player1.Hitbox1.Y*/
 
 	p.Hitbox1.X = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.Width / 2) + (p.PlayerChild.VX * float32(Engine.Renderer.DeltaFrameTime))
 	p.Hitbox1.Y = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.Height / 2) + (p.PlayerChild.VY * float32(Engine.Renderer.DeltaFrameTime))
@@ -225,21 +225,20 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	// Movement collision
 
 	if (left || topleft) && p.PlayerChild.VX > 100 {
-		if !topleft {
+		p.PlayerChild.VX = 0
+		/*if !topleft {
 			p.PlayerChild.VY = TCSpeed
 			p.NumJumps--
-		} else {
-			p.PlayerChild.VX = 0
-		}
+		}*/
 	}
 	if (right || topright) && p.PlayerChild.VX < -100 {
-		if !topright {
+		p.PlayerChild.VX = 0
+		/*if !topright {
 			p.PlayerChild.VY = TCSpeed
 			p.NumJumps--
-		} else {
-			p.PlayerChild.VX = 0
-		}
+		}*/
 	}
+
 	if top && p.PlayerChild.VY > 0 {
 		p.PlayerChild.VY = 0
 	}

@@ -80,8 +80,8 @@ func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool,
 	pey := int((hb.Y + hb.Height) / BlockSize)
 
 	// Broad phase collision
-	for x := px - 2; x < pex+2; x++ {
-		for y := py - 2; y < pey+2; y++ {
+	for x := px - 3; x < pex+3; x++ {
+		for y := py - 3; y < pey+3; y++ {
 			if block := WorldMap.GetWorldBlock(x, y); block.ID != "00000" {
 				if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
 					if cols == 1 {
@@ -101,14 +101,16 @@ func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool,
 	if block := WorldMap.GetWorldBlock(px-1, py+1); block.ID != "00000" {
 		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
 			if cols == 3 {
+				block.Darkness = 0
 				topleft = true
 			}
 		}
 	}
 
-	if block := WorldMap.GetWorldBlock(px+1, py+1); block.ID != "00000" {
+	if block := WorldMap.GetWorldBlock(pex+1, py+1); block.ID != "00000" {
 		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
 			if cols == 1 {
+				block.Darkness = 0
 				topright = true
 			}
 		}

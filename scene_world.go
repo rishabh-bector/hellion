@@ -1,9 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"rapidengine/cmd"
 	"rapidengine/geometry"
+	"rapidengine/material"
 )
+
+var backMat1 *material.BasicMaterial
+var backMat2 *material.BasicMaterial
+var backMat3 *material.BasicMaterial
+var backMat4 *material.BasicMaterial
 
 func InitializeWorldScene() {
 
@@ -14,32 +21,42 @@ func InitializeWorldScene() {
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax3.png", "parallax3", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax4", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees1.png", "parallax1", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees2.png", "parallax2", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees3.png", "parallax3", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax4", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees1.png", "parallax5", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees2.png", "parallax6", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees3.png", "parallax7", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax8", "pixel")
+
+	Engine.TextureControl.NewTexture("assets/backgrounds/snow/snow1.png", "parallax9", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/snow/snow2.png", "parallax10", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/snow/snow3.png", "parallax11", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/snow/snow4.png", "parallax12", "pixel")
+
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain1.png", "parallax13", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain2.png", "parallax14", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain3.png", "parallax15", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain4.png", "parallax16", "pixel")
 
 	backgroundMaterial := Engine.MaterialControl.NewBasicMaterial()
 	backgroundMaterial.DiffuseLevel = 1
 	backgroundMaterial.DiffuseMap = Engine.TextureControl.GetTexture("sky")
 	backgroundMaterial.DiffuseMapScale = 1
 
-	backMat1 := Engine.MaterialControl.NewBasicMaterial()
+	backMat1 = Engine.MaterialControl.NewBasicMaterial()
 	backMat1.DiffuseLevel = 1
 	backMat1.DiffuseMap = Engine.TextureControl.GetTexture("parallax1")
 	backMat1.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
-	backMat2 := Engine.MaterialControl.NewBasicMaterial()
+	backMat2 = Engine.MaterialControl.NewBasicMaterial()
 	backMat2.DiffuseLevel = 1
 	backMat2.DiffuseMap = Engine.TextureControl.GetTexture("parallax2")
 	backMat2.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
-	backMat3 := Engine.MaterialControl.NewBasicMaterial()
+	backMat3 = Engine.MaterialControl.NewBasicMaterial()
 	backMat3.DiffuseLevel = 1
 	backMat3.DiffuseMap = Engine.TextureControl.GetTexture("parallax3")
 	backMat3.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
-	backMat4 := Engine.MaterialControl.NewBasicMaterial()
+	backMat4 = Engine.MaterialControl.NewBasicMaterial()
 	backMat4.DiffuseLevel = 1
 	backMat4.DiffuseMap = Engine.TextureControl.GetTexture("parallax4")
 	backMat4.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
@@ -163,4 +180,27 @@ func InitializeWorldScene() {
 	WorldScene.InstanceChild(GrassChild)
 	WorldScene.InstanceChild(Player1.PlayerChild)
 	WorldScene.InstanceChild(BlockSelect)
+}
+
+var CurrentParallax = int(1)
+var JustParallax = false
+
+func ChangeParallax() {
+	if JustParallax {
+		return
+	}
+
+	JustParallax = true
+	println(CurrentParallax)
+
+	if CurrentParallax == 13 {
+		CurrentParallax = 1
+	} else {
+		CurrentParallax += 4
+	}
+
+	backMat1.DiffuseMap = Engine.TextureControl.GetTexture("parallax" + fmt.Sprint(CurrentParallax))
+	backMat2.DiffuseMap = Engine.TextureControl.GetTexture("parallax" + fmt.Sprint(CurrentParallax+1))
+	backMat3.DiffuseMap = Engine.TextureControl.GetTexture("parallax" + fmt.Sprint(CurrentParallax+2))
+	backMat4.DiffuseMap = Engine.TextureControl.GetTexture("parallax" + fmt.Sprint(CurrentParallax+3))
 }
