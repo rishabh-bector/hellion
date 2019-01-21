@@ -62,11 +62,11 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 				X:      0,
 				Y:      0,
 				Width:  75,
-				Height: 120,
+				Height: 135,
 
 				DirectionOffset: 1,
-				MinimumXDist:    47,
-				MinimumYDist:    20,
+				MinimumXDist:    30,
+				MinimumYDist:    25,
 			},
 		},
 

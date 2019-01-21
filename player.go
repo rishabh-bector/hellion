@@ -152,7 +152,7 @@ func InitializePlayer() {
 		Height: 120,
 
 		DirectionOffset: 1,
-		MinimumXDist:    47,
+		MinimumXDist:    30,
 		MinimumYDist:    20,
 	}
 }
@@ -230,6 +230,7 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 			p.PlayerChild.VY = TCSpeed
 			p.NumJumps--
 		}*/
+		p.PlayerChild.X += 1
 	}
 	if (right || topright) && p.PlayerChild.VX < -100 {
 		p.PlayerChild.VX = 0
@@ -237,9 +238,13 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 			p.PlayerChild.VY = TCSpeed
 			p.NumJumps--
 		}*/
+		p.PlayerChild.X -= 1
 	}
 
 	if top && p.PlayerChild.VY > 0 {
+		p.PlayerChild.VY = 0
+	}
+	if bottom && p.PlayerChild.VY < 0 {
 		p.PlayerChild.VY = 0
 	}
 

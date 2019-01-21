@@ -15,19 +15,22 @@ type AABB struct {
 }
 
 func (aabb *AABB) CheckCollision(other AABB, vx, vy float32) int {
-	if aabb.X+aabb.Width > other.X &&
-		aabb.X < other.X+other.Width &&
-		aabb.Y+aabb.Height > other.Y &&
-		aabb.Y < other.Y+other.Height {
+	ax := aabb.X + (vx * float32(Engine.Renderer.DeltaFrameTime))
+	ay := aabb.Y // + (vy * float32(Engine.Renderer.DeltaFrameTime))
+
+	if ax+aabb.Width > other.X &&
+		ax < other.X+other.Width &&
+		ay+aabb.Height > other.Y &&
+		ay < other.Y+other.Height {
 	} else {
 		return 0
 	}
 
-	b_collision := aabb.Y - (other.Y + other.Height)
-	t_collision := (aabb.Y + aabb.Height) - other.Y
+	b_collision := ay - (other.Y + other.Height)
+	t_collision := (ay + aabb.Height) - other.Y
 
-	l_collision := aabb.X - (other.X + other.Width)
-	r_collision := (aabb.X + aabb.Width) - other.X
+	l_collision := ax - (other.X + other.Width)
+	r_collision := (ax + aabb.Width) - other.X
 
 	b_collision *= b_collision
 	t_collision *= t_collision
@@ -56,7 +59,7 @@ func (aabb *AABB) CheckCollision(other AABB, vx, vy float32) int {
 	}
 
 	if b_collision < t_collision && b_collision < l_collision && b_collision < r_collision {
-		if b_collision >= aabb.MinimumYDist {
+		if b_collision >= aabb.MinimumYDist && vy <= 0 {
 			return 4
 		}
 	}
@@ -101,7 +104,6 @@ func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool,
 	if block := WorldMap.GetWorldBlock(px-1, py+1); block.ID != "00000" {
 		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
 			if cols == 3 {
-				block.Darkness = 0
 				topleft = true
 			}
 		}
@@ -110,7 +112,6 @@ func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool,
 	if block := WorldMap.GetWorldBlock(pex+1, py+1); block.ID != "00000" {
 		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
 			if cols == 1 {
-				block.Darkness = 0
 				topright = true
 			}
 		}
