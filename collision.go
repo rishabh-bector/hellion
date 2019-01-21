@@ -1,73 +1,109 @@
 package main
 
+type Hitbox struct {
+	LAABB AABB
+	RAABB AABB
+	UAABB AABB
+	DAABB AABB
+}
+
+func NewHitBox(original AABB, width float32) Hitbox {
+	return Hitbox{
+		LAABB: AABB{
+			X:      0,
+			Y:      5,
+			Width:  width,
+			Height: original.Height - 5,
+		},
+		RAABB: AABB{
+			X:      original.Width - width,
+			Y:      5,
+			Width:  width,
+			Height: original.Height - 5,
+		},
+		UAABB: AABB{
+			X:      5,
+			Y:      original.Height - width,
+			Width:  original.Width - 5,
+			Height: width,
+		},
+		DAABB: AABB{
+			X:      5,
+			Y:      0,
+			Width:  original.Width - 5,
+			Height: width,
+		},
+	}
+}
+
+func (hb *Hitbox) CheckCollisionAABB(other AABB, vx, vy, selfx, selfy float32) (bool, bool, bool, bool) {
+	left := hb.LAABB.CheckCollisionTranslated(other, vx, vy, selfx, selfy)
+	right := hb.RAABB.CheckCollisionTranslated(other, vx, vy, selfx, selfy)
+	up := hb.UAABB.CheckCollisionTranslated(other, vx, vy, selfx, selfy)
+	down := hb.DAABB.CheckCollisionTranslated(other, vx, vy, selfx, selfy)
+	return left, right, up, down
+}
+
+func (hb *Hitbox) CheckCollisionHitbox(other Hitbox, vx, vy float32) (bool, bool, bool, bool) {
+	left := hb.LAABB.CheckHitboxCollision(other, vx, vy)
+	right := hb.RAABB.CheckHitboxCollision(other, vx, vy)
+	up := hb.UAABB.CheckHitboxCollision(other, vx, vy)
+	down := hb.DAABB.CheckHitboxCollision(other, vx, vy)
+	return left, right, up, down
+}
+
 type AABB struct {
 	X      float32
 	Y      float32
 	Width  float32
 	Height float32
-
-	// To create the second hitbox, for direction detection
-	DirectionOffset float32
-
-	// Minimum distance for collision
-	MinimumXDist float32
-	MinimumYDist float32
 }
 
-func (aabb *AABB) CheckCollision(other AABB, vx, vy float32) int {
-	ax := aabb.X + (vx * float32(Engine.Renderer.DeltaFrameTime))
-	ay := aabb.Y // + (vy * float32(Engine.Renderer.DeltaFrameTime))
+func (aabb *AABB) CheckHitboxCollision(other Hitbox, vx, vy float32) bool {
+	if col := aabb.CheckCollision(other.LAABB, vx, vy); col {
+		return col
+	}
+	if col := aabb.CheckCollision(other.RAABB, vx, vy); col {
+		return col
+	}
+	if col := aabb.CheckCollision(other.UAABB, vx, vy); col {
+		return col
+	}
+	if col := aabb.CheckCollision(other.DAABB, vx, vy); col {
+		return col
+	}
+	return false
+}
+
+func (aabb *AABB) CheckCollisionTranslated(other AABB, vx, vy, selfx, selfy float32) bool {
+	ax := aabb.X + (vx * float32(Engine.Renderer.DeltaFrameTime)) + selfx
+	ay := aabb.Y + (vy * float32(Engine.Renderer.DeltaFrameTime)) + selfy
 
 	if ax+aabb.Width > other.X &&
 		ax < other.X+other.Width &&
 		ay+aabb.Height > other.Y &&
 		ay < other.Y+other.Height {
+		return true
 	} else {
-		return 0
+		return false
 	}
-
-	b_collision := ay - (other.Y + other.Height)
-	t_collision := (ay + aabb.Height) - other.Y
-
-	l_collision := ax - (other.X + other.Width)
-	r_collision := (ax + aabb.Width) - other.X
-
-	b_collision *= b_collision
-	t_collision *= t_collision
-	l_collision *= l_collision
-	r_collision *= r_collision
-
-	l_collision += aabb.DirectionOffset
-	r_collision += aabb.DirectionOffset
-
-	if l_collision < r_collision && l_collision < t_collision && l_collision < b_collision {
-		if l_collision >= aabb.MinimumXDist {
-			return 3
-		}
-	}
-
-	if r_collision < l_collision && r_collision < t_collision && r_collision < b_collision {
-		if r_collision >= aabb.MinimumXDist {
-			return 1
-		}
-	}
-
-	if t_collision < b_collision && t_collision < l_collision && t_collision < r_collision {
-		if t_collision >= aabb.MinimumYDist {
-			return 2
-		}
-	}
-
-	if b_collision < t_collision && b_collision < l_collision && b_collision < r_collision {
-		if b_collision >= aabb.MinimumYDist && vy <= 0 {
-			return 4
-		}
-	}
-
-	return 0
 }
 
-func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool, bool) {
+func (aabb *AABB) CheckCollision(other AABB, vx, vy float32) bool {
+	ax := aabb.X + (vx * float32(Engine.Renderer.DeltaFrameTime))
+	ay := aabb.Y + (vy * float32(Engine.Renderer.DeltaFrameTime))
+
+	if ax+aabb.Width > other.X &&
+		ax < other.X+other.Width &&
+		ay+aabb.Height > other.Y &&
+		ay < other.Y+other.Height {
+		return true
+	} else {
+		return false
+	}
+}
+
+func CheckWorldCollision(hb Hitbox, vx, vy, selfx, selfy float32) (bool, bool, bool, bool, bool, bool) {
 	top := false
 	left := false
 	bottom := false
@@ -76,44 +112,42 @@ func CheckWorldCollision(hb AABB, vx, vy float32) (bool, bool, bool, bool, bool,
 	topleft := false
 	topright := false
 
-	px := int((hb.X) / BlockSize)
-	pex := int((hb.X + hb.Width) / BlockSize)
+	px := int((selfx) / BlockSize)
+	pex := int((selfx + hb.DAABB.Width) / BlockSize)
 
-	py := int((hb.Y) / BlockSize)
-	pey := int((hb.Y + hb.Height) / BlockSize)
+	py := int((selfy) / BlockSize)
+	pey := int((selfy + hb.LAABB.Height) / BlockSize)
 
 	// Broad phase collision
 	for x := px - 3; x < pex+3; x++ {
 		for y := py - 3; y < pey+3; y++ {
 			if block := WorldMap.GetWorldBlock(x, y); block.ID != "00000" {
-				if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
-					if cols == 1 {
-						right = true
-					} else if cols == 2 {
-						top = true
-					} else if cols == 3 {
-						left = true
-					} else if cols == 4 {
-						bottom = true
-					}
+				l, r, u, d := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy)
+				if l {
+					left = true
+				}
+				if r {
+					right = true
+				}
+				if u {
+					top = true
+				}
+				if d {
+					bottom = true
 				}
 			}
 		}
 	}
 
 	if block := WorldMap.GetWorldBlock(px-1, py+1); block.ID != "00000" {
-		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
-			if cols == 3 {
-				topleft = true
-			}
+		if l, _, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy); l {
+			topleft = true
 		}
 	}
 
 	if block := WorldMap.GetWorldBlock(pex+1, py+1); block.ID != "00000" {
-		if cols := hb.CheckCollision(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0, 0}, vx, vy); cols != 0 {
-			if cols == 1 {
-				topright = true
-			}
+		if _, r, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy); r {
+			topright = true
 		}
 	}
 

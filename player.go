@@ -17,6 +17,8 @@ type Player struct {
 	PlayerMaterial *material.BasicMaterial
 
 	// Movement
+	CenterX  float32
+	CenterY  float32
 	SpeedX   float32
 	SpeedY   float32
 	Gravity  float32
@@ -34,7 +36,7 @@ type Player struct {
 	JustPunched bool
 
 	// Collision
-	Hitbox1 AABB
+	Hitbox1 Hitbox
 }
 
 func InitializePlayer() {
@@ -145,16 +147,13 @@ func InitializePlayer() {
 		Player1.SpeedX = 600
 	}
 
-	Player1.Hitbox1 = AABB{
+	original := AABB{
 		X:      0,
 		Y:      0,
 		Width:  50,
 		Height: 120,
-
-		DirectionOffset: 1,
-		MinimumXDist:    30,
-		MinimumYDist:    20,
 	}
+	Player1.Hitbox1 = NewHitBox(original, 5)
 }
 
 func (p *Player) Update(inputs *input.Input) {
@@ -172,10 +171,11 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	colChild.X = Player1.Hitbox1.X
 	colChild.Y = Player1.Hitbox1.Y*/
 
-	p.Hitbox1.X = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.Width / 2) + (p.PlayerChild.VX * float32(Engine.Renderer.DeltaFrameTime))
-	p.Hitbox1.Y = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.Height / 2) + (p.PlayerChild.VY * float32(Engine.Renderer.DeltaFrameTime))
+	p.CenterX = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.DAABB.Width / 2)
+	p.CenterY = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.LAABB.Height / 2)
 
-	top, left, bottom, right, topleft, topright := CheckWorldCollision(p.Hitbox1, p.PlayerChild.VX, p.PlayerChild.VY)
+	top, left, bottom, right, topleft, topright := CheckWorldCollision(p.Hitbox1, p.PlayerChild.VX, p.PlayerChild.VY, p.CenterX, p.CenterY)
+	println(left, right, top, bottom)
 	if bottom {
 		if p.God {
 			p.NumJumps = 10000
@@ -226,19 +226,9 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 
 	if (left || topleft) && p.PlayerChild.VX > 100 {
 		p.PlayerChild.VX = 0
-		/*if !topleft {
-			p.PlayerChild.VY = TCSpeed
-			p.NumJumps--
-		}*/
-		p.PlayerChild.X += 1
 	}
 	if (right || topright) && p.PlayerChild.VX < -100 {
 		p.PlayerChild.VX = 0
-		/*if !topright {
-			p.PlayerChild.VY = TCSpeed
-			p.NumJumps--
-		}*/
-		p.PlayerChild.X -= 1
 	}
 
 	if top && p.PlayerChild.VY > 0 {

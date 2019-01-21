@@ -58,16 +58,12 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 
 			NumJumps: 1,
 
-			Hitbox1: AABB{
+			Hitbox1: NewHitBox(AABB{
 				X:      0,
 				Y:      0,
 				Width:  75,
 				Height: 135,
-
-				DirectionOffset: 1,
-				MinimumXDist:    30,
-				MinimumYDist:    25,
-			},
+			}, 5),
 		},
 
 		activator: Activator{},
@@ -96,7 +92,7 @@ type Common struct {
 	MonsterMaterial *material.BasicMaterial
 	CurrentAnim     string
 
-	Hitbox1 AABB
+	Hitbox1 Hitbox
 
 	VXMult   float32
 	VYMult   float32
@@ -110,15 +106,10 @@ type Common struct {
 }
 
 func (c *Common) Update(player Player) {
-	c.Hitbox1.X = c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.Width / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
-	c.Hitbox1.Y = c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.Height / 2) + (c.MonsterChild.VX * float32(Engine.Renderer.DeltaFrameTime))
+	hx := c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.DAABB.Width / 2)
+	hy := c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.LAABB.Height / 2)
 
-	/*colChild.X = c.Hitbox1.X
-	colChild.Y = c.Hitbox1.Y
-	colChild.ScaleX = c.Hitbox1.Width
-	colChild.ScaleY = c.Hitbox1.Height*/
-
-	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY)
+	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY, hx, hy)
 
 	dx := c.MonsterChild.X - player.PlayerChild.X
 
