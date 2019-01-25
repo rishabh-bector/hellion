@@ -25,8 +25,9 @@ type Player struct {
 	NumJumps int
 
 	// Temp state
-	Crouching bool
-	Attacking bool
+	Crouching  bool
+	Attacking  bool
+	GettingHit bool
 
 	// Data
 	Health      int
@@ -36,7 +37,9 @@ type Player struct {
 	JustPunched bool
 
 	// Collision
-	Hitbox1 Hitbox
+	Hitbox1   Hitbox
+	FullBox   AABB
+	AttackBox AABB
 }
 
 func InitializePlayer() {
@@ -154,6 +157,8 @@ func InitializePlayer() {
 		Height: 120,
 	}
 	Player1.Hitbox1 = NewHitBox(original, 5)
+
+	Player1.FullBox = AABB{0, 0, 50, 120}
 }
 
 func (p *Player) Update(inputs *input.Input) {
@@ -174,8 +179,11 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	p.CenterX = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.DAABB.Width / 2)
 	p.CenterY = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.LAABB.Height / 2)
 
+	p.FullBox.X = p.CenterX
+	p.FullBox.Y = p.CenterY
+
 	top, left, bottom, right, topleft, topright := CheckWorldCollision(p.Hitbox1, p.PlayerChild.VX, p.PlayerChild.VY, p.CenterX, p.CenterY)
-	println(left, right, top, bottom)
+
 	if bottom {
 		if p.God {
 			p.NumJumps = 10000
@@ -251,6 +259,10 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	} else {
 		p.JustPunched = false
 	}
+}
+
+func (p *Player) Hit() {
+	println("OOOOF")
 }
 
 func (p *Player) DoneAttack() {

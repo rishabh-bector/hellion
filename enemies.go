@@ -64,6 +64,13 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 				Width:  75,
 				Height: 135,
 			}, 5),
+
+			aHitbox: AABB{
+				X:      60,
+				Y:      45,
+				Width:  20,
+				Height: 60,
+			},
 		},
 
 		activator: Activator{},
@@ -93,6 +100,7 @@ type Common struct {
 	CurrentAnim     string
 
 	Hitbox1 Hitbox
+	aHitbox AABB
 
 	VXMult   float32
 	VYMult   float32
@@ -100,7 +108,14 @@ type Common struct {
 
 	KnockXMult float32
 	KnockYMult float32
-	Knocking   bool
+
+	AttackTimeout float64
+
+	// Temp state
+	AnimBusy bool
+	MoveBusy bool
+	Knocking bool
+	Hitting  bool
 
 	NumJumps int
 }
@@ -109,9 +124,20 @@ func (c *Common) Update(player Player) {
 	hx := c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.DAABB.Width / 2)
 	hy := c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.LAABB.Height / 2)
 
+	c.aHitbox.X = hx
+	c.aHitbox.Y = hy
+
 	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY, hx, hy)
 
 	dx := c.MonsterChild.X - player.PlayerChild.X
+	absdx := math.Abs(float64(dx))
+
+	if absdx < 100 {
+		if c.AttackTimeout < 0 {
+			c.Attack()
+			c.AttackTimeout = 10
+		}
+	}
 
 	if c.Knocking {
 		c.MonsterChild.VX = -1 * (BaseSpeedX * c.KnockXMult) * (dx / float32(math.Abs(float64(dx))))
@@ -131,7 +157,9 @@ func (c *Common) Update(player Player) {
 		c.MonsterChild.VY -= BaseGravity * float32(Engine.Renderer.DeltaFrameTime)
 	}
 
-	c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx))))
+	if !c.MoveBusy && absdx > 100 {
+		c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx))))
+	}
 
 	if (right || topright) && c.MonsterChild.VX < -50 {
 		c.MonsterChild.VX = 0
@@ -153,6 +181,7 @@ func (c *Common) Update(player Player) {
 	c.MonsterChild.VY = 0*/
 
 	c.UpdateAnimations()
+	c.AttackTimeout -= Engine.Renderer.DeltaFrameTime
 }
 
 func (c *Common) UpdateAnimations() {
@@ -160,6 +189,10 @@ func (c *Common) UpdateAnimations() {
 		c.MonsterMaterial.Flipped = 1
 	} else if c.MonsterChild.VX < 0 {
 		c.MonsterMaterial.Flipped = 0
+	}
+
+	if c.AnimBusy {
+		return
 	}
 
 	if c.MonsterChild.VX > 0 && c.NumJumps > 0 && c.CurrentAnim != "walk" {
@@ -182,6 +215,28 @@ func (c *Common) Jump() {
 		c.MonsterChild.VY = BaseSpeedY * c.VYMult
 		c.MonsterMaterial.PlayAnimationOnce("jump")
 		c.CurrentAnim = "jump"
+	}
+}
+
+func (c *Common) Attack() {
+	c.AnimBusy = true
+	c.MoveBusy = true
+	c.MonsterChild.VX = 0
+
+	c.MonsterMaterial.PlayAnimationOnceCallback("attack", c.DoneHitting)
+	if c.aHitbox.CheckCollision(Player1.FullBox, 0, 0) {
+		c.Hitting = true
+		Player1.GettingHit = true
+		Player1.Hit()
+	}
+}
+
+func (c *Common) DoneHitting() {
+	c.AnimBusy = false
+	c.MoveBusy = false
+	if c.Hitting {
+		c.Hitting = false
+		Player1.GettingHit = false
 	}
 }
 
