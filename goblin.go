@@ -104,7 +104,7 @@ func NewGoblinMaterial() *material.BasicMaterial {
 	goblinMaterial.SetAnimationFPS("idle", 5)
 	goblinMaterial.SetAnimationFPS("jump", 5)
 	goblinMaterial.SetAnimationFPS("hit", 5)
-	goblinMaterial.SetAnimationFPS("attack", 5)
+	goblinMaterial.SetAnimationFPS("attack", 10)
 
 	goblinMaterial.PlayAnimation("idle")
 
