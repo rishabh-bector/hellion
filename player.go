@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"rapidengine/child"
 	"rapidengine/geometry"
 	"rapidengine/input"
@@ -30,7 +31,7 @@ type Player struct {
 	GettingHit bool
 
 	// Data
-	Health      int
+	Health      float32
 	CurrentAnim string
 
 	// Attacks
@@ -247,10 +248,9 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	}
 
 	// Attacking
-
 	if inputs.Keys["p"] {
 		if !p.JustPunched {
-			p.PlayerMaterial.PlayAnimationOnceCallback("punch", p.DoneAttack)
+			p.PlayerMaterial.PlayAnimationOnceCallback("punch", p.DoneAttack, nil)
 			p.CurrentAnim = "punch"
 			p.Attacking = true
 			p.JustPunched = true
@@ -261,8 +261,10 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	}
 }
 
-func (p *Player) Hit() {
-	println("OOOOF")
+func (p *Player) Hit(damage float32) {
+	Engine.Renderer.MainCamera.Shake(0.3, 0.01)
+	p.Health -= damage
+	fmt.Printf("Player hit! Health: %v\n", p.Health)
 }
 
 func (p *Player) DoneAttack() {

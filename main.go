@@ -43,6 +43,7 @@ func main() {
 
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
+	Engine.Renderer.MainCamera.SetSmoothSpeed(0.075)
 
 	Engine.TextControl.LoadFont("./assets/vermin.ttf", "pixel", 32, 15)
 
@@ -109,6 +110,10 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 	} else {
 		JustEnemy = false
+	}
+
+	if inputs.Keys["l"] {
+		renderer.MainCamera.Shake(0.3, 0.01)
 	}
 
 	//println(Engine.PostControl.BloomOffsetX, Engine.PostControl.BloomOffsetY)
@@ -248,23 +253,18 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 
 		// Camera
 		renderer.MainCamera.SetPosition(Player1.CenterX, Player1.CenterY, -10)
-		SkyChild.SetPosition(Player1.CenterX-float32(ScreenWidth/2), Player1.CenterY-float32(ScreenHeight/2))
+		SkyChild.SetPosition(cx-float32(ScreenWidth/2), cy-float32(ScreenHeight/2))
 
-		Back1Child.Y = Player1.CenterY - float32(ScreenHeight/2)
-		Back2Child.Y = Player1.CenterY - float32(ScreenHeight/2)
-		Back3Child.Y = Player1.CenterY - float32(ScreenHeight/2)
-		Back4Child.Y = Player1.CenterY - float32(ScreenHeight/2)
+		Back1Child.Y = cy - float32(ScreenHeight/2)
+		Back2Child.Y = cy - float32(ScreenHeight/2)
+		Back3Child.Y = cy - float32(ScreenHeight/2)
+		Back4Child.Y = cy - float32(ScreenHeight/2)
 
 		// Parallax: Higher divisor = faster movement = appears closer
-		Back1Child.X = (Player1.CenterX / (WorldWidth * BlockSize / 10000)) / 0.8
-		Back2Child.X = (Player1.CenterX / (WorldWidth * BlockSize / 10000)) / 0.6
-		Back3Child.X = (Player1.CenterX / (WorldWidth * BlockSize / 10000)) / 0.3
-		Back4Child.X = (Player1.CenterX / (WorldWidth * BlockSize / 10000)) / 0.2
-
-		Back1Child.Y = Back1Child.Y + (Player1.CenterY/(WorldHeight*BlockSize/10))/0.8
-		Back2Child.Y = Back2Child.Y + (Player1.CenterY/(WorldHeight*BlockSize/10))/0.6
-		Back3Child.Y = Back3Child.Y + (Player1.CenterY/(WorldHeight*BlockSize/10))/0.3
-		Back4Child.Y = Back4Child.Y + (Player1.CenterY/(WorldHeight*BlockSize/10))/0.2
+		Back1Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.8
+		Back2Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.6
+		Back3Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.3
+		Back4Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.2
 	}
 }
 

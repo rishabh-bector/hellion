@@ -13,6 +13,8 @@ func initializeWorldTree() {
 	WorldMap = NewWorldTree()
 }
 
+var AverageWorldHeight = float32(0.5)
+
 func generateWorldTree() {
 
 	Engine.Logger.Info("Loading blocks...")
@@ -129,9 +131,22 @@ func generateHeightMap() {
 	randomizeSeed()
 	gen := procedural.NewSimplexGenerator(0.001, 1, 0.5, 8, Seed)
 
+	minHeight := float64(1)
+	maxHeight := float64(0)
+
 	for x := 0; x < WorldWidth; x++ {
-		HeightMap[x] = GrassMinimum + int(Flatness*gen.Noise1D(float64(x))*float64(WorldHeight))
+		ht := gen.Noise1D(float64(x))
+		if ht < minHeight {
+			minHeight = ht
+		}
+		if ht > maxHeight {
+			maxHeight = ht
+		}
+		HeightMap[x] = GrassMinimum + int(Flatness*ht*float64(WorldHeight))
 	}
+
+	AverageWorldHeight = float32(minHeight+maxHeight) / 2.0
+
 	for x := 0; x < WorldWidth; x++ {
 		createWorldBlock(x, HeightMap[x], "dirt")
 	}

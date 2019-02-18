@@ -17,13 +17,13 @@ type Goblin struct {
 	activator Activator
 }
 
-func (g *Goblin) Update(player Player) {
-	g.common.Update(player)
+func (g *Goblin) Update() {
+	g.common.Update()
 	Engine.Renderer.RenderChild(g.common.MonsterChild)
 }
 
 func (g *Goblin) Damage(amount float32) {
-	g.common.Knockback(5)
+
 }
 
 func (g *Goblin) Activator() *Activator {
@@ -75,13 +75,13 @@ func NewGoblinMaterial() *material.BasicMaterial {
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_i2"), "jump")
 
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a1"), "attack")
-	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a2"), "attack")
+	goblinMaterial.AddHitFrame(Engine.TextureControl.GetTexture("goblin_a2"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a3"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a4"), "attack")
-	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a5"), "attack")
+	goblinMaterial.AddHitFrame(Engine.TextureControl.GetTexture("goblin_a5"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a6"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a7"), "attack")
-	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a8"), "attack")
+	goblinMaterial.AddHitFrame(Engine.TextureControl.GetTexture("goblin_a8"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a9"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a10"), "attack")
 	goblinMaterial.AddFrame(Engine.TextureControl.GetTexture("goblin_a11"), "attack")

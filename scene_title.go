@@ -40,7 +40,7 @@ func InitializeTitleScene() {
 	exitButton.ButtonChild.AttachMaterial(ButtonMaterial)
 
 	Engine.AudioControl.Load("./assets/music/Theme.wav", "title")
-	Engine.AudioControl.Play("title")
+	//Engine.AudioControl.Play("title")
 
 	Engine.UIControl.AlignCenter(playButton)
 	Engine.UIControl.AlignCenter(settingsButton)
