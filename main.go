@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "LOW" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
+var QUALITY = "HIGH" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -43,9 +43,13 @@ func main() {
 
 	Engine.Renderer.SetRenderDistance(float32(ScreenWidth/2) + 50)
 	Engine.Renderer.MainCamera.SetSpeed(0.2)
-	Engine.Renderer.MainCamera.SetSmoothSpeed(0.075)
+	Engine.Renderer.MainCamera.SetSmoothSpeed(0.05)
 
 	Engine.TextControl.LoadFont("./assets/vermin.ttf", "pixel", 32, 15)
+
+	InitializeHitboxViewer()
+	V.Mat.Hue = [4]float32{200, 100, 0, 255}
+	V.Mat.DiffuseLevel = 0
 
 	InitializeLoadingScene()
 	InitializeWorldScene()
@@ -74,7 +78,7 @@ func main() {
 		Engine.PostControl.EnableLightScattering(SunChild)
 
 		if QUALITY == "HIGH" || QUALITY == "EPIC" {
-			Engine.PostControl.EnableBloom(25, 4)
+			Engine.PostControl.EnableBloom(50, 8)
 		} else {
 			Engine.PostControl.EnableBloom(10, 4)
 		}
@@ -83,8 +87,8 @@ func main() {
 		Engine.PostControl.BloomThreshold = -2.6
 
 		//Engine.PostControl.BloomOffsetX = -12
-		Engine.PostControl.BloomOffsetX = -7
-		Engine.PostControl.BloomOffsetY = -7
+		//Engine.PostControl.BloomOffsetX = -7
+		//Engine.PostControl.BloomOffsetY = -7
 	}
 
 	GamePaused = false
@@ -266,6 +270,9 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		Back3Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.3
 		Back4Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.2
 	}
+
+	V.Update()
+	V.Render()
 }
 
 func renderWorldInBounds(renderer *cmd.Renderer) {

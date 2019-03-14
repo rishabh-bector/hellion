@@ -5,32 +5,37 @@ type Hitbox struct {
 	RAABB AABB
 	UAABB AABB
 	DAABB AABB
+
+	// For viewer
+	X float32
+	Y float32
 }
 
 func NewHitBox(original AABB, width float32) Hitbox {
+	s := float32(10)
 	return Hitbox{
 		LAABB: AABB{
 			X:      0,
-			Y:      5,
+			Y:      s,
 			Width:  width,
-			Height: original.Height - 5,
+			Height: original.Height - s*2,
 		},
 		RAABB: AABB{
 			X:      original.Width - width,
-			Y:      5,
+			Y:      s,
 			Width:  width,
-			Height: original.Height - 5,
+			Height: original.Height - s*2,
 		},
 		UAABB: AABB{
-			X:      5,
+			X:      s,
 			Y:      original.Height - width,
-			Width:  original.Width - 5,
+			Width:  original.Width - s*2,
 			Height: width,
 		},
 		DAABB: AABB{
-			X:      5,
+			X:      s,
 			Y:      0,
-			Width:  original.Width - 5,
+			Width:  original.Width - s*2,
 			Height: width,
 		},
 	}
@@ -57,6 +62,9 @@ type AABB struct {
 	Y      float32
 	Width  float32
 	Height float32
+
+	OffX float32
+	OffY float32
 }
 
 func (aabb *AABB) CheckHitboxCollision(other Hitbox, vx, vy float32) bool {
@@ -122,7 +130,7 @@ func CheckWorldCollision(hb Hitbox, vx, vy, selfx, selfy float32) (bool, bool, b
 	for x := px - 3; x < pex+3; x++ {
 		for y := py - 3; y < pey+3; y++ {
 			if block := WorldMap.GetWorldBlock(x, y); block.ID != "00000" {
-				l, r, u, d := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy)
+				l, r, u, d := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0}, vx, vy, selfx, selfy)
 				if l {
 					left = true
 				}
@@ -140,13 +148,13 @@ func CheckWorldCollision(hb Hitbox, vx, vy, selfx, selfy float32) (bool, bool, b
 	}
 
 	if block := WorldMap.GetWorldBlock(px-1, py+1); block.ID != "00000" {
-		if l, _, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy); l {
+		if l, _, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0}, vx, vy, selfx, selfy); l {
 			topleft = true
 		}
 	}
 
 	if block := WorldMap.GetWorldBlock(pex+1, py+1); block.ID != "00000" {
-		if _, r, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize}, vx, vy, selfx, selfy); r {
+		if _, r, _, _ := hb.CheckCollisionAABB(AABB{block.X, block.Y, BlockSize, BlockSize, 0, 0}, vx, vy, selfx, selfy); r {
 			topright = true
 		}
 	}

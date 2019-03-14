@@ -58,14 +58,14 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 			Hitbox1: NewHitBox(AABB{
 				X:      0,
 				Y:      0,
-				Width:  65,
+				Width:  60,
 				Height: 135,
 			}, 5),
 
 			aHitbox: AABB{
-				X:      60,
-				Y:      45,
-				Width:  20,
+				OffX:   0,
+				OffY:   45,
+				Width:  55,
 				Height: 60,
 			},
 
@@ -76,6 +76,9 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 	}
 
 	g.Activator().Activate()
+
+	V.AddBox(&g.common.Hitbox1)
+	V.AddAABB(&g.common.aHitbox)
 
 	em.AllEnemies[len(em.AllEnemies)-1] = &g
 }
@@ -121,12 +124,26 @@ func (c *Common) Update() {
 }
 
 func (c *Common) UpdateMovement() {
+	// Update position
+	c.MonsterChild.X += c.MonsterChild.VX * -float32(Engine.Renderer.DeltaFrameTime)
+	c.MonsterChild.Y += c.MonsterChild.VY * float32(Engine.Renderer.DeltaFrameTime)
+
 	// Update collision data
 	hx := c.MonsterChild.X + (c.MonsterChild.ScaleX / 2) - (c.Hitbox1.DAABB.Width / 2)
 	hy := c.MonsterChild.Y + (c.MonsterChild.ScaleY / 2) - (c.Hitbox1.LAABB.Height / 2)
-	c.aHitbox.X = hx
-	c.aHitbox.Y = hy
+	c.Hitbox1.X = hx
+	c.Hitbox1.Y = hy
 	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY, hx, hy)
+
+	// Attack hitboxes
+	flip := c.MonsterMaterial.Flipped
+	if flip == 0 {
+		flip = 1
+	} else {
+		flip = 0
+	}
+	c.aHitbox.X = (hx + (c.Hitbox1.DAABB.Width / 2)) + (c.aHitbox.OffX+c.aHitbox.Width)*float32(flip-1)
+	c.aHitbox.Y = hy + c.aHitbox.OffY
 
 	// Distance from player
 	dx := c.MonsterChild.X - Player1.PlayerChild.X
@@ -216,6 +233,7 @@ func (c *Common) Jump() {
 func (c *Common) Attack() {
 	c.State = "attacking"
 	c.CurrentAnim = "attacking"
+
 	c.MonsterMaterial.PlayAnimationOnceCallback("attack", c.DoneHitting, c.AttackHitFrame)
 }
 

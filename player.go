@@ -159,7 +159,9 @@ func InitializePlayer() {
 	}
 	Player1.Hitbox1 = NewHitBox(original, 5)
 
-	Player1.FullBox = AABB{0, 0, 50, 120}
+	Player1.FullBox = AABB{0, 0, 50, 120, 0, 0}
+
+	V.AddBox(&Player1.Hitbox1)
 }
 
 func (p *Player) Update(inputs *input.Input) {
@@ -177,11 +179,17 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 	colChild.X = Player1.Hitbox1.X
 	colChild.Y = Player1.Hitbox1.Y*/
 
+	p.PlayerChild.X += p.PlayerChild.VX * -float32(Engine.Renderer.DeltaFrameTime)
+	p.PlayerChild.Y += p.PlayerChild.VY * float32(Engine.Renderer.DeltaFrameTime)
+
 	p.CenterX = p.PlayerChild.X + (p.PlayerChild.ScaleX / 2) - (p.Hitbox1.DAABB.Width / 2)
 	p.CenterY = p.PlayerChild.Y + (p.PlayerChild.ScaleY / 2) - (p.Hitbox1.LAABB.Height / 2)
 
 	p.FullBox.X = p.CenterX
 	p.FullBox.Y = p.CenterY
+
+	p.Hitbox1.X = p.CenterX
+	p.Hitbox1.Y = p.CenterY
 
 	top, left, bottom, right, topleft, topright := CheckWorldCollision(p.Hitbox1, p.PlayerChild.VX, p.PlayerChild.VY, p.CenterX, p.CenterY)
 
