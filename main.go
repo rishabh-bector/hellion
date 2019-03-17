@@ -106,6 +106,8 @@ func main() {
 var JustEnemy = false
 var JustKnock = false
 
+var ViewerEnabled = false
+
 func render(renderer *cmd.Renderer, inputs *input.Input) {
 	if inputs.Keys["e"] {
 		if !JustEnemy {
@@ -271,8 +273,18 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		Back4Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.2
 	}
 
-	V.Update()
-	V.Render()
+	if ViewerEnabled {
+		V.Update()
+		V.Render()
+	}
+
+	if inputs.Keys["v"] {
+		if ViewerEnabled {
+			ViewerEnabled = false
+		} else {
+			ViewerEnabled = true
+		}
+	}
 }
 
 func renderWorldInBounds(renderer *cmd.Renderer) {
