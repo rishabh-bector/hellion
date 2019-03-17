@@ -4,6 +4,8 @@ package main
 //"math"
 
 import (
+	"fmt"
+	"rapidengine/child"
 
 	//"math/rand"
 
@@ -11,8 +13,6 @@ import (
 )
 
 type Goblin struct {
-	Health int
-
 	common    *Common
 	activator Activator
 }
@@ -22,8 +22,17 @@ func (g *Goblin) Update() {
 	Engine.Renderer.RenderChild(g.common.MonsterChild)
 }
 
-func (g *Goblin) Damage(amount float32) {
+func (g *Goblin) GetChild() *child.Child2D {
+	return g.common.MonsterChild
+}
 
+func (g *Goblin) GetCommon() *Common {
+	return g.common
+}
+
+func (g *Goblin) Damage(amount float32) {
+	g.common.Health -= amount
+	fmt.Printf("Goblin hit! Health: %v \n", g.common.Health)
 }
 
 func (g *Goblin) Activator() *Activator {

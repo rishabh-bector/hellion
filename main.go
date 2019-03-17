@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "HIGH" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
+var QUALITY = "LOW" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
