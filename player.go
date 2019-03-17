@@ -41,6 +41,9 @@ type Player struct {
 	Hitbox1   Hitbox
 	FullBox   AABB
 	AttackBox AABB
+
+	CurrentMiningTimer float64
+	CurrentMiningBlock [2]int
 }
 
 func InitializePlayer() {

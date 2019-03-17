@@ -22,6 +22,8 @@ type Block struct {
 	Orientations    [16]*material.BasicMaterial
 
 	LightBlock float32
+
+	Durability float64
 }
 
 func (block *Block) GetMaterial(direction string) *material.BasicMaterial {
@@ -207,16 +209,19 @@ func loadBlocks() {
 			Material:   dirtMaterial,
 			LightBlock: 0.1,
 			SaveColor:  [3]int{112, 85, 74},
+			Durability: 2.0,
 		},
 		"grass": &Block{
 			Material:   grassMaterial,
 			LightBlock: 0.1,
 			SaveColor:  [3]int{115, 173, 87},
+			Durability: 1.5,
 		},
 		"stone": &Block{
 			Material:   stoneMaterial,
 			LightBlock: 0.15,
 			SaveColor:  [3]int{116, 116, 116},
+			Durability: 2.5,
 		},
 		"backdirt": &Block{
 			Material:   backDirtMaterial,
@@ -227,6 +232,7 @@ func loadBlocks() {
 			Material:   leavesMaterial,
 			LightBlock: 0,
 			SaveColor:  [3]int{91, 141, 68},
+			Durability: 1.0,
 		},
 		"treeRightRoot": &Block{
 			Material:   treeRightRootMaterial,
