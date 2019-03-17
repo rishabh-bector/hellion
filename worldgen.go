@@ -123,6 +123,30 @@ func generateWorldTree() {
 	Engine.SceneControl.SetCurrentScene(WorldScene)
 }
 
+func generateTestWorldTree() {
+	randomizeSeed()
+
+	for x := 1300; x < 1600; x++ {
+		HeightMap[x] = 500
+		createWorldBlock(x, 500, "stone")
+	}
+
+	for x := 1300; x < 1600; x++ {
+		orientSingleBlock("stone", false, x, 500)
+	}
+
+	// Save world to image
+	WorldMap.writeToImage()
+
+	CreateLighting(1500, 500, 0.9)
+
+	Player1.PlayerChild.SetPosition(float32(BlockSize)*1500, float32(BlockSize)*600)
+	Player1.CenterX = Player1.PlayerChild.X + (Player1.PlayerChild.ScaleX / 2) - (Player1.Hitbox1.DAABB.Width / 2)
+	Player1.CenterY = Player1.PlayerChild.Y + (Player1.PlayerChild.ScaleY / 2) - (Player1.Hitbox1.LAABB.Height / 2)
+
+	Engine.SceneControl.SetCurrentScene(WorldScene)
+}
+
 //  --------------------------------------------------
 //  World Generation Functions
 //  --------------------------------------------------

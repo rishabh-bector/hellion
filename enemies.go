@@ -29,6 +29,25 @@ func (em *EnemyManager) Update() {
 	}
 }
 
+func (em *EnemyManager) CheckPlayerCollision() Enemy {
+	for _, enemy := range em.AllEnemies {
+		pdist := Distance(
+			Player1.CenterX, Player1.CenterY,
+			enemy.GetChild().X, enemy.GetChild().Y,
+		)
+
+		if pdist > 200 {
+			continue
+		}
+
+		if Player1.CheckEnemyCollision(enemy) {
+			return enemy
+		}
+	}
+
+	return nil
+}
+
 func (em *EnemyManager) NewGoblin(radius float32) {
 	mat := NewGoblinMaterial()
 
@@ -43,9 +62,10 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 	goblinChild.Y = float32(HeightMap[int(goblinChild.X)/BlockSize]*BlockSize) + 50
 
 	var g = Goblin{
-		Health: 100,
-
 		common: &Common{
+
+			Health: 100,
+
 			MonsterChild:    goblinChild,
 			MonsterMaterial: mat,
 
@@ -88,6 +108,9 @@ type Enemy interface {
 
 	Damage(amount float32)
 
+	GetChild() *child.Child2D
+	GetCommon() *Common
+
 	Activator() *Activator
 }
 
@@ -99,6 +122,10 @@ type Common struct {
 	// Engine components
 	MonsterChild    *child.Child2D
 	MonsterMaterial *material.BasicMaterial
+
+	// Monster Data
+	Damage float32
+	Health float32
 
 	// Hitboxes
 	Hitbox1 Hitbox
@@ -268,4 +295,10 @@ func (a *Activator) Deactivate() {
 
 func (a *Activator) IsActive() bool {
 	return a.active
+}
+
+func Distance(x1, y1, x2, y2 float32) float32 {
+	return float32(math.Sqrt(
+		float64((x2-x1)*(x2-x1) + (y2-y2)*(y2-y1)),
+	))
 }

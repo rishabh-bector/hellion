@@ -116,11 +116,14 @@ func choose2() {
 
 func choose3() {
 	CurrentWorld = 3
-	if b3Text.Text == "Play" {
+	/*if b3Text.Text == "Play" {
 		loadWorld()
 	} else {
 		newWorld()
-	}
+	}*/
+
+	initializeWorldTree()
+	generateTestWorldTree()
 }
 
 func loadWorld() {
