@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "LOW" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
+var QUALITY = "HIGH" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -36,6 +36,7 @@ func main() {
 	Config.ShowFPS = true
 	Config.FullScreen = false
 	Config.GammaCorrection = false
+	Config.AntiAliasing = true
 	Config.VSync = false
 	Config.Profiling = false
 
@@ -75,20 +76,21 @@ func main() {
 
 	if QUALITY == "HIGH" || QUALITY == "MEDIUM" || QUALITY == "EPIC" {
 		Engine.PostControl.EnablePostProcessing()
-		Engine.PostControl.EnableLightScattering(SunChild)
 
 		if QUALITY == "HIGH" || QUALITY == "EPIC" {
+			Engine.PostControl.EnableLightScattering(SunChild)
 			Engine.PostControl.EnableBloom(50, 8)
+
+			Engine.PostControl.BloomThreshold = -0.35
+			Engine.PostControl.BloomIntensity = 0.73
 		} else {
 			Engine.PostControl.EnableBloom(10, 4)
+			Engine.PostControl.BloomThreshold = 0.64
+			Engine.PostControl.BloomIntensity = 0.57
 		}
 
 		Engine.PostControl.BloomIntensity = 1.5
 		Engine.PostControl.BloomThreshold = -2.6
-
-		//Engine.PostControl.BloomOffsetX = -12
-		//Engine.PostControl.BloomOffsetX = -7
-		//Engine.PostControl.BloomOffsetY = -7
 	}
 
 	GamePaused = false
