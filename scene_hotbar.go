@@ -85,6 +85,5 @@ func UpdateActiveItem() {
 
 	// UI Updates
 	Player1Health.SetPercentage(Player1.Health / Player1.MaxHealth * 100)
-
-	Player1Health.SetPosition(50, 1000)
+	Player1Health.SetPosition(50, 0.9*float32(Engine.Config.ScreenHeight))
 }
