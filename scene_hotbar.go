@@ -65,7 +65,7 @@ func InitializeHotbarScene() {
 	Player1Health.BackChild.Static = true
 	Player1Health.BarChild.Static = true
 	Player1Health.SetDimensions(400, 25)
-	Player1Health.SetPosition(50, 1000)
+	Player1Health.SetPosition(50, 0.9*float32(Engine.Config.ScreenHeight))
 	Engine.UIControl.InstanceElement(Player1Health, HotbarScene)
 
 	UpdateHotBar()
