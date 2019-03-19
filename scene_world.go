@@ -214,8 +214,6 @@ func InitializeWorldScene() {
 	WorldScene.InstanceChild(GrassChild)
 	WorldScene.InstanceChild(Player1.PlayerChild)
 	WorldScene.InstanceChild(BlockSelect)
-
-	Engine.UIControl.InstanceElement(Player1Health, WorldScene)
 }
 
 var CurrentParallax = int(1)
