@@ -50,7 +50,9 @@ type Player struct {
 	AttackBox AABB
 
 	CurrentMiningTimer float64
-	CurrentMiningBlock [2]int
+	Lastsnapx          int
+	Lastsnapy          int
+	Dead               bool
 }
 
 func InitializePlayer() {
@@ -246,7 +248,7 @@ func (p *Player) UpdateMovement(inputs *input.Input) {
 
 	// Basic movement
 
-	if !p.Crouching && !p.Attacking {
+	if !p.Crouching && !p.Attacking && !p.Dead {
 		if inputs.Keys["w"] && p.NumJumps > 0 {
 			p.PlayerChild.VY = p.SpeedY
 			p.PlayerMaterial.PlayAnimationOnce("jump")
@@ -331,6 +333,9 @@ func (p *Player) Hit(damage float32) {
 
 	Engine.Renderer.MainCamera.Shake(0.3, 0.01)
 	p.Health -= damage
+	if p.Health <= 0 {
+		p.Dead = true
+	}
 	fmt.Printf("Player hit! Health: %v\n", p.Health)
 }
 
@@ -369,4 +374,11 @@ func (p *Player) CheckEnemyCollision(enemy Enemy) bool {
 		return true
 	}
 	return false
+}
+
+func (p *Player) Respawn() {
+	println("respawned")
+	p.Dead = false
+	p.PlayerChild.X = p.CenterX
+	p.PlayerChild.Y = p.CenterY
 }
