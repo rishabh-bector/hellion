@@ -62,6 +62,7 @@ func InitializeTitleScene() {
 }
 
 func updateTitleScreen() {
+
 	Back6Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.4
 	Back5Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.2
 	Back4Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.0

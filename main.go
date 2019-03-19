@@ -73,7 +73,6 @@ func main() {
 	WorldScene.InstanceSubscene(HotbarScene)
 
 	Engine.SceneControl.SetCurrentScene(TitleScene)
-	HotbarScene.Activate()
 
 	if QUALITY == "HIGH" || QUALITY == "MEDIUM" || QUALITY == "EPIC" {
 		Engine.PostControl.EnablePostProcessing()
@@ -154,6 +153,11 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 
 	if MenuScene.IsActive() {
 		renderer.RenderChild(MenuBackChild)
+	}
+
+	if HotbarScene.IsActive() {
+		renderer.RenderChild(Player1Health.BackChild)
+		renderer.RenderChild(Player1Health.BarChild)
 	}
 
 	if WorldScene.IsActive() {

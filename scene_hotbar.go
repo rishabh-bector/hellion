@@ -61,8 +61,15 @@ func InitializeHotbarScene() {
 	}
 	ActiveItem = 0
 
+	Player1Health = Engine.UIControl.NewProgressBar()
+	Player1Health.BackChild.Static = true
+	Player1Health.BarChild.Static = true
+	Player1Health.SetDimensions(400, 25)
+	Player1Health.SetPosition(50, 1000)
+	Engine.UIControl.InstanceElement(Player1Health, HotbarScene)
+
 	UpdateHotBar()
-	HotbarScene.Activate()
+	HotbarScene.Deactivate()
 }
 
 func UpdateHotBar() {
@@ -75,4 +82,9 @@ func UpdateHotBar() {
 
 func UpdateActiveItem() {
 	ActiveChild.SetPosition(1800-5, 500-5-float32(ActiveItem*(SlotSize+SlotSpacing)))
+
+	// UI Updates
+	Player1Health.SetPercentage(Player1.Health / Player1.MaxHealth * 100)
+
+	Player1Health.SetPosition(50, 1000)
 }
