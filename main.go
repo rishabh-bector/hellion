@@ -226,6 +226,19 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		GamePaused = true
 		MenuScene.Activate()
 	}
+
+	if Player1.Dead {
+		heading := Engine.TextControl.NewTextBox("YOU DIED", "pixel", (float32(ScreenWidth) / 2), 700, 5, [3]float32{217, 30, 24})
+		WorldScene.InstanceText(heading)
+		respawnText := Engine.TextControl.NewTextBox("Respawn", "pixel", 100, 100, 1, [3]float32{255, 255, 255})
+		respawnButton := Engine.UIControl.NewUIButton(100, 500, 200, 50)
+		respawnButton.SetClickCallback(Player1.Respawn)
+		respawnButton.AttachText(respawnText)
+		respawnButton.ButtonChild.AttachMaterial(ButtonMaterial)
+		Engine.UIControl.AlignCenter(respawnButton)
+		Engine.UIControl.InstanceElement(respawnButton, WorldScene)
+	}
+
 	if !GamePaused {
 		// Update player
 		Player1.Update(inputs)
@@ -246,17 +259,17 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		)
 
 		if Player1.CurrentMiningTimer <= 0 {
-			Player1.lastsnapx, Player1.lastsnapy = snapx, snapy
+			Player1.Lastsnapx, Player1.Lastsnapy = snapx, snapy
 		}
 
 		if inputs.LeftMouseButton && blockDist < 5 {
-			if Player1.lastsnapx == snapx && Player1.lastsnapy == snapy {
+			if Player1.Lastsnapx == snapx && Player1.Lastsnapy == snapy {
 				Player1.CurrentMiningTimer += renderer.DeltaFrameTime
 			}
 			if Player1.CurrentMiningTimer > 1 { //GetBlock(WorldMap.GetBackBlockName(snapx, snapy)).Durability {
 				destroyBlock(snapx, snapy)
 				Player1.CurrentMiningTimer = 0
-				Player1.lastsnapx, Player1.lastsnapy = snapx, snapy
+				Player1.Lastsnapx, Player1.Lastsnapy = snapx, snapy
 			}
 		} else {
 			Player1.CurrentMiningTimer = 0
