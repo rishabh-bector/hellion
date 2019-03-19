@@ -39,6 +39,7 @@ func main() {
 	Config.AntiAliasing = true
 	Config.VSync = false
 	Config.Profiling = false
+	Config.Blending = false
 
 	Engine = cmd.NewEngine(&Config, render)
 
@@ -207,6 +208,8 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 
 	renderer.RenderChild(SunChild)
 
+	renderer.RenderChild(Back6Child)
+	renderer.RenderChild(Back5Child)
 	renderer.RenderChild(Back4Child)
 	renderer.RenderChild(Back3Child)
 	renderer.RenderChild(Back2Child)
@@ -275,12 +278,16 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		Back2Child.Y = cy - float32(ScreenHeight/2)
 		Back3Child.Y = cy - float32(ScreenHeight/2)
 		Back4Child.Y = cy - float32(ScreenHeight/2)
+		Back5Child.Y = cy - float32(ScreenHeight/2)
+		Back6Child.Y = cy - float32(ScreenHeight/2)
 
 		// Parallax: Higher divisor = faster movement = appears closer
 		Back1Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.8
 		Back2Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.6
 		Back3Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.3
 		Back4Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.2
+		Back5Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.1
+		Back6Child.X = (cx / (WorldWidth * BlockSize / 10000)) / 0.05
 	}
 
 	if ViewerEnabled {

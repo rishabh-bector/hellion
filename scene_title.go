@@ -52,6 +52,9 @@ func InitializeTitleScene() {
 
 	TitleScene.InstanceChild(SkyChild)
 	TitleScene.InstanceChild(SunChild)
+
+	TitleScene.InstanceChild(Back6Child)
+	TitleScene.InstanceChild(Back5Child)
 	TitleScene.InstanceChild(Back4Child)
 	TitleScene.InstanceChild(Back3Child)
 	TitleScene.InstanceChild(Back2Child)
@@ -59,7 +62,9 @@ func InitializeTitleScene() {
 }
 
 func updateTitleScreen() {
-	Back4Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.8
+	Back6Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.4
+	Back5Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.2
+	Back4Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 1.0
 	Back3Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.6
 	Back2Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.3
 	Back1Child.X = (TitleParallax / (WorldWidth * BlockSize / 10000)) / 0.2

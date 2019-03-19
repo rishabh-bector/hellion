@@ -6,9 +6,12 @@ import (
 	"rapidengine/geometry"
 	"rapidengine/input"
 	"rapidengine/material"
+	"rapidengine/ui"
 )
 
 var Player1 Player
+
+var Player1Health *ui.ProgressBar
 
 type Player struct {
 	God bool
@@ -31,6 +34,7 @@ type Player struct {
 
 	// Data
 	Health      float32
+	MaxHealth   float32
 	CurrentAnim string
 
 	// Attack info
@@ -155,7 +159,9 @@ func InitializePlayer() {
 
 		NumJumps:    1,
 		CurrentAnim: "idle",
-		Health:      100,
+
+		Health:    100,
+		MaxHealth: 100,
 	}
 
 	if Player1.God {
@@ -180,6 +186,10 @@ func InitializePlayer() {
 	}
 
 	V.AddBox(&Player1.Hitbox1)
+
+	Player1Health = Engine.UIControl.NewProgressBar()
+	Player1Health.SetDimensions(200, 25)
+	Player1Health.SetPosition(1650, 50)
 }
 
 func (p *Player) Update(inputs *input.Input) {
@@ -349,6 +359,9 @@ func (p *Player) UpdateAnimation() {
 		p.CurrentAnim = "fall"
 		return
 	}
+
+	// UI Updates
+	Player1Health.SetPercentage(Player1.Health / Player1.MaxHealth)
 }
 
 func (p *Player) CheckEnemyCollision(enemy Enemy) bool {

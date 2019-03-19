@@ -11,17 +11,21 @@ var backMat1 *material.BasicMaterial
 var backMat2 *material.BasicMaterial
 var backMat3 *material.BasicMaterial
 var backMat4 *material.BasicMaterial
+var backMat5 *material.BasicMaterial
+var backMat6 *material.BasicMaterial
 
 func InitializeWorldScene() {
 
 	Engine.TextureControl.NewTexture("assets/backgrounds/gradient.png", "sky", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax1.png", "parallax1", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax2.png", "parallax2", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax3.png", "parallax3", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax4", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/1.png", "parallax1", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/2.png", "parallax2", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/3.png", "parallax3", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/4.png", "parallax4", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/5.png", "parallax5", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/og1/6.png", "parallax6", "pixel")
 
-	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees1.png", "parallax5", "pixel")
+	/*Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees1.png", "parallax5", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees2.png", "parallax6", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/forest/trees3.png", "parallax7", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain/parallax4.png", "parallax8", "pixel")
@@ -34,7 +38,7 @@ func InitializeWorldScene() {
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain1.png", "parallax13", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain2.png", "parallax14", "pixel")
 	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain3.png", "parallax15", "pixel")
-	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain4.png", "parallax16", "pixel")
+	Engine.TextureControl.NewTexture("assets/backgrounds/mountain2/mountain4.png", "parallax16", "pixel")*/
 
 	backgroundMaterial := Engine.MaterialControl.NewBasicMaterial()
 	backgroundMaterial.DiffuseLevel = 1
@@ -43,23 +47,39 @@ func InitializeWorldScene() {
 
 	backMat1 = Engine.MaterialControl.NewBasicMaterial()
 	backMat1.DiffuseLevel = 1
+	backMat1.Blending = true
 	backMat1.DiffuseMap = Engine.TextureControl.GetTexture("parallax1")
 	backMat1.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
 	backMat2 = Engine.MaterialControl.NewBasicMaterial()
 	backMat2.DiffuseLevel = 1
+	backMat2.Blending = true
 	backMat2.DiffuseMap = Engine.TextureControl.GetTexture("parallax2")
 	backMat2.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
 	backMat3 = Engine.MaterialControl.NewBasicMaterial()
 	backMat3.DiffuseLevel = 1
+	backMat3.Blending = true
 	backMat3.DiffuseMap = Engine.TextureControl.GetTexture("parallax3")
 	backMat3.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
 	backMat4 = Engine.MaterialControl.NewBasicMaterial()
 	backMat4.DiffuseLevel = 1
+	backMat4.Blending = true
 	backMat4.DiffuseMap = Engine.TextureControl.GetTexture("parallax4")
 	backMat4.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
+
+	backMat5 = Engine.MaterialControl.NewBasicMaterial()
+	backMat5.DiffuseLevel = 1
+	backMat5.Blending = true
+	backMat5.DiffuseMap = Engine.TextureControl.GetTexture("parallax5")
+	backMat5.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
+
+	backMat6 = Engine.MaterialControl.NewBasicMaterial()
+	backMat6.DiffuseLevel = 1
+	backMat6.Blending = true
+	backMat6.DiffuseMap = Engine.TextureControl.GetTexture("parallax6")
+	backMat6.DiffuseMapScale = float32(Config.ScreenWidth) / float32(WorldWidth*BlockSize)
 
 	Back1Child = Engine.ChildControl.NewChild2D()
 	Back1Child.AttachMaterial(backMat1)
@@ -84,6 +104,18 @@ func InitializeWorldScene() {
 	Back4Child.AttachMesh(geometry.NewRectangle())
 	Back4Child.ScaleX = float32(WorldWidth * BlockSize)
 	Back4Child.ScaleY = float32(Config.ScreenHeight)
+
+	Back5Child = Engine.ChildControl.NewChild2D()
+	Back5Child.AttachMaterial(backMat5)
+	Back5Child.AttachMesh(geometry.NewRectangle())
+	Back5Child.ScaleX = float32(WorldWidth * BlockSize)
+	Back5Child.ScaleY = float32(Config.ScreenHeight)
+
+	Back6Child = Engine.ChildControl.NewChild2D()
+	Back6Child.AttachMaterial(backMat6)
+	Back6Child.AttachMesh(geometry.NewRectangle())
+	Back6Child.ScaleX = float32(WorldWidth * BlockSize)
+	Back6Child.ScaleY = float32(Config.ScreenHeight)
 
 	SkyChild = Engine.ChildControl.NewChild2D()
 	SkyChild.AttachMaterial(backgroundMaterial)
@@ -151,9 +183,9 @@ func InitializeWorldScene() {
 	SunChild.ScaleX = 200
 	SunChild.ScaleY = 200
 	SunChild.Static = true
-	SunChild.SetPosition(1500, 900)
+	SunChild.SetPosition(1500, 700)
 	cmd.SunX = (1500.0 + 100) / 1920.0
-	cmd.SunY = (900.0 + 100) / 1080.0
+	cmd.SunY = (700.0 + 100) / 1080.0
 
 	initializeWorldTree()
 
@@ -168,6 +200,8 @@ func InitializeWorldScene() {
 
 	WorldScene.InstanceChild(SunChild)
 
+	WorldScene.InstanceChild(Back6Child)
+	WorldScene.InstanceChild(Back5Child)
 	WorldScene.InstanceChild(Back4Child)
 	WorldScene.InstanceChild(Back3Child)
 	WorldScene.InstanceChild(Back2Child)
@@ -180,6 +214,8 @@ func InitializeWorldScene() {
 	WorldScene.InstanceChild(GrassChild)
 	WorldScene.InstanceChild(Player1.PlayerChild)
 	WorldScene.InstanceChild(BlockSelect)
+
+	Engine.UIControl.InstanceElement(Player1Health, WorldScene)
 }
 
 var CurrentParallax = int(1)
