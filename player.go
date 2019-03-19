@@ -328,10 +328,13 @@ func (p *Player) Hit(damage float32) {
 	}
 
 	Engine.Renderer.MainCamera.Shake(0.3, 0.01)
+
 	p.Health -= damage
 	if p.Health <= 0 {
 		p.Dead = true
+		RespawnScene.Activate()
 	}
+
 	fmt.Printf("Player hit! Health: %v\n", p.Health)
 }
 
@@ -371,6 +374,7 @@ func (p *Player) CheckEnemyCollision(enemy Enemy) bool {
 
 func (p *Player) Respawn() {
 	p.Dead = false
+	p.Health = p.MaxHealth
 	p.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
 	RespawnScene.Deactivate()
 }

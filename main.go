@@ -34,7 +34,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = true
+	Config.FullScreen = false
 	Config.GammaCorrection = false
 	Config.AntiAliasing = true
 	Config.VSync = false
@@ -234,10 +234,6 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	if inputs.Keys["escape"] && !GamePaused {
 		GamePaused = true
 		MenuScene.Activate()
-	}
-
-	if Player1.Dead {
-		RespawnScene.Activate()
 	}
 
 	if !GamePaused {

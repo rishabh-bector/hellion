@@ -146,6 +146,7 @@ func generateTestWorldTree() {
 	Player1.CenterY = Player1.PlayerChild.Y + (Player1.PlayerChild.ScaleY / 2) - (Player1.Hitbox1.LAABB.Height / 2)
 
 	Engine.SceneControl.SetCurrentScene(WorldScene)
+	HotbarScene.Activate()
 }
 
 //  --------------------------------------------------

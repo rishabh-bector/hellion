@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"rapidengine/child"
 	"rapidengine/material"
+	"rapidengine/ui"
 )
 
 type EnemyManager struct {
@@ -22,9 +23,14 @@ func InitializeEnemyManager() *EnemyManager {
 }
 
 func (em *EnemyManager) Update() {
-	for _, enemy := range em.AllEnemies {
+	for i, enemy := range em.AllEnemies {
 		if enemy.Activator().IsActive() {
 			enemy.Update()
+		}
+		if enemy.GetCommon().Health <= 0 {
+			enemy.GetCommon().Kill()
+			enemy.Activator().Deactivate()
+			delete(em.AllEnemies, i)
 		}
 	}
 }
@@ -64,13 +70,14 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 	var g = Goblin{
 		common: &Common{
 
-			Health: 100,
+			Health:    100,
+			MaxHealth: 100,
 
 			MonsterChild:    goblinChild,
 			MonsterMaterial: mat,
 
-			VXMult:   0.8,
-			VYMult:   1,
+			VXMult:   (rand.Float32()*2-1.0)*0.2 + 0.8,
+			VYMult:   (rand.Float32()*2-1.0)*0.2 + 1.0,
 			GravMult: 1,
 
 			NumJumps: 1,
@@ -94,6 +101,12 @@ func (em *EnemyManager) NewGoblin(radius float32) {
 
 		activator: Activator{},
 	}
+
+	g.common.HealthBar = Engine.UIControl.NewProgressBar()
+	g.common.HealthBar.SetDimensions(50, 10)
+	g.common.HealthBar.BackChild.Static = true
+	g.common.HealthBar.BarChild.Static = true
+	g.common.HOffsetY = -30
 
 	g.Activator().Activate()
 
@@ -124,8 +137,9 @@ type Common struct {
 	MonsterMaterial *material.BasicMaterial
 
 	// Monster Data
-	Damage float32
-	Health float32
+	Damage    float32
+	Health    float32
+	MaxHealth float32
 
 	// Hitboxes
 	Hitbox1 Hitbox
@@ -141,6 +155,10 @@ type Common struct {
 	CurrentAnim   string
 	AttackTimeout float64
 
+	HealthBar *ui.ProgressBar
+	HOffsetX  float32
+	HOffsetY  float32
+
 	NumJumps int
 }
 
@@ -148,6 +166,12 @@ func (c *Common) Update() {
 	c.UpdateMovement()
 	c.UpdateAttacks()
 	c.UpdateAnimations()
+
+	c.HealthBar.SetPercentage(c.Health / c.MaxHealth * 100)
+	c.HealthBar.Update(nil)
+
+	Engine.Renderer.RenderChild(c.HealthBar.BackChild)
+	Engine.Renderer.RenderChild(c.HealthBar.BarChild)
 }
 
 func (c *Common) UpdateMovement() {
@@ -161,6 +185,9 @@ func (c *Common) UpdateMovement() {
 	c.Hitbox1.X = hx
 	c.Hitbox1.Y = hy
 	top, left, bottom, right, topleft, topright := CheckWorldCollision(c.Hitbox1, c.MonsterChild.VX, c.MonsterChild.VY, hx, hy)
+
+	camX, camY, _ := Engine.Renderer.MainCamera.GetPosition()
+	c.HealthBar.SetPosition(hx+c.HOffsetX-camX+(float32(Engine.Config.ScreenWidth)/2), hy+c.HOffsetY-camY+(float32(Engine.Config.ScreenHeight)/2))
 
 	// Attack hitboxes
 	flip := c.MonsterMaterial.Flipped
@@ -177,7 +204,7 @@ func (c *Common) UpdateMovement() {
 	absdx := math.Abs(float64(dx))
 
 	if c.State == "normal" && absdx > 100 {
-		c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx))))
+		c.MonsterChild.VX = (BaseSpeedX - 50) * (dx / float32(math.Abs(float64(dx)))) * c.VXMult
 	}
 
 	if c.State == "attacking" {
@@ -194,7 +221,7 @@ func (c *Common) UpdateMovement() {
 		c.NumJumps = 1
 		c.MonsterChild.VY = 0
 	} else {
-		c.MonsterChild.VY -= BaseGravity * float32(Engine.Renderer.DeltaFrameTime)
+		c.MonsterChild.VY -= BaseGravity * float32(Engine.Renderer.DeltaFrameTime) * c.VYMult
 	}
 	if (right || topright) && c.MonsterChild.VX < -50 {
 		c.MonsterChild.VX = 0
@@ -268,6 +295,10 @@ func (c *Common) AttackHitFrame() {
 	if c.CheckPlayerCollision() {
 		Player1.Hit(25)
 	}
+}
+
+func (c *Common) Kill() {
+
 }
 
 func (c *Common) DoneHitting() {
