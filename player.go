@@ -370,8 +370,7 @@ func (p *Player) CheckEnemyCollision(enemy Enemy) bool {
 }
 
 func (p *Player) Respawn() {
-	println("respawned")
 	p.Dead = false
-	p.PlayerChild.X = p.CenterX
-	p.PlayerChild.Y = p.CenterY
+	p.PlayerChild.SetPosition(float32(WorldWidth*BlockSize/2), float32((HeightMap[WorldWidth/2]+50)*BlockSize))
+	RespawnScene.Deactivate()
 }

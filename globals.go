@@ -111,6 +111,7 @@ var MenuScene *cmd.Scene
 var SaveScene *cmd.Scene
 var HotbarScene *cmd.Scene
 var InventoryScene *cmd.Scene
+var RespawnScene *cmd.Scene
 
 var EM *EnemyManager
 

@@ -34,7 +34,7 @@ func main() {
 	Config = cmd.NewEngineConfig(ScreenWidth, ScreenHeight, 2)
 
 	Config.ShowFPS = true
-	Config.FullScreen = false
+	Config.FullScreen = true
 	Config.GammaCorrection = false
 	Config.AntiAliasing = true
 	Config.VSync = false
@@ -60,6 +60,7 @@ func main() {
 	InitializeHotbarScene()
 	InitializeChooseScene()
 	InitializeTitleScene()
+	InitializeRespawnScene()
 
 	EM = InitializeEnemyManager()
 
@@ -71,6 +72,7 @@ func main() {
 
 	WorldScene.InstanceSubscene(MenuScene)
 	WorldScene.InstanceSubscene(HotbarScene)
+	WorldScene.InstanceSubscene(RespawnScene)
 
 	Engine.SceneControl.SetCurrentScene(TitleScene)
 
@@ -235,15 +237,7 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 	}
 
 	if Player1.Dead {
-		heading := Engine.TextControl.NewTextBox("YOU DIED", "pixel", (float32(ScreenWidth) / 2), 700, 5, [3]float32{217, 30, 24})
-		WorldScene.InstanceText(heading)
-		respawnText := Engine.TextControl.NewTextBox("Respawn", "pixel", 100, 100, 1, [3]float32{255, 255, 255})
-		respawnButton := Engine.UIControl.NewUIButton(100, 500, 200, 50)
-		respawnButton.SetClickCallback(Player1.Respawn)
-		respawnButton.AttachText(respawnText)
-		respawnButton.ButtonChild.AttachMaterial(ButtonMaterial)
-		Engine.UIControl.AlignCenter(respawnButton)
-		Engine.UIControl.InstanceElement(respawnButton, WorldScene)
+		RespawnScene.Activate()
 	}
 
 	if !GamePaused {
