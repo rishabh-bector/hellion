@@ -34,6 +34,7 @@ type Player struct {
 
 	// Data
 	Health      float32
+	Money       int
 	MaxHealth   float32
 	CurrentAnim string
 
