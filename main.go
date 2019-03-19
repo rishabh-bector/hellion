@@ -14,7 +14,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var QUALITY = "HIGH" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
+var QUALITY = "LOW" // "EPIC" // "HIGH" // "MEDIUM" // "LOW"
 
 var colChild *child.Child2D
 
@@ -245,17 +245,22 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 			int(Player1.CenterY/BlockSize)+1,
 		)
 
+		if Player1.CurrentMiningTimer <= 0 {
+			Player1.lastsnapx, Player1.lastsnapy = snapx, snapy
+		}
+
 		if inputs.LeftMouseButton && blockDist < 5 {
-			if Player1.CurrentMiningBlock[0] == snapx && Player1.CurrentMiningBlock[1] == snapy {
+			if Player1.lastsnapx == snapx && Player1.lastsnapy == snapy {
 				Player1.CurrentMiningTimer += renderer.DeltaFrameTime
 			}
 			if Player1.CurrentMiningTimer > 1 { //GetBlock(WorldMap.GetBackBlockName(snapx, snapy)).Durability {
 				destroyBlock(snapx, snapy)
 				Player1.CurrentMiningTimer = 0
+				Player1.lastsnapx, Player1.lastsnapy = snapx, snapy
 			}
+		} else {
+			Player1.CurrentMiningTimer = 0
 		}
-
-		Player1.CurrentMiningBlock[0], Player1.CurrentMiningBlock[1] = snapx, snapy
 
 		if inputs.RightMouseButton {
 			if WorldMap.GetWorldBlockID(snapx, snapy) == "00000" {

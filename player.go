@@ -46,7 +46,8 @@ type Player struct {
 	AttackBox AABB
 
 	CurrentMiningTimer float64
-	CurrentMiningBlock [2]int
+	lastsnapx          int
+	lastsnapy          int
 }
 
 func InitializePlayer() {
