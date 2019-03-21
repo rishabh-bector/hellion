@@ -260,13 +260,17 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 
 		if inputs.LeftMouseButton && blockDist < 5 {
+			// println(Player1.Lastsnapx)
+			// println(snapx)
+			println(Player1.CurrentMiningTimer)
 			if Player1.Lastsnapx == snapx && Player1.Lastsnapy == snapy {
 				Player1.CurrentMiningTimer += renderer.DeltaFrameTime
+			} else {
+				Player1.CurrentMiningTimer = 0
 			}
-			if Player1.CurrentMiningTimer > 1 { //GetBlock(WorldMap.GetBackBlockName(snapx, snapy)).Durability {
+			if Player1.CurrentMiningTimer > 0.5 { //GetBlock(WorldMap.GetBackBlockName(snapx, snapy)).Durability {
 				destroyBlock(snapx, snapy)
 				Player1.CurrentMiningTimer = 0
-				Player1.Lastsnapx, Player1.Lastsnapy = snapx, snapy
 			}
 		} else {
 			Player1.CurrentMiningTimer = 0
