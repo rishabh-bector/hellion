@@ -301,7 +301,9 @@ func (c *Common) AttackHitFrame() {
 
 func (c *Common) Kill() {
 	Player1.Money += rand.Intn(4) + 2
-	c.MonsterMaterial.PlayAnimationOnceCallback("die", c.SetDead, nil)
+	// c.MonsterMaterial.PlayAnimationOnceCallback("die", c.SetDead, nil) when we have dying anim's in
+	c.SetDead() // temporary
+
 }
 
 func (c *Common) SetDead() {
