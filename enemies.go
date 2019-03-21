@@ -29,8 +29,9 @@ func (em *EnemyManager) Update() {
 		}
 		if enemy.GetCommon().Health <= 0 {
 			enemy.GetCommon().Kill()
-			enemy.Activator().Deactivate()
-			delete(em.AllEnemies, i)
+		}
+		if enemy.GetCommon().Dead {
+			delete(EM.AllEnemies, i)
 		}
 	}
 }
@@ -140,6 +141,7 @@ type Common struct {
 	Damage    float32
 	Health    float32
 	MaxHealth float32
+	Dead      bool
 
 	// Hitboxes
 	Hitbox1 Hitbox
@@ -298,7 +300,12 @@ func (c *Common) AttackHitFrame() {
 }
 
 func (c *Common) Kill() {
+	Player1.Money += rand.Intn(4) + 2
+	c.MonsterMaterial.PlayAnimationOnceCallback("die", c.SetDead, nil)
+}
 
+func (c *Common) SetDead() {
+	c.Dead = true
 }
 
 func (c *Common) DoneHitting() {

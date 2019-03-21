@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"rapidengine/child"
 
-	"math/rand"
-
 	"rapidengine/material"
 )
 
@@ -33,10 +31,6 @@ func (g *Goblin) GetCommon() *Common {
 func (g *Goblin) Damage(amount float32) {
 	g.common.Health -= amount
 	fmt.Printf("Goblin hit! Health: %v \n", g.common.Health)
-	if g.common.Health <= 0 {
-		g.Activator().Deactivate()
-		Player1.Money += rand.Intn(4) + 2
-	}
 }
 
 func (g *Goblin) Activator() *Activator {
