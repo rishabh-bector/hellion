@@ -110,9 +110,11 @@ func main() {
 var JustEnemy = false
 var JustKnock = false
 
-var ViewerEnabled = false
+var ViewerEnabled = true
 
 func render(renderer *cmd.Renderer, inputs *input.Input) {
+	Inputs = inputs
+
 	if inputs.Keys["e"] {
 		if !JustEnemy {
 			EM.NewGoblin(50)
@@ -190,20 +192,6 @@ func render(renderer *cmd.Renderer, inputs *input.Input) {
 		println(Engine.PostControl.BloomThreshold)
 	}
 
-	if inputs.Keys["up"] {
-		Engine.PostControl.BloomOffsetY++
-		Player1.Gravity++
-	}
-	if inputs.Keys["down"] {
-		Engine.PostControl.BloomOffsetY--
-		Player1.Gravity--
-	}
-	if inputs.Keys["left"] {
-		Engine.PostControl.BloomOffsetX++
-	}
-	if inputs.Keys["right"] {
-		Engine.PostControl.BloomOffsetX--
-	}
 	//println(Engine.PostControl.BloomOffsetX, Engine.PostControl.BloomOffsetY)
 }
 
@@ -260,9 +248,6 @@ func renderWorldScene(renderer *cmd.Renderer, inputs *input.Input) {
 		}
 
 		if inputs.LeftMouseButton && blockDist < 5 {
-			// println(Player1.Lastsnapx)
-			// println(snapx)
-			println(Player1.CurrentMiningTimer)
 			if Player1.Lastsnapx == snapx && Player1.Lastsnapy == snapy {
 				Player1.CurrentMiningTimer += renderer.DeltaFrameTime
 			} else {

@@ -6,6 +6,9 @@ type Hitbox struct {
 	UAABB AABB
 	DAABB AABB
 
+	OffX float32
+	OffY float32
+
 	// For viewer
 	X float32
 	Y float32

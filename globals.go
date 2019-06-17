@@ -4,6 +4,7 @@ import (
 	"rapidengine/child"
 	"rapidengine/cmd"
 	"rapidengine/configuration"
+	"rapidengine/input"
 	"rapidengine/lighting"
 	"rapidengine/material"
 )
@@ -16,6 +17,8 @@ import (
 // Rapid Engine
 var Engine *cmd.Engine
 var Config configuration.EngineConfig
+
+var Inputs *input.Input
 
 // Screen Size
 var ScreenWidth = 1920
